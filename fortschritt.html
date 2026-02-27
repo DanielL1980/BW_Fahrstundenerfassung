@@ -6,7 +6,7 @@
     <title>Fortschritt - BW Fahrschul-Manager</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        .filter-active { border-color: #1e293b !important; transform: scale(1.05); shadow: 0 10px 15px -3px rgba(0,0,0,0.1); }
+        .filter-active { border-color: #1e293b !important; transform: scale(1.05); }
         .row-hidden { display: none !important; }
     </style>
 </head>
@@ -20,76 +20,59 @@
             </button>
             <div>
                 <h1 class="text-xl font-black tracking-tight uppercase italic">Ausbildungsstand</h1>
-                <p class="text-[10px] text-blue-300 font-bold uppercase tracking-widest">Analyse & Filter</p>
+                <p class="text-[10px] text-blue-300 font-bold uppercase tracking-widest">Detaillierte Analyse</p>
             </div>
         </header>
 
         <main class="flex-1 p-5">
-            
             <div class="mb-6 bg-slate-100 p-5 rounded-2xl border border-slate-200 shadow-inner space-y-4">
                 <div>
                     <label class="block text-[10px] font-black text-slate-500 mb-1 uppercase tracking-widest">Fahrschüler</label>
                     <select id="schuelerSelect" onchange="ladeFortschritt()" class="w-full p-4 rounded-xl border-2 border-white bg-white font-black text-slate-800 text-lg shadow-sm outline-none focus:border-blue-400 transition-all"></select>
                 </div>
                 <div>
-                    <label class="block text-[10px] font-black text-slate-500 mb-1 uppercase tracking-widest">DFE Klasse (für Berechnung)</label>
+                    <label class="block text-[10px] font-black text-slate-500 mb-1 uppercase tracking-widest">DFE Klasse</label>
                     <select id="dfeKlasse" onchange="ladeFortschritt()" class="w-full p-3 rounded-xl border-2 border-white bg-white font-bold text-slate-700 shadow-sm outline-none focus:border-blue-400 transition-all">
-                        <option value="C/CE">Klasse C / CE (Alle Aufgaben)</option>
+                        <option value="C/CE">Klasse C / CE</option>
                         <option value="C">Klasse C (Solo)</option>
-                        <option value="E für C">Klasse E für C (Anhänger)</option>
+                        <option value="E für C">Klasse E für C</option>
                     </select>
                 </div>
             </div>
 
             <div id="ergebnisBereich" class="hidden">
-                
                 <div class="grid grid-cols-4 gap-2 mb-4">
-                    <div onclick="setFilter('gruen')" id="box-gruen" class="bg-emerald-50 border-2 border-emerald-100 p-3 rounded-2xl text-center cursor-pointer hover:bg-emerald-100 transition-all shadow-sm">
+                    <div onclick="setFilter('gruen')" id="box-gruen" class="bg-emerald-50 border-2 border-emerald-100 p-3 rounded-2xl text-center cursor-pointer shadow-sm">
                         <div class="text-2xl font-black text-emerald-600" id="countGruen">0</div>
                         <div class="text-[8px] font-black text-emerald-800 uppercase tracking-tighter">Sicher</div>
                     </div>
-                    <div onclick="setFilter('gelb')" id="box-gelb" class="bg-amber-50 border-2 border-amber-100 p-3 rounded-2xl text-center cursor-pointer hover:bg-amber-100 transition-all shadow-sm">
+                    <div onclick="setFilter('gelb')" id="box-gelb" class="bg-amber-50 border-2 border-amber-100 p-3 rounded-2xl text-center cursor-pointer shadow-sm">
                         <div class="text-2xl font-black text-amber-500" id="countGelb">0</div>
                         <div class="text-[8px] font-black text-amber-800 uppercase tracking-tighter">Hilfe</div>
                     </div>
-                    <div onclick="setFilter('rot')" id="box-rot" class="bg-rose-50 border-2 border-rose-100 p-3 rounded-2xl text-center cursor-pointer hover:bg-rose-100 transition-all shadow-sm">
+                    <div onclick="setFilter('rot')" id="box-rot" class="bg-rose-50 border-2 border-rose-100 p-3 rounded-2xl text-center cursor-pointer shadow-sm">
                         <div class="text-2xl font-black text-rose-500" id="countRot">0</div>
                         <div class="text-[8px] font-black text-rose-800 uppercase tracking-tighter">Defizit</div>
                     </div>
-                    <div onclick="setFilter('offen')" id="box-offen" class="bg-slate-100 border-2 border-slate-200 p-3 rounded-2xl text-center cursor-pointer hover:bg-slate-200 transition-all shadow-sm">
+                    <div onclick="setFilter('offen')" id="box-offen" class="bg-slate-100 border-2 border-slate-200 p-3 rounded-2xl text-center cursor-pointer shadow-sm">
                         <div class="text-2xl font-black text-slate-400" id="countOffen">0</div>
                         <div class="text-[8px] font-black text-slate-500 uppercase tracking-tighter">Offen</div>
                     </div>
                 </div>
 
-                <button onclick="setFilter('all')" id="resetBtn" class="w-full mb-6 py-2 bg-slate-800 text-white text-[10px] font-black uppercase tracking-[0.2em] rounded-lg shadow-md hidden">
-                    ✕ Filter zurücksetzen
-                </button>
+                <button onclick="setFilter('all')" id="resetBtn" class="w-full mb-6 py-2 bg-slate-800 text-white text-[10px] font-black uppercase tracking-[0.2em] rounded-lg shadow-md hidden">✕ Filter aufheben</button>
 
                 <div class="mb-8 bg-slate-50 p-5 rounded-2xl border border-slate-200">
                     <div class="flex justify-between items-end mb-2">
                         <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest italic">Gesamtfortschritt</span>
                         <span class="text-xl font-black text-blue-600" id="prozentText">0%</span>
                     </div>
-                    <div class="w-full bg-slate-200 rounded-full h-4 overflow-hidden shadow-inner">
-                        <div id="prozentBalken" class="bg-gradient-to-r from-blue-500 to-blue-700 h-full rounded-full transition-all duration-700" style="width: 0%"></div>
-                    </div>
+                    <div class="w-full bg-slate-200 rounded-full h-4 overflow-hidden shadow-inner"><div id="prozentBalken" class="bg-gradient-to-r from-blue-500 to-blue-700 h-full rounded-full transition-all duration-700" style="width: 0%"></div></div>
                 </div>
 
-                <h2 id="listeTitel" class="text-xs font-black text-slate-400 mb-3 uppercase tracking-widest flex items-center gap-2">
-                    <span class="w-8 h-[2px] bg-slate-200"></span> Aktuelle Ansicht
-                </h2>
-                <div id="kriterienListe" class="bg-white border border-slate-100 rounded-2xl shadow-md divide-y divide-slate-50 mb-10 overflow-hidden">
-                </div>
-
-                <h2 class="text-xs font-black text-slate-400 mb-3 uppercase tracking-widest flex items-center gap-2">
-                    <span class="w-8 h-[2px] bg-slate-200"></span> Historie (Notizen)
-                </h2>
-                <div id="notizenHistorie" class="bg-white border border-slate-100 rounded-2xl shadow-md overflow-hidden divide-y divide-slate-50 mb-10">
-                </div>
-
+                <div id="kriterienListe" class="bg-white border border-slate-100 rounded-2xl shadow-md divide-y divide-slate-50 mb-10 overflow-hidden"></div>
+                <div id="notizenHistorie" class="bg-white border border-slate-100 rounded-2xl shadow-md overflow-hidden divide-y divide-slate-50 mb-10"></div>
             </div>
-
         </main>
     </div>
 
@@ -97,142 +80,47 @@
         const alleFahrten = JSON.parse(localStorage.getItem('bw_ausbildungsstand')) || [];
         const ids = [...new Set(alleFahrten.map(f => f.schuelerId))].filter(id => id);
         
-        const kriterienKatalog = ["Einweisung in das Ausbildungsfahrzeug", "Techn. Durchsichten", "Ladungssicherung", "Fahrtechn. Vorbereitungen", "Handhabung Bedienungseinrichtung", "Bedienung EG-Kontrollgerät", "Anfahr-, Schalt- und Lenkübungen", "Fahren mit geringer Geschwindigkeit", "Abbremsen aus geringer Geschw.", "Rückwärtsfahren mit Einweiser", "An- und Abkuppeln", "Verlassen des Fahrzeugs", "Verhalten beim Anfahren", "Gangwechsel", "Fahrbahnbenutzung", "Abbiegen an Kreuzungen", "Fahrstreifenwechsel", "Beobachtung Verkehrsraum", "Verkehrszeichen", "Geschwindigkeit", "Sicherheitsabstände", "Überholen und Vorbeifahren", "Lichtzeichen", "mit/ohne Vorfahrtsregelung", "Kreisverkehr", "Bahnübergänge", "Fußgänger/Radfahrer", "Fußgängerüberwege", "Verkehrsberuhigte Bereiche", "Öffentliche Verkehrsmittel", "Durchfahren von Engstellen", "Warneinrichtungen", "Sicherung Liegengebliebener Fzg", "Wenden und Rückwärtsfahren (DFE)", "Feld-, Wald-, Wiesenwege", "Bodenverhältnisse", "Materialschonendes Fahren", "Geschwindigkeit / Gangwahl", "Geländegang / Sperren", "Fahrspuren / Lenkradhaltung", "Gefahrbremsung (Gelände)", "Ausweichen", "Steigungen und Gefälle", "Querrinnen / Unebenheiten", "Geländebeurteilung", "Rückwärts Längsparken", "Rückwärts Querparken", "Rückwärts Einmündung", "Rückwärts Rampe", "Abfahrtkontrolle", "Rampe geradeaus", "Umkehren Rückwärts", "Sicherheitskontrolle", "Verbinden / Trennen", "Abstellen Anhänger", "Vorausschauendes Fahren", "Andere Verkehrsteilnehmer", "Fahrverhalten anderer", "Verkehrsraum-Beobachtung", "Bremsen Gefahrensituation", "Bundes-/Landstraße", "Autobahn", "Nacht/Dämmerung", "Komplizierte Situationen", "Risikovermeidung", "Unbekannte Räume", "Prüfungsbedingungen", "Prüfungsreife feststellen"];
+        const kriterienKatalog = ["Einweisung in das Ausbildungsfahrzeug", "Techn. Durchsichten (vor, während, nach der Benutzung)", "Ladungssicherung (Ladung, Zubehör und pers. Ausrüstung)", "Fahrtechn. Vorbereitungen (Sitz/Spiegel / Lenkrad/Gurt)", "Handhabung der Bedienungseinrichtung", "Bedienung EG-Kontrollgerät", "Anfahr-, Schalt- und Lenkübungen", "Fahren mit geringer Geschwindigkeit", "Abbremsen aus geringer Geschwindigkeit", "Rückwärtsfahren mit Einweiser / Sicherungsposten", "An- und Abkuppeln des Anhängers", "Maßnahmen beim Verlassen des Fahrzeugs", "Verhalten beim Anfahren (Ebene/Steigung/Gefälle)", "Gangwechsel", "Fahrbahnbenutzung (Kurven/ein- und mehrspurig)", "Abbiegen an Kreuzungen / Einmündungen", "Fahrstreifenwechsel", "Beobachtung Verkehrsraum", "Beachten der Verkehrszeichen und -einrichtungen", "Geschwindigkeit (Straßen-/Verkehrsverhältnisse)", "Sicherheitsabstände", "Überholen und Vorbeifahren", "Regelung durch Lichtzeichen oder Polizeibeamte", "mit und ohne Verkehrszeichen", "Verhalten am und im Kreisverkehr", "Verhalten an Bahnübergängen", "Verhalten gegenüber Fußgängern und Radfahrern", "Verhalten an Fußgängerüberwegen", "Verhalten in verkehrsberuhigten Bereichen", "Haltende öffentliche Verkehrsmittel u. Schulbusse", "Durchfahren von Engstellen", "Benutzung der Warneinrichtungen", "Maßnahmen zur Sicherung liegengebliebener fzg", "Wenden und Rückwärtsfahren mit und ohne Anhänger", "Fahren auf Feld-, Wald-, und Wiesenwegen", "Fahren auf unterschiedlichen Bodenverhältnissen", "Materialschonendes Fahren", "Geschwindigkeit und Gangwahl", "Fahren ohne und mit Geländegang / Getriebesperren", "Befahren von Fahrspuren, Lenkradhaltung", "Gefahrbremsung auf unbefestigten Wegen (mit ABV)", "Ausweichen von Hindernissen", "Befahren von Steigungen und Gefällen", "Überwinden von Querrinnen / Bodenunebenheiten", "Geländebeurteilung /-ausnutzung", "Rückwärtsfahren in eine Parklücke (Längsaufstellung)", "Rückwärts quer oder schräg einparken", "Fahren nach rechts rückwärts unter Ausnutzung einer Einmündung, Kreuzung oder Einfahrt", "Rückwärtsfahren und Versetzen nach rechts an eine Rampe zum Be- oder Entladen", "Abfahrtkontrolle (Sachgebiete 1-6)", "Rückwärtsfahren geradeaus an eine Rampe zum Be- oder Entladen", "Umkehren durch Rückwärtsfahren nach links", "Sicherheitskontrolle", "Verbinden und Trennen von Fahrzeugen", "Abstellen des Anhängers", "Vorausschauendes Fahren", "Beobachtung anderer Verkehrsteilnehmer", "Beobachtung des Fahrverhaltens anderer fzfhr", "Beobachtung des Verkehrsraums", "Bremsen in Gefahrensituationen", "Schulung auf Bundes- oder Landstraßen", "Schulung auf Autobahnen", "Schulung bei Dämmerung oder Dunkelheit", "Verhalten in komplizierten Verkehrssituationen", "Vermeiden risikoreicher Verkehrssituationen", "Fahren in unbekannten Verkehrsräumen", "Fahren unter Prüfungsbedingungen", "Feststellen der Prüfungsreife"];
 
-        let aktuellerStand = {};
-        let aktuellerFilter = 'all';
-
-        // Init Schüler Dropdown
+        let aktuellerStand = {}; let aktuellerFilter = 'all';
         const selectBox = document.getElementById('schuelerSelect');
-        if (ids.length > 0) {
-            selectBox.innerHTML = '<option value="" disabled selected>Fahrschüler wählen...</option>';
-            ids.forEach(id => selectBox.innerHTML += `<option value="${id}">${id}</option>`);
-        } else {
-            selectBox.innerHTML = '<option value="">Keine Daten vorhanden.</option>';
-            selectBox.disabled = true;
-        }
+        if (ids.length > 0) { selectBox.innerHTML = '<option value="" disabled selected>Fahrschüler wählen...</option>'; ids.forEach(id => selectBox.innerHTML += `<option value="${id}">${id}</option>`); }
+        else { selectBox.innerHTML = '<option value="">Keine Daten vorhanden.</option>'; selectBox.disabled = true; }
 
         function ladeFortschritt() {
-            const id = selectBox.value;
-            if (!id) return;
-            document.getElementById('ergebnisBereich').classList.remove('hidden');
-            
-            const klasse = document.getElementById('dfeKlasse').value;
-            const fahrten = alleFahrten.filter(f => f.schuelerId === id).sort((a, b) => new Date(a.datum) - new Date(b.datum));
-            
-            // Finalen Stand pro Kriterium ermitteln
-            aktuellerStand = {};
-            fahrten.forEach(f => {
-                for (let i = 1; i <= 68; i++) {
-                    if (f[`item_${i}`]) aktuellerStand[i] = f[`item_${i}`];
-                }
-            });
-
-            updateDashboard(klasse);
-            renderList(klasse);
-            renderNotizen(fahrten);
+            const id = selectBox.value; if (!id) return; document.getElementById('ergebnisBereich').classList.remove('hidden');
+            const klasse = document.getElementById('dfeKlasse').value; const fahrten = alleFahrten.filter(f => f.schuelerId === id).sort((a, b) => new Date(a.datum) - new Date(b.datum));
+            aktuellerStand = {}; fahrten.forEach(f => { for (let i = 1; i <= 68; i++) { if (f[`item_${i}`]) aktuellerStand[i] = f[`item_${i}`]; } });
+            updateDashboard(klasse); renderList(klasse); renderNotizen(fahrten);
         }
-
         function updateDashboard(klasse) {
-            let s = { gruen: 0, gelb: 0, rot: 0, offen: 0 };
-            let relevantTotal = 0;
-
+            let s = { gruen: 0, gelb: 0, rot: 0, offen: 0 }; let total = 0;
             for (let i = 1; i <= 68; i++) {
-                // Relevanz-Check (Wie in neue-fahrt.html)
-                let isHidden = false;
-                if (klasse === 'C' && i >= 51 && i <= 55) isHidden = true;
-                if (klasse === 'E für C' && i >= 35 && i <= 50) isHidden = true;
-
-                if (!isHidden) {
-                    relevantTotal++;
-                    const status = aktuellerStand[i];
-                    if (status) s[status]++;
-                    else s.offen++;
-                }
+                let hide = (klasse === 'C' && i >= 51 && i <= 55) || (klasse === 'E für C' && i >= 35 && i <= 50);
+                if (!hide) { total++; const st = aktuellerStand[i]; if (st) s[st]++; else s.offen++; }
             }
-
-            document.getElementById('countGruen').textContent = s.gruen;
-            document.getElementById('countGelb').textContent = s.gelb;
-            document.getElementById('countRot').textContent = s.rot;
-            document.getElementById('countOffen').textContent = s.offen;
-
-            const proz = Math.round((s.gruen / relevantTotal) * 100) || 0;
-            document.getElementById('prozentBalken').style.width = `${proz}%`;
-            document.getElementById('prozentText').textContent = `${proz}%`;
+            ['gruen','gelb','rot','offen'].forEach(k => document.getElementById('count'+k.charAt(0).toUpperCase()+k.slice(1)).textContent = s[k]);
+            const proz = Math.round((s.gruen / total) * 100) || 0; document.getElementById('prozentBalken').style.width = `${proz}%`; document.getElementById('prozentText').textContent = `${proz}%`;
         }
-
-        function setFilter(type) {
-            aktuellerFilter = type;
-            // UI Update
-            ['gruen', 'gelb', 'rot', 'offen'].forEach(t => {
-                document.getElementById(`box-${t}`).classList.remove('filter-active');
-            });
-            if(type !== 'all') {
-                document.getElementById(`box-${type}`).classList.add('filter-active');
-                document.getElementById('resetBtn').classList.remove('hidden');
-            } else {
-                document.getElementById('resetBtn').classList.add('hidden');
-            }
-            ladeFortschritt();
-        }
-
+        function setFilter(t) { aktuellerFilter = t; ['gruen','gelb','rot','offen'].forEach(k => document.getElementById('box-'+k).classList.remove('filter-active')); if(t !== 'all') { document.getElementById('box-'+t).classList.add('filter-active'); document.getElementById('resetBtn').classList.remove('hidden'); } else { document.getElementById('resetBtn').classList.add('hidden'); } ladeFortschritt(); }
         function renderList(klasse) {
-            const list = document.getElementById('kriterienListe');
-            list.innerHTML = '';
-            let countVisible = 0;
-
+            const list = document.getElementById('kriterienListe'); list.innerHTML = '';
             for (let i = 1; i <= 68; i++) {
-                let isHiddenClass = false;
-                if (klasse === 'C' && i >= 51 && i <= 55) isHiddenClass = true;
-                if (klasse === 'E für C' && i >= 35 && i <= 50) isHiddenClass = true;
-                
-                if (isHiddenClass) continue;
-
-                const status = aktuellerStand[i] || 'offen';
-                
-                // Filter Logik
-                if (aktuellerFilter !== 'all' && status !== aktuellerFilter) continue;
-
-                countVisible++;
-                const colorMap = { gruen: 'bg-emerald-500', gelb: 'bg-amber-400', rot: 'bg-rose-500', offen: 'bg-slate-200' };
-                
-                list.innerHTML += `
-                    <div class="p-4 flex items-center justify-between bg-white">
-                        <div class="flex items-center gap-3">
-                            <span class="text-[10px] font-black text-slate-300 w-4">${i}</span>
-                            <span class="text-sm font-bold text-slate-700 leading-tight">${kriterienKatalog[i-1]}</span>
-                        </div>
-                        <div class="w-3 h-3 rounded-full ${colorMap[status]} shadow-sm"></div>
-                    </div>
-                `;
-            }
-
-            if(countVisible === 0) {
-                list.innerHTML = '<div class="p-10 text-center text-xs font-bold text-slate-400 uppercase tracking-widest italic">Keine Einträge für diesen Filter.</div>';
+                let hideClass = (klasse === 'C' && i >= 51 && i <= 55) || (klasse === 'E für C' && i >= 35 && i <= 50);
+                if (hideClass) continue; const st = aktuellerStand[i] || 'offen'; if (aktuellerFilter !== 'all' && st !== aktuellerFilter) continue;
+                const colors = { gruen: 'bg-emerald-500', gelb: 'bg-amber-400', rot: 'bg-rose-500', offen: 'bg-slate-200' };
+                list.innerHTML += `<div class="p-4 flex items-center justify-between"><div class="flex items-center gap-3"><span class="text-[10px] font-black text-slate-300 w-4">${i}</span><span class="text-sm font-bold text-slate-700 leading-tight">${kriterienKatalog[i-1]}</span></div><div class="w-3 h-3 rounded-full ${colors[st]}"></div></div>`;
             }
         }
-
         function renderNotizen(fahrten) {
-            const notizBox = document.getElementById('notizenHistorie');
-            notizBox.innerHTML = ''; 
-            let hatNotiz = false;
-            
+            const box = document.getElementById('notizenHistorie'); box.innerHTML = ''; let ok = false;
             [...fahrten].reverse().forEach(f => {
-                const dat = new Date(f.datum).toLocaleDateString('de-DE');
-                let t = '';
-                const labels = { 'notizen_grundstufe': 'Grundstufe', 'notizen_aufbauA': 'Aufbaustufe A', 'notizen_dfe': 'DFE', 'notizen_aufbauC': 'Aufbaustufe B/C', 'notizen_leistung': 'Leistung', 'notizen_reifestufe': 'Reife / Einweiser' };
-
-                for (const [key, label] of Object.entries(labels)) {
-                    if(f[key] && f[key].trim() !== '') {
-                        t += `<div class="mt-2 p-2 rounded bg-slate-50 border-l-2 border-blue-400"><p class="text-xs text-slate-700"><span class="font-black text-blue-800 uppercase text-[9px] mr-1">${label}:</span> ${f[key]}</p></div>`;
-                    }
-                }
-                if(t) { 
-                    hatNotiz = true; 
-                    notizBox.innerHTML += `<div class="p-5 border-b border-slate-50"><div class="text-[9px] font-black text-blue-400 bg-blue-50 inline-block px-3 py-1 rounded-full uppercase tracking-widest mb-2 italic">Eintrag ${dat}</div>${t}</div>`; 
-                }
+                const dat = new Date(f.datum).toLocaleDateString('de-DE'); let t = '';
+                const lbls = { 'notizen_grundstufe': 'Grundstufe', 'notizen_aufbauA': 'Aufbaustufe A', 'notizen_dfe': 'DFE', 'notizen_aufbauC': 'Aufbaustufe B/C', 'notizen_leistung': 'Leistung', 'notizen_reifestufe': 'Reife' };
+                for (const [k, l] of Object.entries(lbls)) { if(f[k] && f[k].trim() !== '') t += `<div class="mt-2 p-2 rounded bg-slate-50 border-l-2 border-blue-400 text-xs"><span class="font-black text-blue-800 uppercase text-[9px] mr-1">${l}:</span>${f[k]}</div>`; }
+                if(t) { ok = true; box.innerHTML += `<div class="p-5 border-b border-slate-50 text-[9px] font-black text-blue-400 uppercase tracking-widest italic mb-2">Eintrag ${dat}${t}</div>`; }
             });
-            if(!hatNotiz) notizBox.innerHTML = '<div class="p-8 text-xs text-slate-400 italic text-center font-bold uppercase tracking-widest">Keine Notizen erfasst.</div>';
+            if(!ok) box.innerHTML = '<div class="p-8 text-xs text-slate-400 italic text-center font-bold uppercase tracking-widest">Keine Notizen.</div>';
         }
     </script>
 </body>
