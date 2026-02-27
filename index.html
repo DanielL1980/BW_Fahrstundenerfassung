@@ -6,7 +6,7 @@
     <title>BW Fahrschul-Manager</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-100 text-slate-800 font-sans antialiased pb-10">
+<body class="bg-gray-100 text-slate-800 font-sans antialiased pb-20">
 
     <div class="max-w-md mx-auto bg-white min-h-screen shadow-2xl relative flex flex-col">
 
@@ -22,20 +22,13 @@
             
             <h2 class="text-lg font-semibold mb-4 text-slate-700">Schnellzugriff</h2>
 
-            <div class="grid grid-cols-2 gap-4">
+            <div class="grid grid-cols-2 gap-4 mb-8">
                 
                 <button onclick="window.location.href='neue-fahrt.html'" class="bg-blue-50 border-2 border-blue-100 p-4 rounded-2xl flex flex-col items-center justify-center aspect-square hover:bg-blue-100 active:scale-95 transition-all shadow-sm">
                     <svg class="w-10 h-10 text-blue-600 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                     </svg>
                     <span class="font-bold text-blue-800 text-sm">Neue Fahrt</span>
-                </button>
-
-                <button onclick="alert('Hier bauen wir später eine Übersicht aller angelegten IDs ein.')" class="bg-slate-50 border-2 border-slate-100 p-4 rounded-2xl flex flex-col items-center justify-center aspect-square hover:bg-slate-100 active:scale-95 transition-all shadow-sm">
-                    <svg class="w-10 h-10 text-slate-600 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
-                    </svg>
-                    <span class="font-bold text-slate-700 text-sm">Schüler-IDs</span>
                 </button>
 
                 <button onclick="window.location.href='fortschritt.html'" class="bg-blue-50 border-2 border-blue-100 p-4 rounded-2xl flex flex-col items-center justify-center aspect-square hover:bg-blue-100 active:scale-95 transition-all shadow-sm">
@@ -45,23 +38,45 @@
                     <span class="font-bold text-blue-800 text-sm">Fortschritt</span>
                 </button>
 
-                <button onclick="alert('Die Export-Funktion (iPad -> BW-Netzwerk) bauen wir als Nächstes!')" class="bg-slate-50 border-2 border-slate-100 p-4 rounded-2xl flex flex-col items-center justify-center aspect-square hover:bg-slate-100 active:scale-95 transition-all shadow-sm">
+                <button onclick="toggleBereich('schuelerVerwaltung')" class="bg-slate-50 border-2 border-slate-100 p-4 rounded-2xl flex flex-col items-center justify-center aspect-square hover:bg-slate-100 active:scale-95 transition-all shadow-sm">
                     <svg class="w-10 h-10 text-slate-600 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
                     </svg>
-                    <span class="font-bold text-slate-700 text-sm">Tages-Export</span>
+                    <span class="font-bold text-slate-700 text-sm">Schüler-IDs</span>
+                </button>
+
+                <button onclick="toggleBereich('exportVerwaltung')" class="bg-slate-50 border-2 border-slate-100 p-4 rounded-2xl flex flex-col items-center justify-center aspect-square hover:bg-slate-100 active:scale-95 transition-all shadow-sm">
+                    <svg class="w-10 h-10 text-slate-600 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path>
+                    </svg>
+                    <span class="font-bold text-slate-700 text-sm text-center leading-tight">Export / Import</span>
                 </button>
 
             </div>
 
-            <div class="mt-8">
-                <h2 class="text-lg font-semibold mb-3 text-slate-700">Hinweise für heute</h2>
-                <div class="bg-yellow-50 border border-yellow-200 rounded-xl p-3 shadow-sm mb-2 flex justify-between items-center">
-                    <div>
-                        <p class="font-bold text-slate-800">S-2026-04</p>
-                        <p class="text-xs text-slate-500">Kriterium 34 (Wenden) nachschulen</p>
-                    </div>
-                    <span class="bg-yellow-200 text-yellow-800 text-xs font-bold px-2 py-1 rounded">Priorität</span>
+            <div id="schuelerVerwaltung" class="hidden animate-fade-in-up">
+                <h2 class="text-lg font-semibold mb-3 text-slate-700 border-b pb-2">Schüler-IDs verwalten</h2>
+                
+                <form id="neueIdForm" onsubmit="addSchueler(event)" class="mb-4 flex gap-2">
+                    <input type="text" id="neueId" required placeholder="Neue ID (z.B. S-2026-10)" class="flex-1 p-3 rounded-xl border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 shadow-inner uppercase">
+                    <button type="submit" class="bg-blue-700 text-white font-bold px-4 rounded-xl hover:bg-blue-800 active:scale-95 shadow-md">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                    </button>
+                </form>
+
+                <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+                    <div class="p-3 bg-slate-50 border-b border-slate-200 text-xs font-bold text-slate-500 uppercase">Aktive IDs auf diesem Gerät</div>
+                    <ul id="schuelerListe" class="divide-y divide-slate-100">
+                        </ul>
+                </div>
+                <p class="text-[10px] text-slate-400 mt-2 text-center">Hinweis: Löschen einer ID entfernt NICHT die bereits gespeicherten Fahrten.</p>
+            </div>
+
+            <div id="exportVerwaltung" class="hidden animate-fade-in-up">
+                <h2 class="text-lg font-semibold mb-3 text-slate-700 border-b pb-2">Daten-Transfer</h2>
+                <div class="bg-blue-50 border border-blue-100 p-4 rounded-xl mb-4 text-sm text-blue-800">
+                    <p class="font-bold mb-1">Kollegen-Übergabe / Sicherung</p>
+                    <p>Hier generieren wir im nächsten Schritt eine verschlüsselte Datei, die du per Airdrop oder E-Mail an das Tablet eines Kollegen schicken kannst.</p>
                 </div>
             </div>
 
@@ -69,10 +84,78 @@
     </div>
 
     <script>
+        // --- Datumsanzeige ---
         const dateElement = document.getElementById('current-date');
         const today = new Date();
         const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
         dateElement.textContent = today.toLocaleDateString('de-DE', options);
+
+        // --- UI Steuerung ---
+        function toggleBereich(bereichId) {
+            // Alle Bereiche verstecken
+            document.getElementById('schuelerVerwaltung').classList.add('hidden');
+            document.getElementById('exportVerwaltung').classList.add('hidden');
+            
+            // Den gewählten Bereich anzeigen
+            document.getElementById(bereichId).classList.remove('hidden');
+
+            if(bereichId === 'schuelerVerwaltung') {
+                renderSchuelerListe();
+            }
+        }
+
+        // --- Schüler-Verwaltung Logik ---
+        // Lädt die IDs aus dem LocalStorage oder nimmt ein leeres Array
+        let aktiveSchuelerIds = JSON.parse(localStorage.getItem('bw_aktive_schueler')) || ['S-2026-04', 'S-2026-09'];
+
+        // Stellt sicher, dass die Standard-IDs gespeichert sind, falls es der erste Start ist
+        if (!localStorage.getItem('bw_aktive_schueler')) {
+            localStorage.setItem('bw_aktive_schueler', JSON.stringify(aktiveSchuelerIds));
+        }
+
+        function renderSchuelerListe() {
+            const liste = document.getElementById('schuelerListe');
+            liste.innerHTML = '';
+
+            if (aktiveSchuelerIds.length === 0) {
+                liste.innerHTML = '<li class="p-4 text-sm text-slate-500 italic text-center">Keine IDs angelegt.</li>';
+                return;
+            }
+
+            aktiveSchuelerIds.forEach(id => {
+                liste.innerHTML += `
+                <li class="p-3 flex justify-between items-center">
+                    <span class="font-bold text-slate-700">${id}</span>
+                    <button onclick="removeSchueler('${id}')" class="text-red-400 hover:text-red-600 p-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                    </button>
+                </li>`;
+            });
+        }
+
+        function addSchueler(event) {
+            event.preventDefault();
+            const input = document.getElementById('neueId');
+            const neueId = input.value.trim().toUpperCase(); // Formatieren (alles groß, Leerzeichen weg)
+
+            if (neueId && !aktiveSchuelerIds.includes(neueId)) {
+                aktiveSchuelerIds.push(neueId);
+                // Im LocalStorage speichern
+                localStorage.setItem('bw_aktive_schueler', JSON.stringify(aktiveSchuelerIds));
+                input.value = ''; // Feld leeren
+                renderSchuelerListe();
+            } else if (aktiveSchuelerIds.includes(neueId)) {
+                alert('Diese ID existiert bereits!');
+            }
+        }
+
+        function removeSchueler(id) {
+            if (confirm(`Möchtest du die ID "${id}" wirklich aus der Auswahl entfernen? (Gespeicherte Fahrten bleiben erhalten)`)) {
+                aktiveSchuelerIds = aktiveSchuelerIds.filter(item => item !== id);
+                localStorage.setItem('bw_aktive_schueler', JSON.stringify(aktiveSchuelerIds));
+                renderSchuelerListe();
+            }
+        }
     </script>
 </body>
 </html>
