@@ -5,6 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Fortschritt - BW Fahrschul-Manager</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .filter-active { border-color: #1e293b !important; transform: scale(1.05); shadow: 0 10px 15px -3px rgba(0,0,0,0.1); }
+        .row-hidden { display: none !important; }
+    </style>
 </head>
 <body class="bg-slate-50 text-slate-800 font-sans antialiased pb-10">
 
@@ -15,60 +19,73 @@
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
             </button>
             <div>
-                <h1 class="text-xl font-black tracking-tight uppercase italic">Schüler-Status</h1>
-                <p class="text-[10px] text-blue-300 font-bold uppercase tracking-widest">Leistungsstand & Notizen</p>
+                <h1 class="text-xl font-black tracking-tight uppercase italic">Ausbildungsstand</h1>
+                <p class="text-[10px] text-blue-300 font-bold uppercase tracking-widest">Analyse & Filter</p>
             </div>
         </header>
 
         <main class="flex-1 p-5">
             
-            <div class="mb-6 bg-blue-50 p-5 rounded-2xl border border-blue-100 shadow-sm">
-                <label class="block text-[10px] font-black text-blue-900 mb-2 uppercase tracking-widest">Fahrschüler wählen</label>
-                <select id="schuelerSelect" onchange="ladeFortschritt()" class="w-full p-4 rounded-xl border-2 border-white shadow-sm bg-white font-black text-slate-800 text-lg outline-none focus:border-blue-400 transition-all">
-                </select>
+            <div class="mb-6 bg-slate-100 p-5 rounded-2xl border border-slate-200 shadow-inner space-y-4">
+                <div>
+                    <label class="block text-[10px] font-black text-slate-500 mb-1 uppercase tracking-widest">Fahrschüler</label>
+                    <select id="schuelerSelect" onchange="ladeFortschritt()" class="w-full p-4 rounded-xl border-2 border-white bg-white font-black text-slate-800 text-lg shadow-sm outline-none focus:border-blue-400 transition-all"></select>
+                </div>
+                <div>
+                    <label class="block text-[10px] font-black text-slate-500 mb-1 uppercase tracking-widest">DFE Klasse (für Berechnung)</label>
+                    <select id="dfeKlasse" onchange="ladeFortschritt()" class="w-full p-3 rounded-xl border-2 border-white bg-white font-bold text-slate-700 shadow-sm outline-none focus:border-blue-400 transition-all">
+                        <option value="C/CE">Klasse C / CE (Alle Aufgaben)</option>
+                        <option value="C">Klasse C (Solo)</option>
+                        <option value="E für C">Klasse E für C (Anhänger)</option>
+                    </select>
+                </div>
             </div>
 
-            <div id="ergebnisBereich" class="hidden animate-in fade-in duration-500">
+            <div id="ergebnisBereich" class="hidden">
                 
-                <h2 class="text-xs font-black text-slate-400 mb-4 uppercase tracking-[0.2em] flex items-center gap-2">
-                    <span class="w-8 h-[2px] bg-slate-200"></span> Ampel-Status
-                </h2>
-
-                <div class="grid grid-cols-3 gap-3 mb-8">
-                    <div class="bg-emerald-50 border-2 border-emerald-100 p-4 rounded-2xl text-center shadow-sm">
-                        <div class="text-3xl font-black text-emerald-600" id="countGruen">0</div>
-                        <div class="text-[9px] font-black text-emerald-800 uppercase tracking-widest mt-1 italic">Sicher</div>
+                <div class="grid grid-cols-4 gap-2 mb-4">
+                    <div onclick="setFilter('gruen')" id="box-gruen" class="bg-emerald-50 border-2 border-emerald-100 p-3 rounded-2xl text-center cursor-pointer hover:bg-emerald-100 transition-all shadow-sm">
+                        <div class="text-2xl font-black text-emerald-600" id="countGruen">0</div>
+                        <div class="text-[8px] font-black text-emerald-800 uppercase tracking-tighter">Sicher</div>
                     </div>
-                    <div class="bg-amber-50 border-2 border-amber-100 p-4 rounded-2xl text-center shadow-sm">
-                        <div class="text-3xl font-black text-amber-500" id="countGelb">0</div>
-                        <div class="text-[9px] font-black text-amber-800 uppercase tracking-widest mt-1 italic">Hilfe</div>
+                    <div onclick="setFilter('gelb')" id="box-gelb" class="bg-amber-50 border-2 border-amber-100 p-3 rounded-2xl text-center cursor-pointer hover:bg-amber-100 transition-all shadow-sm">
+                        <div class="text-2xl font-black text-amber-500" id="countGelb">0</div>
+                        <div class="text-[8px] font-black text-amber-800 uppercase tracking-tighter">Hilfe</div>
                     </div>
-                    <div class="bg-rose-50 border-2 border-rose-100 p-4 rounded-2xl text-center shadow-sm">
-                        <div class="text-3xl font-black text-rose-500" id="countRot">0</div>
-                        <div class="text-[9px] font-black text-rose-800 uppercase tracking-widest mt-1 italic">Defizit</div>
+                    <div onclick="setFilter('rot')" id="box-rot" class="bg-rose-50 border-2 border-rose-100 p-3 rounded-2xl text-center cursor-pointer hover:bg-rose-100 transition-all shadow-sm">
+                        <div class="text-2xl font-black text-rose-500" id="countRot">0</div>
+                        <div class="text-[8px] font-black text-rose-800 uppercase tracking-tighter">Defizit</div>
                     </div>
-                </div>
-
-                <div class="mb-10 bg-slate-50 p-5 rounded-2xl border border-slate-200 shadow-inner">
-                    <div class="flex justify-between items-end mb-3">
-                        <span class="text-xs font-black text-slate-500 uppercase tracking-widest italic">Prüfungsreife</span>
-                        <span class="text-2xl font-black text-blue-600" id="prozentText">0%</span>
-                    </div>
-                    <div class="w-full bg-slate-200 rounded-full h-5 overflow-hidden shadow-inner p-1">
-                        <div id="prozentBalken" class="bg-gradient-to-r from-blue-500 to-blue-700 h-full rounded-full transition-all duration-1000 ease-out shadow-lg" style="width: 0%"></div>
+                    <div onclick="setFilter('offen')" id="box-offen" class="bg-slate-100 border-2 border-slate-200 p-3 rounded-2xl text-center cursor-pointer hover:bg-slate-200 transition-all shadow-sm">
+                        <div class="text-2xl font-black text-slate-400" id="countOffen">0</div>
+                        <div class="text-[8px] font-black text-slate-500 uppercase tracking-tighter">Offen</div>
                     </div>
                 </div>
 
-                <h2 class="text-xs font-black text-rose-400 mb-3 uppercase tracking-[0.2em] flex items-center gap-2">
-                    <span class="w-8 h-[2px] bg-rose-100"></span> Schwerpunkte (Rot)
-                </h2>
-                <div id="roteListe" class="bg-rose-50/30 border border-rose-100 rounded-2xl shadow-sm divide-y divide-rose-100 mb-10 overflow-hidden">
+                <button onclick="setFilter('all')" id="resetBtn" class="w-full mb-6 py-2 bg-slate-800 text-white text-[10px] font-black uppercase tracking-[0.2em] rounded-lg shadow-md hidden">
+                    ✕ Filter zurücksetzen
+                </button>
+
+                <div class="mb-8 bg-slate-50 p-5 rounded-2xl border border-slate-200">
+                    <div class="flex justify-between items-end mb-2">
+                        <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest italic">Gesamtfortschritt</span>
+                        <span class="text-xl font-black text-blue-600" id="prozentText">0%</span>
+                    </div>
+                    <div class="w-full bg-slate-200 rounded-full h-4 overflow-hidden shadow-inner">
+                        <div id="prozentBalken" class="bg-gradient-to-r from-blue-500 to-blue-700 h-full rounded-full transition-all duration-700" style="width: 0%"></div>
+                    </div>
                 </div>
 
-                <h2 class="text-xs font-black text-slate-400 mb-3 uppercase tracking-[0.2em] flex items-center gap-2">
-                    <span class="w-8 h-[2px] bg-slate-200"></span> Historie
+                <h2 id="listeTitel" class="text-xs font-black text-slate-400 mb-3 uppercase tracking-widest flex items-center gap-2">
+                    <span class="w-8 h-[2px] bg-slate-200"></span> Aktuelle Ansicht
                 </h2>
-                <div id="notizenHistorie" class="bg-white border border-slate-100 rounded-2xl shadow-md overflow-hidden divide-y divide-slate-50">
+                <div id="kriterienListe" class="bg-white border border-slate-100 rounded-2xl shadow-md divide-y divide-slate-50 mb-10 overflow-hidden">
+                </div>
+
+                <h2 class="text-xs font-black text-slate-400 mb-3 uppercase tracking-widest flex items-center gap-2">
+                    <span class="w-8 h-[2px] bg-slate-200"></span> Historie (Notizen)
+                </h2>
+                <div id="notizenHistorie" class="bg-white border border-slate-100 rounded-2xl shadow-md overflow-hidden divide-y divide-slate-50 mb-10">
                 </div>
 
             </div>
@@ -78,66 +95,127 @@
 
     <script>
         const alleFahrten = JSON.parse(localStorage.getItem('bw_ausbildungsstand')) || [];
-        const selectBox = document.getElementById('schuelerSelect');
         const ids = [...new Set(alleFahrten.map(f => f.schuelerId))].filter(id => id);
+        
+        const kriterienKatalog = ["Einweisung in das Ausbildungsfahrzeug", "Techn. Durchsichten", "Ladungssicherung", "Fahrtechn. Vorbereitungen", "Handhabung Bedienungseinrichtung", "Bedienung EG-Kontrollgerät", "Anfahr-, Schalt- und Lenkübungen", "Fahren mit geringer Geschwindigkeit", "Abbremsen aus geringer Geschw.", "Rückwärtsfahren mit Einweiser", "An- und Abkuppeln", "Verlassen des Fahrzeugs", "Verhalten beim Anfahren", "Gangwechsel", "Fahrbahnbenutzung", "Abbiegen an Kreuzungen", "Fahrstreifenwechsel", "Beobachtung Verkehrsraum", "Verkehrszeichen", "Geschwindigkeit", "Sicherheitsabstände", "Überholen und Vorbeifahren", "Lichtzeichen", "mit/ohne Vorfahrtsregelung", "Kreisverkehr", "Bahnübergänge", "Fußgänger/Radfahrer", "Fußgängerüberwege", "Verkehrsberuhigte Bereiche", "Öffentliche Verkehrsmittel", "Durchfahren von Engstellen", "Warneinrichtungen", "Sicherung Liegengebliebener Fzg", "Wenden und Rückwärtsfahren (DFE)", "Feld-, Wald-, Wiesenwege", "Bodenverhältnisse", "Materialschonendes Fahren", "Geschwindigkeit / Gangwahl", "Geländegang / Sperren", "Fahrspuren / Lenkradhaltung", "Gefahrbremsung (Gelände)", "Ausweichen", "Steigungen und Gefälle", "Querrinnen / Unebenheiten", "Geländebeurteilung", "Rückwärts Längsparken", "Rückwärts Querparken", "Rückwärts Einmündung", "Rückwärts Rampe", "Abfahrtkontrolle", "Rampe geradeaus", "Umkehren Rückwärts", "Sicherheitskontrolle", "Verbinden / Trennen", "Abstellen Anhänger", "Vorausschauendes Fahren", "Andere Verkehrsteilnehmer", "Fahrverhalten anderer", "Verkehrsraum-Beobachtung", "Bremsen Gefahrensituation", "Bundes-/Landstraße", "Autobahn", "Nacht/Dämmerung", "Komplizierte Situationen", "Risikovermeidung", "Unbekannte Räume", "Prüfungsbedingungen", "Prüfungsreife feststellen"];
 
-        const kriterienKatalog = ["Einweisung in das Ausbildungsfahrzeug", "Techn. Durchsichten", "Ladungssicherung", "Fahrtechn. Vorbereitungen", "Handhabung Bedienungseinrichtung", "Bedienung EG-Kontrollgerät", "Anfahr-, Schalt- und Lenkübungen", "Fahren mit geringer Geschwindigkeit", "Abbremsen aus geringer Geschw.", "Rückwärtsfahren mit Einweiser", "An- und Abkuppeln des Anhängers", "Maßnahmen beim Verlassen", "Verhalten beim Anfahren", "Gangwechsel", "Fahrbahnbenutzung", "Abbiegen an Kreuzungen", "Fahrstreifenwechsel", "Beobachtung Verkehrsraum", "Verkehrszeichen", "Geschwindigkeit", "Sicherheitsabstände", "Überholen und Vorbeifahren", "- durch Lichtzeichen", "- mit und ohne Verkehrszeichen", "Kreisverkehr", "Bahnübergänge", "Gegenüber Fußgängern/Radfahrern", "Fußgängerüberwege", "Verkehrsberuhigte Bereiche", "Öffentliche Verkehrsmittel", "Durchfahren von Engstellen", "Warneinrichtungen", "Sicherung liegengebliebener Fzg", "Wenden und Rückwärtsfahren (DFE)", "Fahren auf Feld-, Wald-, Wiesenwegen", "Bodenverhältnisse", "Materialschonendes Fahren", "Geschwindigkeit und Gangwahl", "Geländegang / Getriebesperren", "Befahren von Fahrspuren", "Gefahrbremsung (mit ABV)", "Ausweichen von Hindernissen", "Steigungen und Gefälle", "Überwinden von Querrinnen", "Geländebeurteilung", "Rückwärts in Parklücke", "Rückwärts quer einparken", "Rückwärts unter Ausnutzung Einmündung", "Rückwärts an Rampe", "Abfahrtkontrolle", "Rückwärts geradeaus Rampe", "Umkehren durch Rückwärtsfahren", "Sicherheitskontrolle", "Verbinden und Trennen", "Abstellen des Anhängers", "Vorausschauendes Fahren", "Beobachtung Verkehrsteilnehmer", "Beobachtung Fahrverhalten anderer", "Beobachtung Verkehrsraum", "Bremsen in Gefahrensituationen", "Überlandfahrten", "Autobahn", "Dunkelheit", "Verhalten in komplizierten Situationen", "Vermeiden risikoreicher Situationen", "Fahren in unbekannten Räumen", "Fahren unter Prüfungsbedingungen", "Feststellen der Prüfungsreife"];
+        let aktuellerStand = {};
+        let aktuellerFilter = 'all';
 
-        if (ids.length === 0) {
-            selectBox.innerHTML = '<option value="">Keine Daten vorhanden.</option>';
-            selectBox.disabled = true;
-        } else {
+        // Init Schüler Dropdown
+        const selectBox = document.getElementById('schuelerSelect');
+        if (ids.length > 0) {
             selectBox.innerHTML = '<option value="" disabled selected>Fahrschüler wählen...</option>';
             ids.forEach(id => selectBox.innerHTML += `<option value="${id}">${id}</option>`);
+        } else {
+            selectBox.innerHTML = '<option value="">Keine Daten vorhanden.</option>';
+            selectBox.disabled = true;
         }
 
         function ladeFortschritt() {
             const id = selectBox.value;
             if (!id) return;
             document.getElementById('ergebnisBereich').classList.remove('hidden');
-
-            const fahrten = alleFahrten.filter(f => f.schuelerId === id).sort((a, b) => new Date(a.datum) - new Date(b.datum));
-            const stand = {};
             
+            const klasse = document.getElementById('dfeKlasse').value;
+            const fahrten = alleFahrten.filter(f => f.schuelerId === id).sort((a, b) => new Date(a.datum) - new Date(b.datum));
+            
+            // Finalen Stand pro Kriterium ermitteln
+            aktuellerStand = {};
             fahrten.forEach(f => {
-                for (const [key, val] of Object.entries(f)) {
-                    if (val === 'rot' || val === 'gelb' || val === 'gruen') stand[key] = val;
+                for (let i = 1; i <= 68; i++) {
+                    if (f[`item_${i}`]) aktuellerStand[i] = f[`item_${i}`];
                 }
             });
 
-            let a = 0, b = 0, c = 0; const defizite = [];
-            for (const [key, val] of Object.entries(stand)) {
-                if (val === 'gruen') c++; 
-                if (val === 'gelb') b++;
-                if (val === 'rot') { 
-                    a++; 
-                    let nr = parseInt(key.split('_')[1]);
-                    let echterText = kriterienKatalog[nr - 1] || "Unbekannt";
-                    defizite.push(`${nr}. ${echterText}`); 
+            updateDashboard(klasse);
+            renderList(klasse);
+            renderNotizen(fahrten);
+        }
+
+        function updateDashboard(klasse) {
+            let s = { gruen: 0, gelb: 0, rot: 0, offen: 0 };
+            let relevantTotal = 0;
+
+            for (let i = 1; i <= 68; i++) {
+                // Relevanz-Check (Wie in neue-fahrt.html)
+                let isHidden = false;
+                if (klasse === 'C' && i >= 51 && i <= 55) isHidden = true;
+                if (klasse === 'E für C' && i >= 35 && i <= 50) isHidden = true;
+
+                if (!isHidden) {
+                    relevantTotal++;
+                    const status = aktuellerStand[i];
+                    if (status) s[status]++;
+                    else s.offen++;
                 }
             }
 
-            document.getElementById('countGruen').textContent = c;
-            document.getElementById('countGelb').textContent = b;
-            document.getElementById('countRot').textContent = a;
-            
-            const proz = Math.round((c / 68) * 100);
+            document.getElementById('countGruen').textContent = s.gruen;
+            document.getElementById('countGelb').textContent = s.gelb;
+            document.getElementById('countRot').textContent = s.rot;
+            document.getElementById('countOffen').textContent = s.offen;
+
+            const proz = Math.round((s.gruen / relevantTotal) * 100) || 0;
             document.getElementById('prozentBalken').style.width = `${proz}%`;
             document.getElementById('prozentText').textContent = `${proz}%`;
+        }
 
-            const defBox = document.getElementById('roteListe');
-            defBox.innerHTML = defizite.length ? '' : '<div class="p-8 text-xs text-slate-400 italic text-center font-bold uppercase tracking-widest">Alles im grünen Bereich.</div>';
-            
-            defizite.forEach(d => {
-                defBox.innerHTML += `
-                <div class="p-4 flex items-center bg-white/50">
-                    <div class="w-2 h-2 rounded-full bg-rose-500 mr-4 shadow-sm shadow-rose-200"></div>
-                    <span class="text-sm font-black text-slate-700 italic uppercase tracking-tighter">${d}</span>
-                </div>`;
+        function setFilter(type) {
+            aktuellerFilter = type;
+            // UI Update
+            ['gruen', 'gelb', 'rot', 'offen'].forEach(t => {
+                document.getElementById(`box-${t}`).classList.remove('filter-active');
             });
+            if(type !== 'all') {
+                document.getElementById(`box-${type}`).classList.add('filter-active');
+                document.getElementById('resetBtn').classList.remove('hidden');
+            } else {
+                document.getElementById('resetBtn').classList.add('hidden');
+            }
+            ladeFortschritt();
+        }
 
+        function renderList(klasse) {
+            const list = document.getElementById('kriterienListe');
+            list.innerHTML = '';
+            let countVisible = 0;
+
+            for (let i = 1; i <= 68; i++) {
+                let isHiddenClass = false;
+                if (klasse === 'C' && i >= 51 && i <= 55) isHiddenClass = true;
+                if (klasse === 'E für C' && i >= 35 && i <= 50) isHiddenClass = true;
+                
+                if (isHiddenClass) continue;
+
+                const status = aktuellerStand[i] || 'offen';
+                
+                // Filter Logik
+                if (aktuellerFilter !== 'all' && status !== aktuellerFilter) continue;
+
+                countVisible++;
+                const colorMap = { gruen: 'bg-emerald-500', gelb: 'bg-amber-400', rot: 'bg-rose-500', offen: 'bg-slate-200' };
+                
+                list.innerHTML += `
+                    <div class="p-4 flex items-center justify-between bg-white">
+                        <div class="flex items-center gap-3">
+                            <span class="text-[10px] font-black text-slate-300 w-4">${i}</span>
+                            <span class="text-sm font-bold text-slate-700 leading-tight">${kriterienKatalog[i-1]}</span>
+                        </div>
+                        <div class="w-3 h-3 rounded-full ${colorMap[status]} shadow-sm"></div>
+                    </div>
+                `;
+            }
+
+            if(countVisible === 0) {
+                list.innerHTML = '<div class="p-10 text-center text-xs font-bold text-slate-400 uppercase tracking-widest italic">Keine Einträge für diesen Filter.</div>';
+            }
+        }
+
+        function renderNotizen(fahrten) {
             const notizBox = document.getElementById('notizenHistorie');
-            notizBox.innerHTML = ''; let hatNotiz = false;
+            notizBox.innerHTML = ''; 
+            let hatNotiz = false;
             
             [...fahrten].reverse().forEach(f => {
                 const dat = new Date(f.datum).toLocaleDateString('de-DE');
@@ -146,21 +224,15 @@
 
                 for (const [key, label] of Object.entries(labels)) {
                     if(f[key] && f[key].trim() !== '') {
-                        t += `<div class="mt-2 p-2 rounded bg-slate-50 border-l-2 border-blue-400"><p class="text-xs text-slate-700 font-medium"><span class="font-black text-blue-800 uppercase text-[9px] mr-1">${label}:</span> ${f[key]}</p></div>`;
+                        t += `<div class="mt-2 p-2 rounded bg-slate-50 border-l-2 border-blue-400"><p class="text-xs text-slate-700"><span class="font-black text-blue-800 uppercase text-[9px] mr-1">${label}:</span> ${f[key]}</p></div>`;
                     }
                 }
-
                 if(t) { 
                     hatNotiz = true; 
-                    notizBox.innerHTML += `
-                    <div class="p-5 border-b border-slate-50">
-                        <div class="text-[9px] font-black text-blue-400 bg-blue-50 inline-block px-3 py-1 rounded-full uppercase tracking-widest mb-2 italic">Protokoll ${dat}</div>
-                        ${t}
-                    </div>`; 
+                    notizBox.innerHTML += `<div class="p-5 border-b border-slate-50"><div class="text-[9px] font-black text-blue-400 bg-blue-50 inline-block px-3 py-1 rounded-full uppercase tracking-widest mb-2 italic">Eintrag ${dat}</div>${t}</div>`; 
                 }
             });
-            
-            if(!hatNotiz) notizBox.innerHTML = '<div class="p-8 text-xs text-slate-400 italic text-center font-bold uppercase tracking-widest">Keine Notizen verfügbar.</div>';
+            if(!hatNotiz) notizBox.innerHTML = '<div class="p-8 text-xs text-slate-400 italic text-center font-bold uppercase tracking-widest">Keine Notizen erfasst.</div>';
         }
     </script>
 </body>
