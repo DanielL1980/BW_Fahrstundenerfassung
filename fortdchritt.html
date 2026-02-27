@@ -3,73 +3,65 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Ausbildungsstand - Fortschritt</title>
+    <title>Fortschritt - BW Fahrschul-Manager</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-100 text-slate-800 font-sans antialiased pb-10">
+<body class="bg-gray-100 text-black font-sans antialiased pb-10">
 
-    <div class="max-w-2xl mx-auto bg-white min-h-screen shadow-2xl relative flex flex-col">
+    <div class="max-w-2xl mx-auto bg-white min-h-screen shadow-2xl relative flex flex-col border-x-2 border-gray-200">
 
-        <header class="bg-slate-800 text-white p-4 sticky top-0 z-50 shadow-md flex items-center">
-            <button onclick="window.location.href='index.html'" type="button" class="mr-4 p-2 bg-slate-700 rounded-full hover:bg-slate-600 active:scale-95">
+        <header class="bg-black text-white p-4 sticky top-0 z-50 flex items-center border-b-4 border-gray-500">
+            <button onclick="window.location.href='index.html'" class="mr-4 p-2 bg-gray-800 rounded border border-gray-600 active:scale-95">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
             </button>
             <div>
-                <h1 class="text-xl font-bold tracking-wide">Schüler-Fortschritt</h1>
-                <p class="text-xs text-slate-300">Aktueller Leistungsstand & Historie</p>
+                <h1 class="text-xl font-bold tracking-wide uppercase">Fortschritt</h1>
+                <p class="text-xs text-gray-300">Leistungsstand (Monochrom)</p>
             </div>
         </header>
 
         <main class="flex-1 p-5">
             
-            <div class="mb-6 bg-slate-50 p-4 rounded-xl border border-slate-200 shadow-sm">
-                <label class="block text-sm font-bold text-slate-700 mb-2 uppercase tracking-wide">Schüler-ID auswählen</label>
-                <select id="schuelerSelect" onchange="ladeFortschritt()" class="w-full p-3 rounded-lg border border-slate-300 bg-white font-bold text-slate-800 text-lg">
-                    <option value="" disabled selected>Bitte wählen...</option>
-                </select>
+            <div class="mb-6 bg-gray-100 p-4 rounded border-2 border-black">
+                <label class="block text-sm font-bold text-black mb-2 uppercase tracking-wide">Schüler-ID</label>
+                <select id="schuelerSelect" onchange="ladeFortschritt()" class="w-full p-3 rounded border-2 border-gray-400 bg-white font-bold text-black text-lg focus:border-black uppercase"></select>
             </div>
 
             <div id="ergebnisBereich" class="hidden">
                 
-                <h2 class="text-lg font-bold text-blue-900 mb-4 border-b-2 border-blue-200 pb-1">Ampel-Status (70 Kriterien)</h2>
+                <h2 class="text-lg font-bold text-black mb-4 border-b-2 border-black pb-1 uppercase">Aktueller Status</h2>
 
                 <div class="grid grid-cols-3 gap-3 mb-6">
-                    <div class="bg-green-50 border border-green-200 p-3 rounded-xl text-center shadow-sm">
-                        <div class="text-2xl font-black text-green-600" id="countGruen">0</div>
-                        <div class="text-[10px] font-bold text-green-800 uppercase tracking-wide mt-1">Sicher (Grün)</div>
+                    <div class="bg-white border-2 border-black p-3 rounded text-center">
+                        <div class="text-2xl font-black text-black" id="countGruen">0</div>
+                        <div class="text-[10px] font-bold text-gray-700 uppercase mt-1">Sicher (C)</div>
                     </div>
-                    <div class="bg-yellow-50 border border-yellow-200 p-3 rounded-xl text-center shadow-sm">
-                        <div class="text-2xl font-black text-yellow-600" id="countGelb">0</div>
-                        <div class="text-[10px] font-bold text-yellow-800 uppercase tracking-wide mt-1">Hilfe (Gelb)</div>
+                    <div class="bg-white border-2 border-gray-500 p-3 rounded text-center">
+                        <div class="text-2xl font-black text-gray-700" id="countGelb">0</div>
+                        <div class="text-[10px] font-bold text-gray-500 uppercase mt-1">Hilfe (B)</div>
                     </div>
-                    <div class="bg-red-50 border border-red-200 p-3 rounded-xl text-center shadow-sm">
-                        <div class="text-2xl font-black text-red-600" id="countRot">0</div>
-                        <div class="text-[10px] font-bold text-red-800 uppercase tracking-wide mt-1">Defizit (Rot)</div>
+                    <div class="bg-gray-200 border-2 border-gray-400 p-3 rounded text-center">
+                        <div class="text-2xl font-black text-black" id="countRot">0</div>
+                        <div class="text-[10px] font-bold text-black uppercase mt-1">Defizit (A)</div>
                     </div>
                 </div>
 
-                <div class="mb-8 bg-slate-50 p-4 rounded-xl border border-slate-200 shadow-sm">
+                <div class="mb-8 bg-gray-100 p-4 rounded border-2 border-gray-300">
                     <div class="flex justify-between items-end mb-2">
-                        <span class="text-sm font-bold text-slate-700">Prüfungsreife (Grüne Kriterien)</span>
-                        <span class="text-lg font-black text-blue-700" id="prozentText">0%</span>
+                        <span class="text-sm font-bold text-black uppercase">Prüfungsreife (C-Kriterien)</span>
+                        <span class="text-lg font-black text-black" id="prozentText">0%</span>
                     </div>
-                    <div class="w-full bg-slate-200 rounded-full h-4 overflow-hidden shadow-inner">
-                        <div id="prozentBalken" class="bg-blue-600 h-4 rounded-full transition-all duration-1000 ease-out" style="width: 0%"></div>
+                    <div class="w-full bg-white border-2 border-gray-300 h-6">
+                        <div id="prozentBalken" class="bg-black h-full transition-all duration-1000" style="width: 0%"></div>
                     </div>
                 </div>
 
-                <h2 class="text-lg font-bold text-red-900 mb-3 border-b-2 border-red-200 pb-1">Aktuelle Schwerpunkte (Rot)</h2>
-                <div id="roteListe" class="bg-white border border-red-100 rounded-xl shadow-sm divide-y divide-red-50 mb-8">
-                </div>
+                <h2 class="text-lg font-bold text-black mb-3 border-b-2 border-black pb-1 uppercase">Aktuelle Defizite (A)</h2>
+                <div id="roteListe" class="bg-white border-2 border-gray-300 rounded divide-y divide-gray-200 mb-8"></div>
 
-                <h2 class="text-lg font-bold text-slate-800 mb-3 border-b-2 border-slate-300 pb-1">Pädagogische Historie (Notizen)</h2>
-                <div id="notizenHistorie" class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden divide-y divide-slate-100">
-                    </div>
+                <h2 class="text-lg font-bold text-black mb-3 border-b-2 border-black pb-1 uppercase">Historie (Notizen)</h2>
+                <div id="notizenHistorie" class="bg-white border-2 border-gray-300 rounded divide-y divide-gray-200"></div>
 
-            </div>
-
-            <div id="keineDatenMeldung" class="text-center p-8 text-slate-500 hidden">
-                <p>Noch keine Ausbildungsdaten erfasst.</p>
             </div>
 
         </main>
@@ -78,116 +70,60 @@
     <script>
         const alleFahrten = JSON.parse(localStorage.getItem('bw_ausbildungsstand')) || [];
         const selectBox = document.getElementById('schuelerSelect');
-        const ergebnisBereich = document.getElementById('ergebnisBereich');
-        const keineDatenMeldung = document.getElementById('keineDatenMeldung');
+        const ids = [...new Set(alleFahrten.map(f => f.schuelerId))].filter(id => id);
 
-        const schuelerIds = [...new Set(alleFahrten.map(f => f.schuelerId))].filter(id => id);
-
-        if (schuelerIds.length === 0) {
-            keineDatenMeldung.classList.remove('hidden');
+        if (ids.length === 0) {
+            selectBox.innerHTML = '<option value="">Keine Daten erfasst.</option>';
             selectBox.disabled = true;
         } else {
-            schuelerIds.forEach(id => {
-                const option = document.createElement('option');
-                option.value = id;
-                option.textContent = id;
-                selectBox.appendChild(option);
-            });
+            selectBox.innerHTML = '<option value="" disabled selected>AUSWÄHLEN</option>';
+            ids.forEach(id => selectBox.innerHTML += `<option value="${id}">${id}</option>`);
         }
 
         function ladeFortschritt() {
-            const gewaehlteId = selectBox.value;
-            if (!gewaehlteId) return;
+            const id = selectBox.value;
+            if (!id) return;
+            document.getElementById('ergebnisBereich').classList.remove('hidden');
 
-            ergebnisBereich.classList.remove('hidden');
-
-            const schuelerFahrten = alleFahrten.filter(f => f.schuelerId === gewaehlteId);
-            schuelerFahrten.sort((a, b) => new Date(a.datum) - new Date(b.datum));
-
-            // Ampel-Berechnung
-            const aktuellerStand = {};
-            schuelerFahrten.forEach(fahrt => {
-                for (const [key, value] of Object.entries(fahrt)) {
-                    if (key.startsWith('item_') && (value === 'rot' || value === 'gelb' || value === 'gruen')) {
-                        aktuellerStand[key] = value;
-                    }
+            const fahrten = alleFahrten.filter(f => f.schuelerId === id).sort((a, b) => new Date(a.datum) - new Date(b.datum));
+            const stand = {};
+            
+            fahrten.forEach(f => {
+                for (const [key, val] of Object.entries(f)) {
+                    if (val === 'rot' || val === 'gelb' || val === 'gruen') stand[key] = val;
                 }
             });
 
-            let gruen = 0, gelb = 0, rot = 0;
-            const rotePunkte = [];
-            for (const [key, value] of Object.entries(aktuellerStand)) {
-                if (value === 'gruen') gruen++;
-                if (value === 'gelb') gelb++;
-                if (value === 'rot') {
-                    rot++;
-                    rotePunkte.push(`Kriterium Nr. ${key.split('_')[1]}`);
-                }
+            let a = 0, b = 0, c = 0; const defizite = [];
+            for (const [key, val] of Object.entries(stand)) {
+                if (val === 'gruen') c++; if (val === 'gelb') b++;
+                if (val === 'rot') { a++; defizite.push(`Kriterium ${key.split('_')[1]}`); }
             }
 
-            document.getElementById('countGruen').textContent = gruen;
-            document.getElementById('countGelb').textContent = gelb;
-            document.getElementById('countRot').textContent = rot;
+            document.getElementById('countGruen').textContent = c;
+            document.getElementById('countGelb').textContent = b;
+            document.getElementById('countRot').textContent = a;
+            
+            const proz = Math.round((c / 68) * 100);
+            document.getElementById('prozentBalken').style.width = `${proz}%`;
+            document.getElementById('prozentText').textContent = `${proz}%`;
 
-            const maxKriterien = 68;
-            const prozent = Math.round((gruen / maxKriterien) * 100);
-            document.getElementById('prozentBalken').style.width = `${prozent}%`;
-            document.getElementById('prozentText').textContent = `${prozent}%`;
+            const defBox = document.getElementById('roteListe');
+            defBox.innerHTML = defizite.length ? '' : '<div class="p-3 text-sm font-bold text-gray-500">Keine Defizite.</div>';
+            defizite.forEach(d => defBox.innerHTML += `<div class="p-3 font-bold text-black border-l-4 border-black">${d} (A)</div>`);
 
-            const roteListeContainer = document.getElementById('roteListe');
-            roteListeContainer.innerHTML = '';
-            if (rotePunkte.length === 0) {
-                roteListeContainer.innerHTML = `<div class="p-4 text-sm text-slate-500 italic text-center">Keine kritischen Defizite (Rot) vorhanden.</div>`;
-            } else {
-                rotePunkte.forEach(punkt => {
-                    roteListeContainer.innerHTML += `<div class="p-3 flex items-center"><div class="w-3 h-3 rounded-full bg-red-500 mr-3"></div><span class="text-sm font-bold text-slate-700">${punkt} bedarf Nachschulung</span></div>`;
+            const notizBox = document.getElementById('notizenHistorie');
+            notizBox.innerHTML = ''; let hatNotiz = false;
+            
+            [...fahrten].reverse().forEach(f => {
+                const dat = new Date(f.datum).toLocaleDateString('de-DE');
+                let t = '';
+                ['grundstufe','aufbauA','dfe','aufbauC','leistung','reifestufe'].forEach(k => {
+                    if(f['notizen_'+k]) t += `<p class="mt-1 text-sm font-bold uppercase">${k}: <span class="font-normal normal-case">${f['notizen_'+k]}</span></p>`;
                 });
-            }
-
-            // NEU: Historie der Notizen aufbauen
-            const notizenBereich = document.getElementById('notizenHistorie');
-            notizenBereich.innerHTML = '';
-            let hatNotizen = false;
-
-            // Wir drehen die Liste um, damit die NEUESTEN Notizen ganz oben stehen
-            const fahrtenAbsteigend = [...schuelerFahrten].reverse();
-
-            fahrtenAbsteigend.forEach(fahrt => {
-                const datumString = new Date(fahrt.datum).toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' });
-                let tagesNotizen = '';
-                
-                // Wir prüfen für diese Fahrt alle möglichen Notiz-Felder ab
-                const bereiche = [
-                    { key: 'notizen_grundstufe', label: 'Grundstufe' },
-                    { key: 'notizen_aufbauA', label: 'Aufbaustufe A' },
-                    { key: 'notizen_dfe', label: 'DFE / Wenden' },
-                    { key: 'notizen_aufbauB', label: 'Gelände / Aufbau B' },
-                    { key: 'notizen_aufbauC', label: 'Aufbaustufe C' },
-                    { key: 'notizen_leistung', label: 'Leistungsstufe' },
-                    { key: 'notizen_reifestufe', label: 'Reifestufe' },
-                    { key: 'notizen_einweiser', label: 'Einweiser' },
-                    { key: 'notizen', label: 'Allgemein (Alt)' } // Falls alte Daten existieren
-                ];
-
-                bereiche.forEach(b => {
-                    if(fahrt[b.key] && fahrt[b.key].trim() !== '') {
-                        tagesNotizen += `<p class="text-sm text-slate-700 mt-1"><span class="font-bold text-blue-800">${b.label}:</span> ${fahrt[b.key]}</p>`;
-                    }
-                });
-
-                if (tagesNotizen !== '') {
-                    hatNotizen = true;
-                    notizenBereich.innerHTML += `
-                    <div class="p-4">
-                        <div class="text-[10px] font-bold text-slate-400 bg-slate-100 inline-block px-2 py-0.5 rounded uppercase tracking-wider mb-1">Eintrag vom ${datumString}</div>
-                        ${tagesNotizen}
-                    </div>`;
-                }
+                if(t) { hatNotiz = true; notizBox.innerHTML += `<div class="p-3"><span class="bg-black text-white text-xs px-2 py-1 font-bold">${dat}</span>${t}</div>`; }
             });
-
-            if(!hatNotizen) {
-                 notizenBereich.innerHTML = `<div class="p-4 text-sm text-slate-500 italic text-center">Bisher keine Notizen erfasst.</div>`;
-            }
+            if(!hatNotiz) notizBox.innerHTML = '<div class="p-3 text-sm font-bold text-gray-500">Keine Notizen.</div>';
         }
     </script>
 </body>
