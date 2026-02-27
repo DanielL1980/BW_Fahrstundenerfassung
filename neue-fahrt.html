@@ -31,7 +31,7 @@
                 </button>
                 <div>
                     <h1 class="text-xl font-black tracking-tight uppercase italic">Dokumentation</h1>
-                    <p class="text-[10px] text-emerald-300 font-bold uppercase tracking-widest">Vollständige Kriterien</p>
+                    <p class="text-[10px] text-emerald-300 font-bold uppercase tracking-widest">Fahrt & Ausbildungsstand</p>
                 </div>
             </div>
         </header>
@@ -45,12 +45,19 @@
                         <select name="schuelerId" id="schuelerSelect" required onchange="ladeBestehendenStand()" class="w-full p-3 rounded-xl border-2 border-white bg-white font-black text-slate-800 shadow-sm outline-none focus:border-emerald-500 transition-all"></select>
                     </div>
                     <div>
-                        <label class="block text-[10px] font-black text-slate-500 mb-1 uppercase tracking-widest">DFE Klasse</label>
+                        <label class="block text-[10px] font-black text-slate-500 mb-1 uppercase tracking-widest">DFE Klasse auswählen</label>
                         <select name="dfeKlasse" id="dfeKlasse" onchange="applyDFEFilter()" class="w-full p-3 rounded-xl border-2 border-emerald-200 bg-emerald-50 font-black text-emerald-900 shadow-sm outline-none focus:border-emerald-500 transition-all">
                             <option value="C/CE">Klasse C / CE (Gesamt)</option>
-                            <option value="C">Klasse C (Solo)</option>
+                            <option value="C">Klasse C (Nur Solo)</option>
                             <option value="E für C">Klasse E für C (Anhänger)</option>
                         </select>
+                    </div>
+                </div>
+
+                <div class="flex justify-end mb-3 pr-2 opacity-50">
+                    <div class="flex gap-14 mr-4">
+                        <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Zyklen</span>
+                        <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Bewertung</span>
                     </div>
                 </div>
 
@@ -77,13 +84,13 @@
             reife: ["Verhalten in komplizierten Verkehrssituationen", "Vermeiden risikoreicher Verkehrssituationen", "Fahren in unbekannten Verkehrsräumen", "Fahren unter Prüfungsbedingungen", "Feststellen der Prüfungsreife", "Einweisertätigkeit bei Tag", "Einweisertätigkeit bei Nacht"]
         };
 
-        const titles = { grundstufe: "Grundstufe (1-12)", aufbauA: "Aufbau A (13-33)", dfe: "DFE (34)", aufbauBC: "Aufbau B/C (35-55)", leistung: "Leistung (56-63)", reife: "Reife (64-70)" };
+        const titles = { grundstufe: "Grundstufe (1-12)", aufbauA: "Aufbau A (13-33)", dfe: "DFE (34)", aufbauBC: "Aufbau B/C (35-55)", leistung: "Leistung (56-63)", reife: "Reife / Einweiser (64-70)" };
 
         function generateRow(nr, text) {
             const isSpecial = (nr >= 69);
             const maxVal = (nr === 69) ? 2 : (nr === 70) ? 1 : 99;
             return `
-            <div id="row-${nr}" class="flex items-center justify-between py-4 border-b border-slate-50 last:border-0">
+            <div id="row-${nr}" class="flex items-center justify-between py-4 border-b border-slate-50 last:border-0 group">
                 <span class="text-xs font-bold text-slate-600 w-1/2 pr-2 leading-tight">${nr}. ${text}</span>
                 <div class="flex items-center justify-end w-1/2 space-x-4">
                     <div class="flex items-center bg-slate-100 rounded-xl p-1 border border-slate-200">
@@ -114,20 +121,40 @@
         }
 
         function ladeBestehendenStand() {
-            const id = document.getElementById('schuelerSelect').value; if(!id) return;
+            const id = document.getElementById('schuelerSelect').value;
+            if(!id) return;
+
+            // WICHTIG: Nicht das ganze Formular resetten! Nur die Werte im Inhaltsbereich.
+            const allRadios = document.querySelectorAll('input[type="radio"]');
+            allRadios.forEach(r => r.checked = false);
+            const allCounts = document.querySelectorAll('input[type="number"]');
+            allCounts.forEach(c => c.value = 0);
+            const allNotes = document.querySelectorAll('textarea');
+            allNotes.forEach(n => n.value = '');
+
             const alleFahrten = JSON.parse(localStorage.getItem('bw_ausbildungsstand')) || [];
             const schuelerFahrten = alleFahrten.filter(f => f.schuelerId === id).sort((a,b) => new Date(a.datum) - new Date(b.datum));
-            document.getElementById('fahrtForm').reset();
-            renderAll(); applyDFEFilter();
+            
             schuelerFahrten.forEach(f => {
                 for(let i=1; i<=70; i++) {
-                    if(f[`item_${i}`]) { const rb = document.getElementById(`i${i}_${f['item_'+i]}`); if(rb) rb.checked = true; }
-                    if(f[`count_${i}`]) { const inp = document.getElementById(`count_${i}`); if(inp) inp.value = parseInt(inp.value) + parseInt(f[`count_${i}`]); }
+                    if(f[`item_${i}`]) { 
+                        const rb = document.getElementById(`i${i}_${f['item_'+i]}`); 
+                        if(rb) rb.checked = true; 
+                    }
+                    if(f[`count_${i}`]) { 
+                        const inp = document.getElementById(`count_${i}`); 
+                        if(inp) inp.value = parseInt(inp.value) + parseInt(f[`count_${i}`]); 
+                    }
                 }
             });
+            applyDFEFilter();
         }
 
-        function changeCount(nr, val, max) { const inp = document.getElementById(`count_${nr}`); let newVal = parseInt(inp.value) + val; if (newVal >= 0 && newVal <= max) inp.value = newVal; }
+        function changeCount(nr, val, max) { 
+            const inp = document.getElementById(`count_${nr}`); 
+            let newVal = parseInt(inp.value) + val; 
+            if (newVal >= 0 && newVal <= max) inp.value = newVal; 
+        }
         
         function applyDFEFilter() {
             const klasse = document.getElementById('dfeKlasse').value;
@@ -136,17 +163,33 @@
             else if (klasse === 'E für C') { for(let i=35; i<=50; i++) { if(document.getElementById(`row-${i}`)) document.getElementById(`row-${i}`).classList.add('row-hidden'); } document.getElementById('section-dfe').classList.add('row-hidden'); }
         }
 
+        // Init App
         const ids = JSON.parse(localStorage.getItem('bw_aktive_schueler')) || [];
         const select = document.getElementById('schuelerSelect');
-        if (ids.length > 0) { select.innerHTML = '<option value="" disabled selected>Fahrschüler wählen...</option>'; ids.forEach(id => select.innerHTML += `<option value="${id}">${id}</option>`); }
-        else { select.innerHTML = '<option value="">Keine Schüler vorhanden!</option>'; }
+        if (ids.length > 0) { 
+            select.innerHTML = '<option value="" disabled selected>Fahrschüler auswählen...</option>'; 
+            ids.forEach(id => select.innerHTML += `<option value="${id}">${id}</option>`); 
+        } else { 
+            select.innerHTML = '<option value="">Keine Schüler vorhanden!</option>'; 
+        }
 
         renderAll();
+
         function saveFahrt(event) {
-            event.preventDefault(); const formData = new FormData(event.target); const data = Object.fromEntries(formData.entries()); data.datum = new Date().toISOString();
+            event.preventDefault(); 
+            const formData = new FormData(event.target); 
+            const data = Object.fromEntries(formData.entries()); 
+            data.datum = new Date().toISOString();
+            
+            // Berechnung der Minuten für den PC-Export
             if(data.count_69) data.item_69_minuten = (parseInt(data.count_69) >= 2) ? 90 : (parseInt(data.count_69) == 1 ? 45 : 0);
             if(data.count_70) data.item_70_minuten = (parseInt(data.count_70) >= 1) ? 45 : 0;
-            let arr = JSON.parse(localStorage.getItem('bw_ausbildungsstand')) || []; arr.push(data); localStorage.setItem('bw_ausbildungsstand', JSON.stringify(arr)); alert('✅ Stand aktualisiert!'); window.location.href = 'index.html';
+            
+            let arr = JSON.parse(localStorage.getItem('bw_ausbildungsstand')) || []; 
+            arr.push(data); 
+            localStorage.setItem('bw_ausbildungsstand', JSON.stringify(arr)); 
+            alert('✅ Stand aktualisiert!'); 
+            window.location.href = 'index.html';
         }
     </script>
 </body>
