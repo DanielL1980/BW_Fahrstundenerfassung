@@ -3,83 +3,169 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>BW Fahrschul-Manager</title>
+    <title>BW Fahrschul-Manager - Neue Fahrt</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Verstecke Standard-Radiobuttons für das Ampelsystem */
+        input[type="radio"].ampel-radio { display: none; }
+        /* Styling für ausgewählte Ampel-Buttons */
+        input[type="radio"].ampel-radio:checked + label {
+            opacity: 1;
+            transform: scale(1.05);
+            border-color: #1e293b; /* slate-800 */
+            border-width: 2px;
+        }
+        .ampel-label { opacity: 0.4; transition: all 0.2s ease-in-out; }
+    </style>
 </head>
 <body class="bg-gray-100 text-slate-800 font-sans antialiased">
 
     <div class="max-w-md mx-auto bg-white min-h-screen shadow-2xl relative flex flex-col">
 
-        <header class="bg-slate-800 text-white p-5 rounded-b-2xl shadow-md">
-            <div class="flex justify-between items-center mb-2">
-                <h1 class="text-xl font-bold tracking-wide">Fahrschul-App</h1>
-                <span id="current-date" class="text-sm text-slate-300 font-mono"></span>
+        <header class="bg-slate-800 text-white p-4 rounded-b-2xl shadow-md flex items-center">
+            <button onclick="window.history.back()" class="mr-4 p-2 bg-slate-700 rounded-full hover:bg-slate-600">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+            </button>
+            <div>
+                <h1 class="text-xl font-bold tracking-wide">Fahrt dokumentieren</h1>
+                <p class="text-xs text-slate-400">Gemäß FahrschAusbO & Leitfaden C/CE</p>
             </div>
-            <p class="text-sm text-slate-400">Datenschutzkonformer Modus (Lokal)</p>
         </header>
 
-        <main class="flex-1 p-5">
-            
-            <h2 class="text-lg font-semibold mb-4 text-slate-700">Schnellzugriff</h2>
-
-            <div class="grid grid-cols-2 gap-4">
+        <main class="flex-1 p-5 overflow-y-auto">
+            <form id="fahrtForm" onsubmit="saveFahrt(event)">
                 
-                <button onclick="alert('Hier öffnet sich später das Formular für die Fahrstunde.')" class="bg-blue-50 border-2 border-blue-100 p-4 rounded-2xl flex flex-col items-center justify-center aspect-square hover:bg-blue-100 active:scale-95 transition-all shadow-sm">
-                    <svg class="w-10 h-10 text-blue-600 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                    </svg>
-                    <span class="font-bold text-blue-800 text-sm">Neue Fahrt</span>
-                </button>
+                <div class="mb-6 p-4 bg-slate-50 rounded-xl border border-slate-200">
+                    <label class="block text-sm font-bold text-slate-700 mb-2">Schüler-ID</label>
+                    <select id="schuelerId" required class="w-full p-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 bg-white">
+                        <option value="" disabled selected>ID auswählen...</option>
+                        <option value="S-2026-04">S-2026-04</option>
+                        <option value="S-2026-09">S-2026-09</option>
+                        <option value="S-2026-12">S-2026-12</option>
+                    </select>
 
-                <button class="bg-slate-50 border-2 border-slate-100 p-4 rounded-2xl flex flex-col items-center justify-center aspect-square hover:bg-slate-100 active:scale-95 transition-all shadow-sm">
-                    <svg class="w-10 h-10 text-slate-600 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
-                    </svg>
-                    <span class="font-bold text-slate-700 text-sm">Schüler-IDs</span>
-                </button>
-
-                <button class="bg-slate-50 border-2 border-slate-100 p-4 rounded-2xl flex flex-col items-center justify-center aspect-square hover:bg-slate-100 active:scale-95 transition-all shadow-sm">
-                    <svg class="w-10 h-10 text-slate-600 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
-                    </svg>
-                    <span class="font-bold text-slate-700 text-sm">Fortschritt</span>
-                </button>
-
-                <button class="bg-slate-50 border-2 border-slate-100 p-4 rounded-2xl flex flex-col items-center justify-center aspect-square hover:bg-slate-100 active:scale-95 transition-all shadow-sm">
-                    <svg class="w-10 h-10 text-slate-600 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
-                    </svg>
-                    <span class="font-bold text-slate-700 text-sm">Tages-Export</span>
-                </button>
-
-            </div>
-
-            <div class="mt-8">
-                <h2 class="text-lg font-semibold mb-3 text-slate-700">Zuletzt erfasst</h2>
-                <div class="bg-white border border-slate-200 rounded-xl p-3 shadow-sm mb-2 flex justify-between items-center">
-                    <div>
-                        <p class="font-bold text-slate-800">S-2026-04</p>
-                        <p class="text-xs text-slate-500">Grundfahraufgaben</p>
+                    <div class="grid grid-cols-2 gap-4 mt-4">
+                        <div>
+                            <label class="block text-sm font-bold text-slate-700 mb-2">Klasse</label>
+                            <select id="klasse" required class="w-full p-3 rounded-lg border border-slate-300 bg-white">
+                                <option value="C">C</option>
+                                <option value="CE">CE</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold text-slate-700 mb-2">Dauer (Min)</label>
+                            <input type="number" id="dauer" value="90" required class="w-full p-3 rounded-lg border border-slate-300 bg-white">
+                        </div>
                     </div>
-                    <span class="bg-green-100 text-green-800 text-xs font-bold px-2 py-1 rounded">Beendet</span>
                 </div>
-                <div class="bg-white border border-slate-200 rounded-xl p-3 shadow-sm flex justify-between items-center">
-                    <div>
-                        <p class="font-bold text-slate-800">S-2026-09</p>
-                        <p class="text-xs text-slate-500">Überlandfahrt</p>
-                    </div>
-                    <span class="bg-yellow-100 text-yellow-800 text-xs font-bold px-2 py-1 rounded">Entwurf</span>
-                </div>
-            </div>
 
+                <div class="mb-6">
+                    <label class="block text-sm font-bold text-slate-700 mb-2">Ausbildungsstufe (FahrschAusbO)</label>
+                    <select id="stufe" required class="w-full p-3 rounded-lg border border-slate-300 bg-white mb-4">
+                        <option value="grund">Grundstufe (Bedienung, Abfahrtskontrolle)</option>
+                        <option value="aufbau">Aufbaustufe (Verkehr, Grundfahraufgaben)</option>
+                        <option value="leistung">Leistungsstufe (Schwierige Verkehrssituationen)</option>
+                        <option value="reife">Reifestufe (Prüfungsvorbereitung)</option>
+                        <optgroup label="Besondere Ausbildungsfahrten">
+                            <option value="ueberland">Überlandfahrt</option>
+                            <option value="autobahn">Autobahnfahrt</option>
+                            <option value="dunkelheit">Fahrt bei Dunkelheit</option>
+                        </optgroup>
+                    </select>
+                </div>
+
+                <h3 class="text-sm font-bold text-slate-700 mb-3 border-b pb-2">Bewertung Kernkompetenzen (C/CE)</h3>
+                <div class="space-y-4 mb-6" id="bewertungen">
+                    
+                    <div class="flex items-center justify-between">
+                        <span class="text-sm font-medium text-slate-700">Abfahrtskontrolle / Trennen & Verbinden</span>
+                        <div class="flex space-x-2">
+                            <input type="radio" name="bew_abfahrt" id="abf_rot" value="rot" class="ampel-radio">
+                            <label for="abf_rot" class="ampel-label w-8 h-8 rounded-full bg-red-500 cursor-pointer shadow-sm"></label>
+                            
+                            <input type="radio" name="bew_abfahrt" id="abf_gelb" value="gelb" class="ampel-radio">
+                            <label for="abf_gelb" class="ampel-label w-8 h-8 rounded-full bg-yellow-400 cursor-pointer shadow-sm"></label>
+                            
+                            <input type="radio" name="bew_abfahrt" id="abf_gruen" value="gruen" class="ampel-radio">
+                            <label for="abf_gruen" class="ampel-label w-8 h-8 rounded-full bg-green-500 cursor-pointer shadow-sm"></label>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-between">
+                        <span class="text-sm font-medium text-slate-700">Verkehrsbeobachtung / Spiegel</span>
+                        <div class="flex space-x-2">
+                            <input type="radio" name="bew_spiegel" id="sp_rot" value="rot" class="ampel-radio">
+                            <label for="sp_rot" class="ampel-label w-8 h-8 rounded-full bg-red-500 cursor-pointer"></label>
+                            
+                            <input type="radio" name="bew_spiegel" id="sp_gelb" value="gelb" class="ampel-radio">
+                            <label for="sp_gelb" class="ampel-label w-8 h-8 rounded-full bg-yellow-400 cursor-pointer"></label>
+                            
+                            <input type="radio" name="bew_spiegel" id="sp_gruen" value="gruen" class="ampel-radio">
+                            <label for="sp_gruen" class="ampel-label w-8 h-8 rounded-full bg-green-500 cursor-pointer"></label>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-between">
+                        <span class="text-sm font-medium text-slate-700">Fahrzeugbedienung (Schalten/Retarder)</span>
+                        <div class="flex space-x-2">
+                            <input type="radio" name="bew_bedienung" id="bed_rot" value="rot" class="ampel-radio">
+                            <label for="bed_rot" class="ampel-label w-8 h-8 rounded-full bg-red-500 cursor-pointer"></label>
+                            
+                            <input type="radio" name="bew_bedienung" id="bed_gelb" value="gelb" class="ampel-radio">
+                            <label for="bed_gelb" class="ampel-label w-8 h-8 rounded-full bg-yellow-400 cursor-pointer"></label>
+                            
+                            <input type="radio" name="bew_bedienung" id="bed_gruen" value="gruen" class="ampel-radio">
+                            <label for="bed_gruen" class="ampel-label w-8 h-8 rounded-full bg-green-500 cursor-pointer"></label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-8">
+                    <label class="block text-sm font-bold text-slate-700 mb-2">Pädagogische Notizen (Keine Klarnamen!)</label>
+                    <textarea id="notizen" rows="3" placeholder="Z.B. 'Bremsverzögerung unterschätzt, nächste Stunde Fokus auf vorausschauendes Fahren.'" class="w-full p-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 bg-white"></textarea>
+                </div>
+
+                <button type="submit" class="w-full bg-blue-700 text-white font-bold text-lg py-4 rounded-xl shadow-lg hover:bg-blue-800 active:scale-95 transition-all">
+                    Fahrt speichern (Lokal)
+                </button>
+            </form>
         </main>
     </div>
 
     <script>
-        const dateElement = document.getElementById('current-date');
-        const today = new Date();
-        const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
-        dateElement.textContent = today.toLocaleDateString('de-DE', options);
+        function saveFahrt(event) {
+            event.preventDefault(); // Verhindert das Neuladen der Seite
+            
+            // Sammeln der Daten
+            const fahrtDaten = {
+                id: Date.now(), // Eindeutige ID für den Datensatz
+                datum: new Date().toISOString(),
+                schuelerId: document.getElementById('schuelerId').value,
+                klasse: document.getElementById('klasse').value,
+                dauer: document.getElementById('dauer').value,
+                stufe: document.getElementById('stufe').value,
+                notizen: document.getElementById('notizen').value,
+                // Ampel-Werte auslesen (nur wenn ausgewählt)
+                bewertung: {
+                    abfahrt: document.querySelector('input[name="bew_abfahrt"]:checked')?.value || 'nicht_bewertet',
+                    spiegel: document.querySelector('input[name="bew_spiegel"]:checked')?.value || 'nicht_bewertet',
+                    bedienung: document.querySelector('input[name="bew_bedienung"]:checked')?.value || 'nicht_bewertet'
+                }
+            };
+
+            // Daten in den Local Storage speichern (als Text/JSON)
+            // 1. Bisherige Fahrten laden (oder leeres Array erstellen)
+            let gespeicherteFahrten = JSON.parse(localStorage.getItem('bw_fahrten')) || [];
+            // 2. Neue Fahrt hinzufügen
+            gespeicherteFahrten.push(fahrtDaten);
+            // 3. Wieder speichern
+            localStorage.setItem('bw_fahrten', JSON.stringify(gespeicherteFahrten));
+
+            alert('Fahrt für ' + fahrtDaten.schuelerId + ' wurde lokal gespeichert!');
+            
+            // Zurück zum Dashboard
+            window.history.back();
+        }
     </script>
 </body>
 </html>
