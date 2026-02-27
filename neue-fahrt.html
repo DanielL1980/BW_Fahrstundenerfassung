@@ -12,14 +12,10 @@
             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2);
         }
         .ampel-label { opacity: 0.25; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); }
-        
-        /* Einweiser-Spezial-Buttons */
         .count-btn-active { background-color: #065f46 !important; color: white !important; border-color: #065f46 !important; }
-
         details > summary { list-style: none; }
         details > summary::-webkit-details-marker { display: none; }
         details[open] summary { border-bottom: 2px solid #f1f5f9; border-bottom-left-radius: 0; border-bottom-right-radius: 0; }
-        
         input[type=number]::-webkit-inner-spin-button, 
         input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
         .row-hidden { display: none !important; }
@@ -47,14 +43,14 @@
                 <div class="mb-8 bg-slate-100 p-5 rounded-2xl border border-slate-200 shadow-inner space-y-4">
                     <div>
                         <label class="block text-[10px] font-black text-slate-500 mb-1 uppercase tracking-widest">Fahrschüler</label>
-                        <select name="schuelerId" id="schuelerSelect" required class="w-full p-3 rounded-xl border-2 border-white bg-white font-black text-slate-800 shadow-sm outline-none focus:border-emerald-500 transition-all"></select>
+                        <select name="schuelerId" id="schuelerSelect" required onchange="ladeBestehendenStand()" class="w-full p-3 rounded-xl border-2 border-white bg-white font-black text-slate-800 shadow-sm outline-none focus:border-emerald-500 transition-all"></select>
                     </div>
                     <div>
-                        <label class="block text-[10px] font-black text-slate-500 mb-1 uppercase tracking-widest">DFE Klasse auswählen</label>
+                        <label class="block text-[10px] font-black text-slate-500 mb-1 uppercase tracking-widest">DFE Klasse</label>
                         <select name="dfeKlasse" id="dfeKlasse" onchange="applyDFEFilter()" class="w-full p-3 rounded-xl border-2 border-emerald-200 bg-emerald-50 font-black text-emerald-900 shadow-sm outline-none focus:border-emerald-500 transition-all">
                             <option value="C/CE">Klasse C / CE (Gesamt)</option>
-                            <option value="C">Klasse C (Nur Solo)</option>
-                            <option value="E für C">Klasse E für C (Anhänger-Ergänzung)</option>
+                            <option value="C">Klasse C (Solo)</option>
+                            <option value="E für C">Klasse E für C (Anhänger)</option>
                         </select>
                     </div>
                 </div>
@@ -66,49 +62,8 @@
                     </div>
                 </div>
 
-                <div class="space-y-4">
-                    <details open id="section-grundstufe" class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-                        <summary class="p-5 font-black text-xs text-slate-500 bg-slate-50/50 cursor-pointer flex justify-between items-center uppercase tracking-[0.2em]">
-                            Grundstufe (1 - 12) <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                        </summary>
-                        <div class="p-5" id="container-grundstufe"></div>
-                    </details>
-
-                    <details id="section-aufbauA" class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-                        <summary class="p-5 font-black text-xs text-slate-500 bg-slate-50/50 cursor-pointer flex justify-between items-center uppercase tracking-[0.2em]">
-                            Aufbaustufe A (13 - 33) <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                        </summary>
-                        <div class="p-5" id="container-aufbauA"></div>
-                    </details>
-
-                    <details id="section-dfe" class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-                        <summary class="p-5 font-black text-xs text-slate-500 bg-slate-50/50 cursor-pointer flex justify-between items-center uppercase tracking-[0.2em]">
-                            Fahraufgaben DFE (34) <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                        </summary>
-                        <div class="p-5" id="container-dfe"></div>
-                    </details>
-
-                    <details id="section-aufbauBC" class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-                        <summary class="p-5 font-black text-xs text-slate-500 bg-slate-50/50 cursor-pointer flex justify-between items-center uppercase tracking-[0.2em]">
-                            Aufbaustufe B & C (35 - 55) <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                        </summary>
-                        <div class="p-5" id="container-aufbauBC"></div>
-                    </details>
-
-                    <details id="section-leistung" class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-                        <summary class="p-5 font-black text-xs text-slate-500 bg-slate-50/50 cursor-pointer flex justify-between items-center uppercase tracking-[0.2em]">
-                            Leistungsstufe (56 - 63) <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                        </summary>
-                        <div class="p-5" id="container-leistung"></div>
-                    </details>
-
-                    <details id="section-reife" class="mb-10 bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-                        <summary class="p-5 font-black text-xs text-slate-500 bg-slate-50/50 cursor-pointer flex justify-between items-center uppercase tracking-[0.2em]">
-                            Reifestufe / Einweiser (64 - 70) <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                        </summary>
-                        <div class="p-5" id="container-reife"></div>
-                    </details>
-                </div>
+                <div class="space-y-4" id="formContent">
+                    </div>
 
                 <div class="fixed bottom-0 left-0 w-full p-6 bg-white/90 backdrop-blur-md border-t border-slate-200 shadow-xl z-50">
                     <div class="max-w-2xl mx-auto">
@@ -131,6 +86,8 @@
             reife: ["Komplizierte Situationen", "Risikovermeidung", "Unbekannte Räume", "Prüfungsbedingungen", "Prüfungsreife feststellen"]
         };
 
+        const titles = { grundstufe: "Grundstufe (1-12)", aufbauA: "Aufbau A (13-33)", dfe: "DFE (34)", aufbauBC: "Aufbau B/C (35-55)", leistung: "Leistung (56-63)", reife: "Reife (64-70)" };
+
         function generateRow(nr, text) {
             return `
             <div id="row-${nr}" class="flex items-center justify-between py-4 border-b border-slate-50 last:border-0 group">
@@ -150,86 +107,86 @@
             </div>`;
         }
 
-        function changeCount(nr, val) {
-            const inp = document.getElementById(`count_${nr}`);
-            inp.value = Math.max(0, parseInt(inp.value) + val);
-        }
-
-        // Initialer Bau der Liste
         function renderAll() {
+            const main = document.getElementById('formContent');
+            main.innerHTML = '';
             let currentNr = 1;
             ['grundstufe', 'aufbauA', 'dfe', 'aufbauBC', 'leistung', 'reife'].forEach(key => {
-                const container = document.getElementById(`container-${key}`);
-                container.innerHTML = '';
-                katalog[key].forEach(text => {
-                    container.innerHTML += generateRow(currentNr, text);
-                    currentNr++;
-                });
-                // Notizfelder
-                container.innerHTML += `<textarea name="notizen_${key}" rows="2" placeholder="Notizen..." class="w-full mt-4 p-4 text-sm rounded-xl bg-slate-50 border border-slate-100 italic outline-none"></textarea>`;
+                let html = `<details id="section-${key}" class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden mb-4">
+                    <summary class="p-5 font-black text-xs text-slate-500 bg-slate-50/50 cursor-pointer flex justify-between items-center uppercase tracking-widest">${titles[key]} <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7" stroke-width="2"></path></svg></summary>
+                    <div class="p-5">`;
+                katalog[key].forEach(text => { html += generateRow(currentNr, text); currentNr++; });
+                
+                if(key === 'reife') {
+                    html += `<div class="mt-4 pt-4 border-t border-slate-200 space-y-4">
+                        <div class="flex items-center justify-between"><span class="text-xs font-black uppercase text-slate-500 italic">69. Einweisung Tag</span>
+                        <div class="flex gap-2"><button type="button" onclick="setEinweiser(69, 1, 45)" id="btn-69-1" class="px-3 py-2 bg-slate-100 rounded-lg text-[10px] font-bold border border-slate-200">1x (45m)</button>
+                        <button type="button" onclick="setEinweiser(69, 2, 90)" id="btn-69-2" class="px-3 py-2 bg-slate-100 rounded-lg text-[10px] font-bold border border-slate-200">2x (90m)</button>
+                        <input type="hidden" name="item_69_count" id="item_69_count" value="0"><input type="hidden" name="item_69_minuten" id="item_69_minuten" value="0"></div></div>
+                        <div class="flex items-center justify-between"><span class="text-xs font-black uppercase text-slate-500 italic">70. Einweisung Nacht</span>
+                        <button type="button" onclick="setEinweiser(70, 1, 45)" id="btn-70-1" class="px-3 py-2 bg-slate-100 rounded-lg text-[10px] font-bold border border-slate-200">1x (45m)</button>
+                        <input type="hidden" name="item_70_count" id="item_70_count" value="0"><input type="hidden" name="item_70_minuten" id="item_70_minuten" value="0"></div></div>`;
+                }
+                html += `<textarea name="notizen_${key}" rows="2" placeholder="Notizen..." class="w-full mt-4 p-4 text-sm rounded-xl bg-slate-50 border border-slate-100 italic outline-none"></textarea></div></details>`;
+                main.innerHTML += html;
             });
-
-            // Spezieller Abschluss für Einweiser
-            const reifeContainer = document.getElementById('container-reife');
-            reifeContainer.innerHTML += `
-                <div class="mt-4 pt-4 border-t border-slate-200 space-y-4">
-                    <div class="flex items-center justify-between">
-                        <span class="text-xs font-black uppercase text-slate-500">69. Einweisung Tag</span>
-                        <div class="flex gap-2">
-                            <button type="button" onclick="setEinweiser(69, 1, 45)" id="btn-69-1" class="px-3 py-2 bg-slate-100 rounded-lg text-[10px] font-bold border border-slate-200 transition-all">1x (45m)</button>
-                            <button type="button" onclick="setEinweiser(69, 2, 90)" id="btn-69-2" class="px-3 py-2 bg-slate-100 rounded-lg text-[10px] font-bold border border-slate-200 transition-all">2x (90m)</button>
-                            <input type="hidden" name="item_69_count" id="item_69_count" value="0">
-                            <input type="hidden" name="item_69_minuten" id="item_69_minuten" value="0">
-                        </div>
-                    </div>
-                    <div class="flex items-center justify-between">
-                        <span class="text-xs font-black uppercase text-slate-500">70. Einweisung Nacht</span>
-                        <button type="button" onclick="setEinweiser(70, 1, 45)" id="btn-70-1" class="px-3 py-2 bg-slate-100 rounded-lg text-[10px] font-bold border border-slate-200 transition-all">1x (45m)</button>
-                        <input type="hidden" name="item_70_count" id="item_70_count" value="0">
-                        <input type="hidden" name="item_70_minuten" id="item_70_minuten" value="0">
-                    </div>
-                </div>
-            `;
         }
 
+        function ladeBestehendenStand() {
+            const id = document.getElementById('schuelerSelect').value;
+            if(!id) return;
+            const alleFahrten = JSON.parse(localStorage.getItem('bw_ausbildungsstand')) || [];
+            const schuelerFahrten = alleFahrten.filter(f => f.schuelerId === id).sort((a,b) => new Date(a.datum) - new Date(b.datum));
+            
+            // Formular resetten
+            document.getElementById('fahrtForm').reset();
+            renderAll(); // Liste neu bauen um sicherzugehen
+            applyDFEFilter();
+
+            schuelerFahrten.forEach(f => {
+                for(let i=1; i<=68; i++) {
+                    // Ampel laden
+                    if(f[`item_${i}`]) {
+                        const rb = document.getElementById(`i${i}_${f['item_'+i]}`);
+                        if(rb) rb.checked = true;
+                    }
+                    // Zyklen summieren
+                    if(f[`count_${i}`]) {
+                        const inp = document.getElementById(`count_${i}`);
+                        if(inp) inp.value = parseInt(inp.value) + parseInt(f[`count_${i}`]);
+                    }
+                }
+                // Einweiser laden
+                if(f.item_69_count) setEinweiser(69, parseInt(f.item_69_count), parseInt(f.item_69_minuten));
+                if(f.item_70_count) setEinweiser(70, parseInt(f.item_70_count), parseInt(f.item_70_minuten));
+            });
+        }
+
+        function changeCount(nr, val) { const inp = document.getElementById(`count_${nr}`); inp.value = Math.max(0, parseInt(inp.value) + val); }
+        
         function setEinweiser(nr, count, min) {
-            // Reset
             [1, 2].forEach(i => { if(document.getElementById(`btn-${nr}-${i}`)) document.getElementById(`btn-${nr}-${i}`).classList.remove('count-btn-active'); });
-            // Set
-            document.getElementById(`btn-${nr}-${count}`).classList.add('count-btn-active');
+            if(count > 0) document.getElementById(`btn-${nr}-${count}`).classList.add('count-btn-active');
             document.getElementById(`item_${nr}_count`).value = count;
             document.getElementById(`item_${nr}_minuten`).value = min;
         }
 
         function applyDFEFilter() {
             const klasse = document.getElementById('dfeKlasse').value;
-            // Alle Zeilen/Sektionen erst anzeigen
             for(let i=1; i<=70; i++) { if(document.getElementById(`row-${i}`)) document.getElementById(`row-${i}`).classList.remove('row-hidden'); }
-            document.getElementById('section-aufbauBC').classList.remove('row-hidden');
             document.getElementById('section-dfe').classList.remove('row-hidden');
-
-            if (klasse === 'C') {
-                // Verstecke 51-55 (Anhänger spezifisch in Aufbau C)
-                for(let i=51; i<=55; i++) { if(document.getElementById(`row-${i}`)) document.getElementById(`row-${i}`).classList.add('row-hidden'); }
-            } else if (klasse === 'E für C') {
-                // Verstecke 35-50 (Solo Gelände Zeug)
-                for(let i=35; i<=50; i++) { if(document.getElementById(`row-${i}`)) document.getElementById(`row-${i}`).classList.add('row-hidden'); }
-                document.getElementById('section-dfe').classList.add('row-hidden');
-            }
+            if (klasse === 'C') { for(let i=51; i<=55; i++) { if(document.getElementById(`row-${i}`)) document.getElementById(`row-${i}`).classList.add('row-hidden'); } }
+            else if (klasse === 'E für C') { for(let i=35; i<=50; i++) { if(document.getElementById(`row-${i}`)) document.getElementById(`row-${i}`).classList.add('row-hidden'); } document.getElementById('section-dfe').classList.add('row-hidden'); }
         }
 
-        // Init
         const ids = JSON.parse(localStorage.getItem('bw_aktive_schueler')) || [];
         const select = document.getElementById('schuelerSelect');
         if (ids.length > 0) {
             select.innerHTML = '<option value="" disabled selected>Fahrschüler wählen...</option>';
             ids.forEach(id => select.innerHTML += `<option value="${id}">${id}</option>`);
-        } else {
-            select.innerHTML = '<option value="">Keine Schüler vorhanden!</option>';
-        }
+        } else { select.innerHTML = '<option value="">Keine Schüler vorhanden!</option>'; }
 
         renderAll();
-        applyDFEFilter();
 
         function saveFahrt(event) {
             event.preventDefault(); 
@@ -238,7 +195,7 @@
             let arr = JSON.parse(localStorage.getItem('bw_ausbildungsstand')) || [];
             arr.push(data);
             localStorage.setItem('bw_ausbildungsstand', JSON.stringify(arr));
-            alert('✅ Gespeichert!');
+            alert('✅ Stand aktualisiert!');
             window.location.href = 'index.html';
         }
     </script>
