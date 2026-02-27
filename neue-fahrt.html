@@ -31,7 +31,7 @@
                 </button>
                 <div>
                     <h1 class="text-xl font-black tracking-tight uppercase italic">Dokumentation</h1>
-                    <p class="text-[10px] text-emerald-300 font-bold uppercase tracking-widest">Fahrt & Ausbildungsstand</p>
+                    <p class="text-[10px] text-emerald-300 font-bold uppercase tracking-widest">Vollständige Kriterien</p>
                 </div>
             </div>
         </header>
@@ -54,13 +54,12 @@
                     </div>
                 </div>
 
-                <div class="space-y-4" id="formContent">
-                    </div>
+                <div class="space-y-4" id="formContent"></div>
 
                 <div class="fixed bottom-0 left-0 w-full p-6 bg-white/90 backdrop-blur-md border-t border-slate-200 shadow-xl z-50">
                     <div class="max-w-2xl mx-auto">
                         <button type="submit" class="w-full bg-slate-800 text-white font-black text-lg py-5 rounded-2xl shadow-xl active:scale-95 transition-all uppercase tracking-widest border-b-4 border-emerald-600">
-                            Fahrt abschließen & Speichern
+                            Dokumentation Speichern
                         </button>
                     </div>
                 </div>
@@ -70,22 +69,21 @@
 
     <script>
         const katalog = {
-            grundstufe: ["Einweisung in das Ausbildungsfahrzeug", "Techn. Durchsichten", "Ladungssicherung", "Fahrtechn. Vorbereitungen", "Handhabung Bedienungseinrichtung", "Bedienung EG-Kontrollgerät", "Anfahr-, Schalt- und Lenkübungen", "Fahren mit geringer Geschwindigkeit", "Abbremsen aus geringer Geschwindigkeit", "Rückwärtsfahren mit Einweiser", "An- und Abkuppeln", "Verlassen des Fahrzeugs"],
-            aufbauA: ["Verhalten beim Anfahren", "Gangwechsel", "Fahrbahnbenutzung", "Abbiegen an Kreuzungen", "Fahrstreifenwechsel", "Beobachtung Verkehrsraum", "Verkehrszeichen", "Geschwindigkeit", "Sicherheitsabstände", "Überholen und Vorbeifahren", "Lichtzeichen", "mit/ohne Vorfahrtsregelung", "Kreisverkehr", "Bahnübergänge", "Fußgänger/Radfahrer", "Fußgängerüberwege", "Verkehrsberuhigte Bereiche", "ÖPNV / Schulbusse", "Durchfahren von Engstellen", "Warneinrichtungen", "Sicherung Liegengebliebener"],
-            dfe: ["Wenden und Rückwärtsfahren (DFE)"],
-            aufbauBC: ["Feld-, Wald-, Wiesenwege", "Bodenverhältnisse", "Materialschonendes Fahren", "Geschwindigkeit / Gangwahl", "Geländegang / Sperren", "Fahrspuren / Lenkradhaltung", "Gefahrbremsung (Gelände)", "Ausweichen", "Steigungen und Gefälle", "Querrinnen / Unebenheiten", "Geländebeurteilung", "Rückwärts Längsparken", "Rückwärts Querparken", "Rückwärts Einmündung", "Rückwärts Rampe", "Abfahrtkontrolle", "Rampe geradeaus", "Umkehren Rückwärts", "Sicherheitskontrolle", "Verbinden / Trennen", "Abstellen Anhänger"],
-            leistung: ["Vorausschauendes Fahren", "Andere Verkehrsteilnehmer", "Fahrverhalten anderer", "Verkehrsraum-Beobachtung", "Bremsen Gefahrensituation", "Bundes-/Landstraße", "Autobahn", "Nacht/Dämmerung"],
-            reife: ["Komplizierte Situationen", "Risikovermeidung", "Unbekannte Räume", "Prüfungsbedingungen", "Feststellen der Prüfungsreife", "Einweisertätigkeit Tag", "Einweisertätigkeit Nacht"]
+            grundstufe: ["Einweisung in das Ausbildungsfahrzeug", "Techn. Durchsichten (vor, während, nach der Benutzung)", "Ladungssicherung (Ladung, Zubehör und pers. Ausrüstung)", "Fahrtechn. Vorbereitungen (Sitz/Spiegel / Lenkrad/Gurt)", "Handhabung der Bedienungseinrichtung", "Bedienung EG-Kontrollgerät", "Anfahr-, Schalt- und Lenkübungen", "Fahren mit geringer Geschwindigkeit", "Abbremsen aus geringer Geschwindigkeit", "Rückwärtsfahren mit Einweiser / Sicherungsposten", "An- und Abkuppeln des Anhängers", "Maßnahmen beim Verlassen des Fahrzeugs"],
+            aufbauA: ["Verhalten beim Anfahren (Ebene/Steigung/Gefälle)", "Gangwechsel", "Fahrbahnbenutzung (Kurven/ein- und mehrspurig)", "Abbiegen an Kreuzungen / Einmündungen", "Fahrstreifenwechsel", "Beobachtung Verkehrsraum", "Beachten der Verkehrszeichen und -einrichtungen", "Geschwindigkeit (Straßen-/Verkehrsverhältnisse)", "Sicherheitsabstände", "Überholen und Vorbeifahren", "Regelung durch Lichtzeichen oder Polizeibeamte", "mit und ohne Verkehrszeichen", "Verhalten am und im Kreisverkehr", "Verhalten an Bahnübergängen", "Verhalten gegenüber Fußgängern und Radfahrern", "Verhalten an Fußgängerüberwegen", "Verhalten in verkehrsberuhigten Bereichen", "Haltende öffentliche Verkehrsmittel u. Schulbusse", "Durchfahren von Engstellen", "Benutzung der Warneinrichtungen", "Maßnahmen zur Sicherung liegengebliebener fzg"],
+            dfe: ["Wenden und Rückwärtsfahren mit und ohne Anhänger"],
+            aufbauBC: ["Fahren auf Feld-, Wald-, und Wiesenwegen", "Fahren auf unterschiedlichen Bodenverhältnissen", "Materialschonendes Fahren", "Geschwindigkeit und Gangwahl", "Fahren ohne und mit Geländegang / Getriebesperren", "Befahren von Fahrspuren, Lenkradhaltung", "Gefahrbremsung auf unbefestigten Wegen (mit ABV)", "Ausweichen von Hindernissen", "Befahren von Steigungen und Gefällen", "Überwinden von Querrinnen / Bodenunebenheiten", "Geländebeurteilung /-ausnutzung", "Rückwärtsfahren in eine Parklücke (Längsaufstellung)", "Rückwärts quer oder schräg einparken", "Fahren nach rechts rückwärts unter Ausnutzung einer Einmündung, Kreuzung oder Einfahrt", "Rückwärtsfahren und Versetzen nach rechts an eine Rampe zum Be- oder Entladen", "Abfahrtkontrolle (Sachgebiete 1-6)", "Rückwärtsfahren geradeaus an eine Rampe zum Be- oder Entladen", "Umkehren durch Rückwärtsfahren nach links", "Sicherheitskontrolle", "Verbinden und Trennen von Fahrzeugen", "Abstellen des Anhängers"],
+            leistung: ["Vorausschauendes Fahren", "Beobachtung anderer Verkehrsteilnehmer", "Beobachtung des Fahrverhaltens anderer fzfhr", "Beobachtung des Verkehrsraums", "Bremsen in Gefahrensituationen", "Schulung auf Bundes- oder Landstraßen", "Schulung auf Autobahnen", "Schulung bei Dämmerung oder Dunkelheit"],
+            reife: ["Verhalten in komplizierten Verkehrssituationen", "Vermeiden risikoreicher Verkehrssituationen", "Fahren in unbekannten Verkehrsräumen", "Fahren unter Prüfungsbedingungen", "Feststellen der Prüfungsreife", "Einweisertätigkeit bei Tag", "Einweisertätigkeit bei Nacht"]
         };
 
-        const titles = { grundstufe: "Grundstufe (1-12)", aufbauA: "Aufbau A (13-33)", dfe: "DFE (34)", aufbauBC: "Aufbau B/C (35-55)", leistung: "Leistung (56-63)", reife: "Reife / Einweiser (64-70)" };
+        const titles = { grundstufe: "Grundstufe (1-12)", aufbauA: "Aufbau A (13-33)", dfe: "DFE (34)", aufbauBC: "Aufbau B/C (35-55)", leistung: "Leistung (56-63)", reife: "Reife (64-70)" };
 
         function generateRow(nr, text) {
             const isSpecial = (nr >= 69);
             const maxVal = (nr === 69) ? 2 : (nr === 70) ? 1 : 99;
-            
             return `
-            <div id="row-${nr}" class="flex items-center justify-between py-4 border-b border-slate-50 last:border-0 group">
+            <div id="row-${nr}" class="flex items-center justify-between py-4 border-b border-slate-50 last:border-0">
                 <span class="text-xs font-bold text-slate-600 w-1/2 pr-2 leading-tight">${nr}. ${text}</span>
                 <div class="flex items-center justify-end w-1/2 space-x-4">
                     <div class="flex items-center bg-slate-100 rounded-xl p-1 border border-slate-200">
@@ -93,8 +91,7 @@
                         <input type="number" name="count_${nr}" id="count_${nr}" value="0" class="w-8 text-center bg-transparent font-black text-xs text-slate-700 outline-none" readonly>
                         <button type="button" onclick="changeCount(${nr}, 1, ${maxVal})" class="w-7 h-7 bg-white rounded-lg shadow-sm flex items-center justify-center font-black text-slate-600">+</button>
                     </div>
-                    ${!isSpecial ? `
-                    <div class="flex space-x-2">
+                    ${!isSpecial ? `<div class="flex space-x-2">
                         <input type="radio" name="item_${nr}" id="i${nr}_rot" value="rot" class="ampel-radio"><label for="i${nr}_rot" class="ampel-label w-7 h-7 rounded-full bg-rose-500 cursor-pointer shadow-sm"></label>
                         <input type="radio" name="item_${nr}" id="i${nr}_gelb" value="gelb" class="ampel-radio"><label for="i${nr}_gelb" class="ampel-label w-7 h-7 rounded-full bg-amber-400 cursor-pointer shadow-sm"></label>
                         <input type="radio" name="item_${nr}" id="i${nr}_gruen" value="gruen" class="ampel-radio"><label for="i${nr}_gruen" class="ampel-label w-7 h-7 rounded-full bg-emerald-500 cursor-pointer shadow-sm"></label>
@@ -105,8 +102,7 @@
 
         function renderAll() {
             const main = document.getElementById('formContent');
-            main.innerHTML = '';
-            let currentNr = 1;
+            main.innerHTML = ''; let currentNr = 1;
             ['grundstufe', 'aufbauA', 'dfe', 'aufbauBC', 'leistung', 'reife'].forEach(key => {
                 let html = `<details id="section-${key}" class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden mb-4">
                     <summary class="p-5 font-black text-xs text-slate-500 bg-slate-50/50 cursor-pointer flex justify-between items-center uppercase tracking-widest">${titles[key]} <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7" stroke-width="2"></path></svg></summary>
@@ -118,67 +114,39 @@
         }
 
         function ladeBestehendenStand() {
-            const id = document.getElementById('schuelerSelect').value;
-            if(!id) return;
+            const id = document.getElementById('schuelerSelect').value; if(!id) return;
             const alleFahrten = JSON.parse(localStorage.getItem('bw_ausbildungsstand')) || [];
             const schuelerFahrten = alleFahrten.filter(f => f.schuelerId === id).sort((a,b) => new Date(a.datum) - new Date(b.datum));
-            
             document.getElementById('fahrtForm').reset();
-            renderAll();
-            applyDFEFilter();
-
+            renderAll(); applyDFEFilter();
             schuelerFahrten.forEach(f => {
                 for(let i=1; i<=70; i++) {
-                    if(f[`item_${i}`]) {
-                        const rb = document.getElementById(`i${i}_${f['item_'+i]}`);
-                        if(rb) rb.checked = true;
-                    }
-                    if(f[`count_${i}`]) {
-                        const inp = document.getElementById(`count_${i}`);
-                        if(inp) inp.value = parseInt(inp.value) + parseInt(f[`count_${i}`]);
-                    }
+                    if(f[`item_${i}`]) { const rb = document.getElementById(`i${i}_${f['item_'+i]}`); if(rb) rb.checked = true; }
+                    if(f[`count_${i}`]) { const inp = document.getElementById(`count_${i}`); if(inp) inp.value = parseInt(inp.value) + parseInt(f[`count_${i}`]); }
                 }
             });
         }
 
-        function changeCount(nr, val, max) { 
-            const inp = document.getElementById(`count_${nr}`); 
-            let newVal = parseInt(inp.value) + val;
-            if (newVal >= 0 && newVal <= max) inp.value = newVal;
-        }
+        function changeCount(nr, val, max) { const inp = document.getElementById(`count_${nr}`); let newVal = parseInt(inp.value) + val; if (newVal >= 0 && newVal <= max) inp.value = newVal; }
         
         function applyDFEFilter() {
             const klasse = document.getElementById('dfeKlasse').value;
             for(let i=1; i<=70; i++) { if(document.getElementById(`row-${i}`)) document.getElementById(`row-${i}`).classList.remove('row-hidden'); }
-            document.getElementById('section-dfe').classList.remove('row-hidden');
             if (klasse === 'C') { for(let i=51; i<=55; i++) { if(document.getElementById(`row-${i}`)) document.getElementById(`row-${i}`).classList.add('row-hidden'); } }
             else if (klasse === 'E für C') { for(let i=35; i<=50; i++) { if(document.getElementById(`row-${i}`)) document.getElementById(`row-${i}`).classList.add('row-hidden'); } document.getElementById('section-dfe').classList.add('row-hidden'); }
         }
 
         const ids = JSON.parse(localStorage.getItem('bw_aktive_schueler')) || [];
         const select = document.getElementById('schuelerSelect');
-        if (ids.length > 0) {
-            select.innerHTML = '<option value="" disabled selected>Fahrschüler wählen...</option>';
-            ids.forEach(id => select.innerHTML += `<option value="${id}">${id}</option>`);
-        } else { select.innerHTML = '<option value="">Keine Schüler vorhanden!</option>'; }
+        if (ids.length > 0) { select.innerHTML = '<option value="" disabled selected>Fahrschüler wählen...</option>'; ids.forEach(id => select.innerHTML += `<option value="${id}">${id}</option>`); }
+        else { select.innerHTML = '<option value="">Keine Schüler vorhanden!</option>'; }
 
         renderAll();
-
         function saveFahrt(event) {
-            event.preventDefault(); 
-            const formData = new FormData(event.target);
-            const data = Object.fromEntries(formData.entries());
-            data.datum = new Date().toISOString();
-
-            // Automatisches Berechnen der Minuten für den PC-Export
+            event.preventDefault(); const formData = new FormData(event.target); const data = Object.fromEntries(formData.entries()); data.datum = new Date().toISOString();
             if(data.count_69) data.item_69_minuten = (parseInt(data.count_69) >= 2) ? 90 : (parseInt(data.count_69) == 1 ? 45 : 0);
             if(data.count_70) data.item_70_minuten = (parseInt(data.count_70) >= 1) ? 45 : 0;
-
-            let arr = JSON.parse(localStorage.getItem('bw_ausbildungsstand')) || [];
-            arr.push(data);
-            localStorage.setItem('bw_ausbildungsstand', JSON.stringify(arr));
-            alert('✅ Stand aktualisiert!');
-            window.location.href = 'index.html';
+            let arr = JSON.parse(localStorage.getItem('bw_ausbildungsstand')) || []; arr.push(data); localStorage.setItem('bw_ausbildungsstand', JSON.stringify(arr)); alert('✅ Stand aktualisiert!'); window.location.href = 'index.html';
         }
     </script>
 </body>
