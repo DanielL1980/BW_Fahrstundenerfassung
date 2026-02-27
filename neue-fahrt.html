@@ -15,13 +15,12 @@
         }
         .ampel-label { opacity: 0.2; transition: all 0.2s ease-in-out; }
         
-        /* Schönere ausklappbare Bereiche (Details/Summary) */
         details > summary { list-style: none; }
         details > summary::-webkit-details-marker { display: none; }
         details[open] summary { border-bottom-width: 1px; border-color: #e2e8f0; border-bottom-left-radius: 0; border-bottom-right-radius: 0; }
     </style>
 </head>
-<body class="bg-gray-100 text-slate-800 font-sans antialiased pb-20">
+<body class="bg-gray-100 text-slate-800 font-sans antialiased pb-24">
 
     <div class="max-w-2xl mx-auto bg-white min-h-screen shadow-2xl relative flex flex-col">
 
@@ -235,6 +234,7 @@
                                 </div>`);
                             });
                         </script>
+                        
                         <div class="bg-slate-50 p-2 font-bold text-xs uppercase text-slate-600 mt-2 mb-2">Stufe B (Besondere Ausbildungsfahrten)</div>
                         <script>
                             const leistungB = [
@@ -243,12 +243,16 @@
                             leistungB.forEach((item, index) => {
                                 let i = index + 61;
                                 document.write(`
-                                <div class="flex items-center justify-between py-3">
-                                    <span class="text-xs font-medium text-slate-700 w-2/3 pr-2">${i}. ${item}</span>
-                                    <div class="flex space-x-2 w-1/3 justify-end">
-                                        <input type="radio" name="item_${i}" id="i${i}_rot" value="rot" class="ampel-radio"><label for="i${i}_rot" class="ampel-label w-7 h-7 rounded-full bg-red-500 cursor-pointer"></label>
-                                        <input type="radio" name="item_${i}" id="i${i}_gelb" value="gelb" class="ampel-radio"><label for="i${i}_gelb" class="ampel-label w-7 h-7 rounded-full bg-yellow-400 cursor-pointer"></label>
-                                        <input type="radio" name="item_${i}" id="i${i}_gruen" value="gruen" class="ampel-radio"><label for="i${i}_gruen" class="ampel-label w-7 h-7 rounded-full bg-green-500 cursor-pointer"></label>
+                                <div class="flex items-center justify-between py-3 border-b border-slate-100 last:border-0">
+                                    <span class="text-xs font-medium text-slate-700 w-1/2 pr-2">${i}. ${item}</span>
+                                    <div class="flex items-center justify-end w-1/2 space-x-3">
+                                        <input type="number" name="item_${i}_stunden" placeholder="Anz." min="0" class="w-14 p-1.5 text-xs rounded border border-slate-300 text-center bg-slate-50 shadow-inner">
+                                        
+                                        <div class="flex space-x-2">
+                                            <input type="radio" name="item_${i}" id="i${i}_rot" value="rot" class="ampel-radio"><label for="i${i}_rot" class="ampel-label w-7 h-7 rounded-full bg-red-500 cursor-pointer"></label>
+                                            <input type="radio" name="item_${i}" id="i${i}_gelb" value="gelb" class="ampel-radio"><label for="i${i}_gelb" class="ampel-label w-7 h-7 rounded-full bg-yellow-400 cursor-pointer"></label>
+                                            <input type="radio" name="item_${i}" id="i${i}_gruen" value="gruen" class="ampel-radio"><label for="i${i}_gruen" class="ampel-label w-7 h-7 rounded-full bg-green-500 cursor-pointer"></label>
+                                        </div>
                                     </div>
                                 </div>`);
                             });
@@ -312,10 +316,8 @@
             const formData = new FormData(event.target);
             const ausbildungsstand = Object.fromEntries(formData.entries());
             
-            // Metadaten
             ausbildungsstand.datum = new Date().toISOString();
 
-            // Lokal abspeichern
             let gespeicherteDaten = JSON.parse(localStorage.getItem('bw_ausbildungsstand')) || [];
             gespeicherteDaten.push(ausbildungsstand);
             localStorage.setItem('bw_ausbildungsstand', JSON.stringify(gespeicherteDaten));
