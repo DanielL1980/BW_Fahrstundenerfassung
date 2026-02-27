@@ -6,64 +6,70 @@
     <title>Fortschritt - BW Fahrschul-Manager</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-100 text-slate-800 font-sans antialiased pb-10">
+<body class="bg-slate-50 text-slate-800 font-sans antialiased pb-10">
 
     <div class="max-w-2xl mx-auto bg-white min-h-screen shadow-2xl relative flex flex-col">
 
-        <header class="bg-slate-800 text-white p-4 sticky top-0 z-50 shadow-md flex items-center">
-            <button onclick="window.location.href='index.html'" type="button" class="mr-4 p-2 bg-slate-700 rounded-full hover:bg-slate-600 active:scale-95">
+        <header class="bg-slate-800 text-white p-5 sticky top-0 z-50 shadow-lg flex items-center border-b-4 border-blue-500">
+            <button onclick="window.location.href='index.html'" type="button" class="mr-4 p-2 bg-slate-700 rounded-xl hover:bg-slate-600 active:scale-95 transition-all">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
             </button>
             <div>
-                <h1 class="text-xl font-bold tracking-wide">Schüler-Fortschritt</h1>
-                <p class="text-xs text-slate-300">Aktueller Leistungsstand & Historie</p>
+                <h1 class="text-xl font-black tracking-tight uppercase italic">Schüler-Status</h1>
+                <p class="text-[10px] text-blue-300 font-bold uppercase tracking-widest">Leistungsstand & Notizen</p>
             </div>
         </header>
 
         <main class="flex-1 p-5">
             
-            <div class="mb-6 bg-slate-50 p-4 rounded-xl border border-slate-200 shadow-sm">
-                <label class="block text-sm font-bold text-slate-700 mb-2 uppercase tracking-wide">Schüler-ID auswählen</label>
-                <select id="schuelerSelect" onchange="ladeFortschritt()" class="w-full p-3 rounded-lg border border-slate-300 bg-white font-bold text-slate-800 text-lg">
-                    </select>
+            <div class="mb-6 bg-blue-50 p-5 rounded-2xl border border-blue-100 shadow-sm">
+                <label class="block text-[10px] font-black text-blue-900 mb-2 uppercase tracking-widest">Fahrschüler wählen</label>
+                <select id="schuelerSelect" onchange="ladeFortschritt()" class="w-full p-4 rounded-xl border-2 border-white shadow-sm bg-white font-black text-slate-800 text-lg outline-none focus:border-blue-400 transition-all">
+                </select>
             </div>
 
-            <div id="ergebnisBereich" class="hidden">
+            <div id="ergebnisBereich" class="hidden animate-in fade-in duration-500">
                 
-                <h2 class="text-lg font-bold text-blue-900 mb-4 border-b-2 border-blue-200 pb-1">Ampel-Status (68 Kriterien)</h2>
+                <h2 class="text-xs font-black text-slate-400 mb-4 uppercase tracking-[0.2em] flex items-center gap-2">
+                    <span class="w-8 h-[2px] bg-slate-200"></span> Ampel-Status
+                </h2>
 
-                <div class="grid grid-cols-3 gap-3 mb-6">
-                    <div class="bg-green-50 border border-green-200 p-3 rounded-xl text-center shadow-sm">
-                        <div class="text-2xl font-black text-green-600" id="countGruen">0</div>
-                        <div class="text-[10px] font-bold text-green-800 uppercase tracking-wide mt-1">Sicher (Grün)</div>
+                <div class="grid grid-cols-3 gap-3 mb-8">
+                    <div class="bg-emerald-50 border-2 border-emerald-100 p-4 rounded-2xl text-center shadow-sm">
+                        <div class="text-3xl font-black text-emerald-600" id="countGruen">0</div>
+                        <div class="text-[9px] font-black text-emerald-800 uppercase tracking-widest mt-1 italic">Sicher</div>
                     </div>
-                    <div class="bg-yellow-50 border border-yellow-200 p-3 rounded-xl text-center shadow-sm">
-                        <div class="text-2xl font-black text-yellow-600" id="countGelb">0</div>
-                        <div class="text-[10px] font-bold text-yellow-800 uppercase tracking-wide mt-1">Hilfe (Gelb)</div>
+                    <div class="bg-amber-50 border-2 border-amber-100 p-4 rounded-2xl text-center shadow-sm">
+                        <div class="text-3xl font-black text-amber-500" id="countGelb">0</div>
+                        <div class="text-[9px] font-black text-amber-800 uppercase tracking-widest mt-1 italic">Hilfe</div>
                     </div>
-                    <div class="bg-red-50 border border-red-200 p-3 rounded-xl text-center shadow-sm">
-                        <div class="text-2xl font-black text-red-600" id="countRot">0</div>
-                        <div class="text-[10px] font-bold text-red-800 uppercase tracking-wide mt-1">Defizit (Rot)</div>
+                    <div class="bg-rose-50 border-2 border-rose-100 p-4 rounded-2xl text-center shadow-sm">
+                        <div class="text-3xl font-black text-rose-500" id="countRot">0</div>
+                        <div class="text-[9px] font-black text-rose-800 uppercase tracking-widest mt-1 italic">Defizit</div>
                     </div>
                 </div>
 
-                <div class="mb-8 bg-slate-50 p-4 rounded-xl border border-slate-200 shadow-sm">
-                    <div class="flex justify-between items-end mb-2">
-                        <span class="text-sm font-bold text-slate-700">Prüfungsreife (Grüne Kriterien)</span>
-                        <span class="text-lg font-black text-blue-700" id="prozentText">0%</span>
+                <div class="mb-10 bg-slate-50 p-5 rounded-2xl border border-slate-200 shadow-inner">
+                    <div class="flex justify-between items-end mb-3">
+                        <span class="text-xs font-black text-slate-500 uppercase tracking-widest italic">Prüfungsreife</span>
+                        <span class="text-2xl font-black text-blue-600" id="prozentText">0%</span>
                     </div>
-                    <div class="w-full bg-slate-200 rounded-full h-4 overflow-hidden shadow-inner">
-                        <div id="prozentBalken" class="bg-blue-600 h-4 rounded-full transition-all duration-1000 ease-out" style="width: 0%"></div>
+                    <div class="w-full bg-slate-200 rounded-full h-5 overflow-hidden shadow-inner p-1">
+                        <div id="prozentBalken" class="bg-gradient-to-r from-blue-500 to-blue-700 h-full rounded-full transition-all duration-1000 ease-out shadow-lg" style="width: 0%"></div>
                     </div>
                 </div>
 
-                <h2 class="text-lg font-bold text-red-900 mb-3 border-b-2 border-red-200 pb-1">Aktuelle Schwerpunkte (Rot)</h2>
-                <div id="roteListe" class="bg-white border border-red-100 rounded-xl shadow-sm divide-y divide-red-50 mb-8">
-                    </div>
+                <h2 class="text-xs font-black text-rose-400 mb-3 uppercase tracking-[0.2em] flex items-center gap-2">
+                    <span class="w-8 h-[2px] bg-rose-100"></span> Schwerpunkte (Rot)
+                </h2>
+                <div id="roteListe" class="bg-rose-50/30 border border-rose-100 rounded-2xl shadow-sm divide-y divide-rose-100 mb-10 overflow-hidden">
+                </div>
 
-                <h2 class="text-lg font-bold text-slate-800 mb-3 border-b-2 border-slate-300 pb-1">Historie (Notizen)</h2>
-                <div id="notizenHistorie" class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden divide-y divide-slate-100">
-                    </div>
+                <h2 class="text-xs font-black text-slate-400 mb-3 uppercase tracking-[0.2em] flex items-center gap-2">
+                    <span class="w-8 h-[2px] bg-slate-200"></span> Historie
+                </h2>
+                <div id="notizenHistorie" class="bg-white border border-slate-100 rounded-2xl shadow-md overflow-hidden divide-y divide-slate-50">
+                </div>
 
             </div>
 
@@ -75,21 +81,13 @@
         const selectBox = document.getElementById('schuelerSelect');
         const ids = [...new Set(alleFahrten.map(f => f.schuelerId))].filter(id => id);
 
-        // Das "Wörterbuch" mit allen 68 Kriterien-Texten, damit nicht nur "Kriterium 1" dasteht
-        const kriterienKatalog = [
-            "Einweisung in das Ausbildungsfahrzeug", "Techn. Durchsichten", "Ladungssicherung", "Fahrtechn. Vorbereitungen", "Handhabung Bedienungseinrichtung", "Bedienung EG-Kontrollgerät", "Anfahr-, Schalt- und Lenkübungen", "Fahren mit geringer Geschwindigkeit", "Abbremsen aus geringer Geschw.", "Rückwärtsfahren mit Einweiser", "An- und Abkuppeln des Anhängers", "Maßnahmen beim Verlassen",
-            "Verhalten beim Anfahren", "Gangwechsel", "Fahrbahnbenutzung", "Abbiegen an Kreuzungen", "Fahrstreifenwechsel", "Beobachtung Verkehrsraum", "Verkehrszeichen", "Geschwindigkeit", "Sicherheitsabstände", "Überholen und Vorbeifahren", "- durch Lichtzeichen", "- mit und ohne Verkehrszeichen", "Kreisverkehr", "Bahnübergänge", "Gegenüber Fußgängern/Radfahrern", "Fußgängerüberwege", "Verkehrsberuhigte Bereiche", "Öffentliche Verkehrsmittel", "Durchfahren von Engstellen", "Warneinrichtungen", "Sicherung liegengebliebener Fzg",
-            "Wenden und Rückwärtsfahren (DFE)",
-            "Fahren auf Feld-, Wald-, Wiesenwegen", "Bodenverhältnisse", "Materialschonendes Fahren", "Geschwindigkeit und Gangwahl", "Geländegang / Getriebesperren", "Befahren von Fahrspuren", "Gefahrbremsung (mit ABV)", "Ausweichen von Hindernissen", "Steigungen und Gefälle", "Überwinden von Querrinnen", "Geländebeurteilung", "Rückwärts in Parklücke", "Rückwärts quer einparken", "Rückwärts unter Ausnutzung Einmündung", "Rückwärts an Rampe", "Abfahrtkontrolle", "Rückwärts geradeaus Rampe", "Umkehren durch Rückwärtsfahren", "Sicherheitskontrolle", "Verbinden und Trennen", "Abstellen des Anhängers",
-            "Vorausschauendes Fahren", "Beobachtung Verkehrsteilnehmer", "Beobachtung Fahrverhalten anderer", "Beobachtung Verkehrsraum", "Bremsen in Gefahrensituationen", "Überlandfahrten", "Autobahn", "Dunkelheit",
-            "Verhalten in komplizierten Situationen", "Vermeiden risikoreicher Situationen", "Fahren in unbekannten Räumen", "Fahren unter Prüfungsbedingungen", "Feststellen der Prüfungsreife"
-        ];
+        const kriterienKatalog = ["Einweisung in das Ausbildungsfahrzeug", "Techn. Durchsichten", "Ladungssicherung", "Fahrtechn. Vorbereitungen", "Handhabung Bedienungseinrichtung", "Bedienung EG-Kontrollgerät", "Anfahr-, Schalt- und Lenkübungen", "Fahren mit geringer Geschwindigkeit", "Abbremsen aus geringer Geschw.", "Rückwärtsfahren mit Einweiser", "An- und Abkuppeln des Anhängers", "Maßnahmen beim Verlassen", "Verhalten beim Anfahren", "Gangwechsel", "Fahrbahnbenutzung", "Abbiegen an Kreuzungen", "Fahrstreifenwechsel", "Beobachtung Verkehrsraum", "Verkehrszeichen", "Geschwindigkeit", "Sicherheitsabstände", "Überholen und Vorbeifahren", "- durch Lichtzeichen", "- mit und ohne Verkehrszeichen", "Kreisverkehr", "Bahnübergänge", "Gegenüber Fußgängern/Radfahrern", "Fußgängerüberwege", "Verkehrsberuhigte Bereiche", "Öffentliche Verkehrsmittel", "Durchfahren von Engstellen", "Warneinrichtungen", "Sicherung liegengebliebener Fzg", "Wenden und Rückwärtsfahren (DFE)", "Fahren auf Feld-, Wald-, Wiesenwegen", "Bodenverhältnisse", "Materialschonendes Fahren", "Geschwindigkeit und Gangwahl", "Geländegang / Getriebesperren", "Befahren von Fahrspuren", "Gefahrbremsung (mit ABV)", "Ausweichen von Hindernissen", "Steigungen und Gefälle", "Überwinden von Querrinnen", "Geländebeurteilung", "Rückwärts in Parklücke", "Rückwärts quer einparken", "Rückwärts unter Ausnutzung Einmündung", "Rückwärts an Rampe", "Abfahrtkontrolle", "Rückwärts geradeaus Rampe", "Umkehren durch Rückwärtsfahren", "Sicherheitskontrolle", "Verbinden und Trennen", "Abstellen des Anhängers", "Vorausschauendes Fahren", "Beobachtung Verkehrsteilnehmer", "Beobachtung Fahrverhalten anderer", "Beobachtung Verkehrsraum", "Bremsen in Gefahrensituationen", "Überlandfahrten", "Autobahn", "Dunkelheit", "Verhalten in komplizierten Situationen", "Vermeiden risikoreicher Situationen", "Fahren in unbekannten Räumen", "Fahren unter Prüfungsbedingungen", "Feststellen der Prüfungsreife"];
 
         if (ids.length === 0) {
-            selectBox.innerHTML = '<option value="">Keine Daten erfasst.</option>';
+            selectBox.innerHTML = '<option value="">Keine Daten vorhanden.</option>';
             selectBox.disabled = true;
         } else {
-            selectBox.innerHTML = '<option value="" disabled selected>Bitte wählen...</option>';
+            selectBox.innerHTML = '<option value="" disabled selected>Fahrschüler wählen...</option>';
             ids.forEach(id => selectBox.innerHTML += `<option value="${id}">${id}</option>`);
         }
 
@@ -101,7 +99,6 @@
             const fahrten = alleFahrten.filter(f => f.schuelerId === id).sort((a, b) => new Date(a.datum) - new Date(b.datum));
             const stand = {};
             
-            // Ermittelt für jedes "item_X" den finalen/letzten Stand
             fahrten.forEach(f => {
                 for (const [key, val] of Object.entries(f)) {
                     if (val === 'rot' || val === 'gelb' || val === 'gruen') stand[key] = val;
@@ -114,10 +111,8 @@
                 if (val === 'gelb') b++;
                 if (val === 'rot') { 
                     a++; 
-                    // Liest die Nummer aus dem Schlüssel (z.B. "item_14" -> "14")
                     let nr = parseInt(key.split('_')[1]);
-                    // Holt den echten Text aus unserem Wörterbuch (-1 weil Arrays bei 0 anfangen)
-                    let echterText = kriterienKatalog[nr - 1] || "Unbekanntes Kriterium";
+                    let echterText = kriterienKatalog[nr - 1] || "Unbekannt";
                     defizite.push(`${nr}. ${echterText}`); 
                 }
             }
@@ -131,13 +126,13 @@
             document.getElementById('prozentText').textContent = `${proz}%`;
 
             const defBox = document.getElementById('roteListe');
-            defBox.innerHTML = defizite.length ? '' : '<div class="p-4 text-sm text-slate-500 italic text-center">Keine kritischen Defizite vorhanden.</div>';
+            defBox.innerHTML = defizite.length ? '' : '<div class="p-8 text-xs text-slate-400 italic text-center font-bold uppercase tracking-widest">Alles im grünen Bereich.</div>';
             
             defizite.forEach(d => {
                 defBox.innerHTML += `
-                <div class="p-3 flex items-center">
-                    <div class="w-3 h-3 rounded-full bg-red-500 mr-3 shrink-0"></div>
-                    <span class="text-sm font-bold text-slate-700">${d}</span>
+                <div class="p-4 flex items-center bg-white/50">
+                    <div class="w-2 h-2 rounded-full bg-rose-500 mr-4 shadow-sm shadow-rose-200"></div>
+                    <span class="text-sm font-black text-slate-700 italic uppercase tracking-tighter">${d}</span>
                 </div>`;
             });
 
@@ -147,33 +142,25 @@
             [...fahrten].reverse().forEach(f => {
                 const dat = new Date(f.datum).toLocaleDateString('de-DE');
                 let t = '';
-                
-                const labels = {
-                    'notizen_grundstufe': 'Grundstufe',
-                    'notizen_aufbauA': 'Aufbaustufe A',
-                    'notizen_dfe': 'DFE',
-                    'notizen_aufbauC': 'Aufbaustufe B/C',
-                    'notizen_leistung': 'Leistung',
-                    'notizen_reifestufe': 'Reife / Einweiser'
-                };
+                const labels = { 'notizen_grundstufe': 'Grundstufe', 'notizen_aufbauA': 'Aufbaustufe A', 'notizen_dfe': 'DFE', 'notizen_aufbauC': 'Aufbaustufe B/C', 'notizen_leistung': 'Leistung', 'notizen_reifestufe': 'Reife / Einweiser' };
 
                 for (const [key, label] of Object.entries(labels)) {
                     if(f[key] && f[key].trim() !== '') {
-                        t += `<p class="mt-1 text-sm text-slate-700"><span class="font-bold text-blue-800">${label}:</span> ${f[key]}</p>`;
+                        t += `<div class="mt-2 p-2 rounded bg-slate-50 border-l-2 border-blue-400"><p class="text-xs text-slate-700 font-medium"><span class="font-black text-blue-800 uppercase text-[9px] mr-1">${label}:</span> ${f[key]}</p></div>`;
                     }
                 }
 
                 if(t) { 
                     hatNotiz = true; 
                     notizBox.innerHTML += `
-                    <div class="p-4">
-                        <div class="text-[10px] font-bold text-slate-400 bg-slate-100 inline-block px-2 py-0.5 rounded uppercase tracking-wider mb-1">Eintrag vom ${dat}</div>
+                    <div class="p-5 border-b border-slate-50">
+                        <div class="text-[9px] font-black text-blue-400 bg-blue-50 inline-block px-3 py-1 rounded-full uppercase tracking-widest mb-2 italic">Protokoll ${dat}</div>
                         ${t}
                     </div>`; 
                 }
             });
             
-            if(!hatNotiz) notizBox.innerHTML = '<div class="p-4 text-sm text-slate-500 italic text-center">Bisher keine Notizen erfasst.</div>';
+            if(!hatNotiz) notizBox.innerHTML = '<div class="p-8 text-xs text-slate-400 italic text-center font-bold uppercase tracking-widest">Keine Notizen verfügbar.</div>';
         }
     </script>
 </body>
