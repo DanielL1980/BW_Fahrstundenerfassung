@@ -3,218 +3,324 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Neue Fahrt - BW Fahrschul-Manager</title>
+    <title>Ausbildungsstand - BW Fahrschul-Manager</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* Verstecke Standard-Radiobuttons */
         input[type="radio"].ampel-radio { display: none; }
-        /* Styling für Ampel-Buttons */
         input[type="radio"].ampel-radio:checked + label {
             opacity: 1;
-            transform: scale(1.1);
-            border-color: #1e293b; 
-            border-width: 2px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            transform: scale(1.15);
+            border: 2px solid #1e293b;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
         }
-        .ampel-label { opacity: 0.3; transition: all 0.2s ease-in-out; }
+        .ampel-label { opacity: 0.2; transition: all 0.2s ease-in-out; }
+        
+        /* Schönere ausklappbare Bereiche (Details/Summary) */
+        details > summary { list-style: none; }
+        details > summary::-webkit-details-marker { display: none; }
+        details[open] summary { border-bottom-width: 1px; border-color: #e2e8f0; border-bottom-left-radius: 0; border-bottom-right-radius: 0; }
     </style>
 </head>
-<body class="bg-gray-100 text-slate-800 font-sans antialiased pb-10">
+<body class="bg-gray-100 text-slate-800 font-sans antialiased pb-20">
 
     <div class="max-w-2xl mx-auto bg-white min-h-screen shadow-2xl relative flex flex-col">
 
-        <header class="bg-slate-800 text-white p-4 sticky top-0 z-50 shadow-md flex items-center">
-            <button onclick="window.location.href='index.html'" type="button" class="mr-4 p-2 bg-slate-700 rounded-full hover:bg-slate-600 active:scale-95">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
-            </button>
-            <div>
-                <h1 class="text-xl font-bold tracking-wide">Fahrt dokumentieren</h1>
-                <p class="text-xs text-slate-300">Curricularer Leitfaden C/CE & Stufenplan</p>
+        <header class="bg-slate-800 text-white p-4 sticky top-0 z-50 shadow-md flex items-center justify-between">
+            <div class="flex items-center">
+                <button onclick="window.location.href='index.html'" type="button" class="mr-4 p-2 bg-slate-700 rounded-full hover:bg-slate-600 active:scale-95">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                </button>
+                <div>
+                    <h1 class="text-xl font-bold tracking-wide">Ausbildungsstand</h1>
+                    <p class="text-xs text-slate-300">Offizieller BW-Stufenplan</p>
+                </div>
             </div>
         </header>
 
-        <main class="flex-1 p-5">
+        <main class="flex-1 p-4">
             <form id="fahrtForm" onsubmit="saveFahrt(event)">
                 
-                <section class="mb-8">
-                    <h2 class="text-lg font-bold text-blue-900 mb-3 border-b-2 border-blue-200 pb-1">1. Stammdaten (Anonymisiert)</h2>
-                    <div class="grid grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-xs font-bold text-slate-500 mb-1 uppercase tracking-wide">Schüler-ID</label>
-                            <select name="schuelerId" required class="w-full p-3 rounded-xl border border-slate-300 bg-slate-50 font-bold text-slate-700">
-                                <option value="" disabled selected>Auswählen...</option>
-                                <option value="S-2026-04">S-2026-04</option>
-                                <option value="S-2026-09">S-2026-09</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold text-slate-500 mb-1 uppercase tracking-wide">Klasse</label>
-                            <select name="klasse" required class="w-full p-3 rounded-xl border border-slate-300 bg-slate-50 font-bold text-slate-700">
-                                <option value="C">Klasse C</option>
-                                <option value="CE">Klasse CE</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold text-slate-500 mb-1 uppercase tracking-wide">Dauer (Min)</label>
-                            <input type="number" name="dauer" value="90" required class="w-full p-3 rounded-xl border border-slate-300 bg-slate-50 font-bold text-slate-700">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold text-slate-500 mb-1 uppercase tracking-wide">Datum</label>
-                            <input type="date" name="datum" id="heute" required class="w-full p-3 rounded-xl border border-slate-300 bg-slate-50 font-bold text-slate-700">
-                        </div>
-                    </div>
-                </section>
-
-                <section class="mb-8">
-                    <h2 class="text-lg font-bold text-blue-900 mb-3 border-b-2 border-blue-200 pb-1">2. Stufenplan (FahrschAusbO)</h2>
-                    <select name="ausbildungsstufe" required class="w-full p-3 rounded-xl border border-slate-300 bg-slate-50 font-bold text-slate-700 mb-3">
-                        <option value="" disabled selected>Aktuelle Stufe wählen...</option>
-                        <optgroup label="Reguläre Stufen">
-                            <option value="Grundstufe">Grundstufe (Einweisung, Bedienung)</option>
-                            <option value="Aufbaustufe">Aufbaustufe (Einfache Verkehrssituationen)</option>
-                            <option value="Leistungsstufe">Leistungsstufe (Schwierige Verkehrssituationen)</option>
-                            <option value="Reifestufe">Reifestufe (Prüfungsvorbereitung)</option>
-                        </optgroup>
-                        <optgroup label="Besondere Ausbildungsfahrten">
-                            <option value="Ueberland">Überlandfahrt (B 12)</option>
-                            <option value="Autobahn">Autobahnfahrt (B 13)</option>
-                            <option value="Dunkelheit">Fahrt bei Dunkelheit (B 14)</option>
-                        </optgroup>
+                <div class="mb-6 bg-slate-50 p-4 rounded-xl border border-slate-200">
+                    <label class="block text-sm font-bold text-slate-700 mb-2 uppercase tracking-wide">Schüler-ID</label>
+                    <select name="schuelerId" required class="w-full p-3 rounded-lg border border-slate-300 bg-white font-bold text-slate-800 text-lg">
+                        <option value="" disabled selected>Fahrschüler auswählen...</option>
+                        <option value="S-2026-04">S-2026-04</option>
+                        <option value="S-2026-09">S-2026-09</option>
                     </select>
-                </section>
+                </div>
 
-                <section class="mb-8">
-                    <h2 class="text-lg font-bold text-blue-900 mb-1 border-b-2 border-blue-200 pb-1">3. Kompetenzbewertung (C/CE)</h2>
-                    <p class="text-xs text-slate-500 mb-4 bg-slate-100 p-2 rounded">
-                        <span class="font-bold text-red-600">Rot:</span> Eingreifen nötig / Grobe Mängel &bull; 
-                        <span class="font-bold text-yellow-600">Gelb:</span> Hilfestellung nötig &bull; 
-                        <span class="font-bold text-green-600">Grün:</span> Selbstständig / Prüfungsreif
-                    </p>
+                <p class="text-xs text-slate-500 mb-4 bg-slate-100 p-2 rounded text-center">
+                    Tippe auf eine Stufe, um die Inhalte aufzuklappen.
+                </p>
 
-                    <div class="mb-6 bg-slate-50 p-4 rounded-xl border border-slate-200 shadow-sm">
-                        <h3 class="font-bold text-slate-700 mb-3 uppercase text-xs tracking-wider">A. Vorbereitung & Technik</h3>
-                        
-                        <div class="flex items-center justify-between mb-3 border-b border-slate-200 pb-2">
-                            <span class="text-sm font-medium text-slate-800 w-2/3">Abfahrtskontrolle (StVZO)</span>
-                            <div class="flex space-x-3 w-1/3 justify-end">
-                                <input type="radio" name="bew_abfahrtskontrolle" id="abf_rot" value="rot" class="ampel-radio"><label for="abf_rot" class="ampel-label w-8 h-8 rounded-full bg-red-500 cursor-pointer"></label>
-                                <input type="radio" name="bew_abfahrtskontrolle" id="abf_gelb" value="gelb" class="ampel-radio"><label for="abf_gelb" class="ampel-label w-8 h-8 rounded-full bg-yellow-400 cursor-pointer"></label>
-                                <input type="radio" name="bew_abfahrtskontrolle" id="abf_gruen" value="gruen" class="ampel-radio"><label for="abf_gruen" class="ampel-label w-8 h-8 rounded-full bg-green-500 cursor-pointer"></label>
-                            </div>
-                        </div>
-                        
-                        <div class="flex items-center justify-between border-b border-slate-200 pb-2 mb-3">
-                            <span class="text-sm font-medium text-slate-800 w-2/3">Trennen & Verbinden (inkl. Leitungen)</span>
-                            <div class="flex space-x-3 w-1/3 justify-end">
-                                <input type="radio" name="bew_trennen" id="trenn_rot" value="rot" class="ampel-radio"><label for="trenn_rot" class="ampel-label w-8 h-8 rounded-full bg-red-500 cursor-pointer"></label>
-                                <input type="radio" name="bew_trennen" id="trenn_gelb" value="gelb" class="ampel-radio"><label for="trenn_gelb" class="ampel-label w-8 h-8 rounded-full bg-yellow-400 cursor-pointer"></label>
-                                <input type="radio" name="bew_trennen" id="trenn_gruen" value="gruen" class="ampel-radio"><label for="trenn_gruen" class="ampel-label w-8 h-8 rounded-full bg-green-500 cursor-pointer"></label>
-                            </div>
-                        </div>
+                <details class="mb-3 bg-white rounded-xl shadow-sm border border-slate-300 overflow-hidden">
+                    <summary class="p-4 font-bold text-slate-800 bg-slate-100 cursor-pointer flex justify-between items-center active:bg-slate-200">
+                        Grundstufe (1 - 12)
+                        <svg class="w-5 h-5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </summary>
+                    <div class="p-3 divide-y divide-slate-100">
+                        <script>
+                            const grundstufe = [
+                                "Einweisung in das Ausbildungsfahrzeug", "Techn. Durchsichten (vor, während, nach der Benutzung)", 
+                                "Ladungssicherung (Ladung, Zubehör und pers. Ausrüstung)", "Fahrtechn. Vorbereitungen (Sitz / Spiegel / Lenkrad / Gurt)",
+                                "Handhabung der Bedienungseinrichtung", "Bedienung EG-Kontrollgerät", "Anfahr-, Schalt- und Lenkübungen",
+                                "Fahren mit geringer Geschwindigkeit", "Abbremsen aus geringer Geschwindigkeit", 
+                                "Rückwärtsfahren mit Einweiser / Sicherungsposten", "An- und Abkuppeln des Anhängers", "Maßnahmen beim Verlassen des Fahrzeugs"
+                            ];
+                            grundstufe.forEach((item, index) => {
+                                let i = index + 1;
+                                document.write(`
+                                <div class="flex items-center justify-between py-3">
+                                    <span class="text-xs font-medium text-slate-700 w-2/3 pr-2">${i}. ${item}</span>
+                                    <div class="flex space-x-2 w-1/3 justify-end">
+                                        <input type="radio" name="item_${i}" id="i${i}_rot" value="rot" class="ampel-radio"><label for="i${i}_rot" class="ampel-label w-7 h-7 rounded-full bg-red-500 cursor-pointer"></label>
+                                        <input type="radio" name="item_${i}" id="i${i}_gelb" value="gelb" class="ampel-radio"><label for="i${i}_gelb" class="ampel-label w-7 h-7 rounded-full bg-yellow-400 cursor-pointer"></label>
+                                        <input type="radio" name="item_${i}" id="i${i}_gruen" value="gruen" class="ampel-radio"><label for="i${i}_gruen" class="ampel-label w-7 h-7 rounded-full bg-green-500 cursor-pointer"></label>
+                                    </div>
+                                </div>`);
+                            });
+                        </script>
+                    </div>
+                </details>
 
-                        <div class="flex items-center justify-between">
-                            <span class="text-sm font-medium text-slate-800 w-2/3">Fahrzeugbedienung (Retarder, Motorbremse, Getriebe)</span>
-                            <div class="flex space-x-3 w-1/3 justify-end">
-                                <input type="radio" name="bew_bedienung" id="bed_rot" value="rot" class="ampel-radio"><label for="bed_rot" class="ampel-label w-8 h-8 rounded-full bg-red-500 cursor-pointer"></label>
-                                <input type="radio" name="bew_bedienung" id="bed_gelb" value="gelb" class="ampel-radio"><label for="bed_gelb" class="ampel-label w-8 h-8 rounded-full bg-yellow-400 cursor-pointer"></label>
-                                <input type="radio" name="bew_bedienung" id="bed_gruen" value="gruen" class="ampel-radio"><label for="bed_gruen" class="ampel-label w-8 h-8 rounded-full bg-green-500 cursor-pointer"></label>
+                <details class="mb-3 bg-white rounded-xl shadow-sm border border-slate-300 overflow-hidden">
+                    <summary class="p-4 font-bold text-slate-800 bg-slate-100 cursor-pointer flex justify-between items-center active:bg-slate-200">
+                        Aufbaustufe A (13 - 33)
+                        <svg class="w-5 h-5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </summary>
+                    <div class="p-3 divide-y divide-slate-100">
+                        <script>
+                            const aufbauA = [
+                                "Verhalten beim Anfahren (Ebene / Steigung / Gefälle)", "Gangwechsel", "Fahrbahnbenutzung (Kurven / ein- und mehrspurig)",
+                                "Abbiegen an Kreuzungen / Einmündungen", "Fahrstreifenwechsel", "Beobachtung Verkehrsraum",
+                                "Beachten der Verkehrszeichen und -einrichtungen", "Geschwindigkeit (Straßen-/ Verkehrsverhältnisse)",
+                                "Sicherheitsabstände", "Überholen und Vorbeifahren", "- Regelung durch Lichtzeichen oder Polizeibeamte",
+                                "- mit und ohne Verkehrszeichen", "Verhalten am und im Kreisverkehr", "Verhalten an Bahnübergängen",
+                                "Verhalten gegenüber Fußgängern und Radfahrern", "Verhalten an Fußgängerüberwegen", "Verhalten in verkehrsberuhigten Bereichen",
+                                "Haltende öffentliche Verkehrsmittel u. Schulbusse", "Durchfahren von Engstellen", "Benutzung der Warneinrichtungen",
+                                "Maßnahmen zur Sicherung liegengebliebener Fzg"
+                            ];
+                            aufbauA.forEach((item, index) => {
+                                let i = index + 13;
+                                document.write(`
+                                <div class="flex items-center justify-between py-3">
+                                    <span class="text-xs font-medium text-slate-700 w-2/3 pr-2">${i}. ${item}</span>
+                                    <div class="flex space-x-2 w-1/3 justify-end">
+                                        <input type="radio" name="item_${i}" id="i${i}_rot" value="rot" class="ampel-radio"><label for="i${i}_rot" class="ampel-label w-7 h-7 rounded-full bg-red-500 cursor-pointer"></label>
+                                        <input type="radio" name="item_${i}" id="i${i}_gelb" value="gelb" class="ampel-radio"><label for="i${i}_gelb" class="ampel-label w-7 h-7 rounded-full bg-yellow-400 cursor-pointer"></label>
+                                        <input type="radio" name="item_${i}" id="i${i}_gruen" value="gruen" class="ampel-radio"><label for="i${i}_gruen" class="ampel-label w-7 h-7 rounded-full bg-green-500 cursor-pointer"></label>
+                                    </div>
+                                </div>`);
+                            });
+                        </script>
+                    </div>
+                </details>
+
+                <details class="mb-3 bg-white rounded-xl shadow-sm border border-slate-300 overflow-hidden">
+                    <summary class="p-4 font-bold text-slate-800 bg-slate-100 cursor-pointer flex justify-between items-center active:bg-slate-200">
+                        Fahraufgaben DFE Kl C / CE (34)
+                        <svg class="w-5 h-5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </summary>
+                    <div class="p-3 divide-y divide-slate-100">
+                        <div class="flex items-center justify-between py-3">
+                            <span class="text-xs font-medium text-slate-700 w-2/3 pr-2">34. Wenden und Rückwärtsfahren mit und ohne Anhänger</span>
+                            <div class="flex space-x-2 w-1/3 justify-end">
+                                <input type="radio" name="item_34" id="i34_rot" value="rot" class="ampel-radio"><label for="i34_rot" class="ampel-label w-7 h-7 rounded-full bg-red-500 cursor-pointer"></label>
+                                <input type="radio" name="item_34" id="i34_gelb" value="gelb" class="ampel-radio"><label for="i34_gelb" class="ampel-label w-7 h-7 rounded-full bg-yellow-400 cursor-pointer"></label>
+                                <input type="radio" name="item_34" id="i34_gruen" value="gruen" class="ampel-radio"><label for="i34_gruen" class="ampel-label w-7 h-7 rounded-full bg-green-500 cursor-pointer"></label>
                             </div>
                         </div>
                     </div>
+                </details>
 
-                    <div class="mb-6 bg-slate-50 p-4 rounded-xl border border-slate-200 shadow-sm">
-                        <h3 class="font-bold text-slate-700 mb-3 uppercase text-xs tracking-wider">B. Grundfahraufgaben</h3>
-                        
-                        <div class="flex items-center justify-between border-b border-slate-200 pb-2 mb-3">
-                            <span class="text-sm font-medium text-slate-800 w-2/3">Rückwärtsfahren (Gliederzug/Sattel)</span>
-                            <div class="flex space-x-3 w-1/3 justify-end">
-                                <input type="radio" name="bew_rueckwaerts" id="rueck_rot" value="rot" class="ampel-radio"><label for="rueck_rot" class="ampel-label w-8 h-8 rounded-full bg-red-500 cursor-pointer"></label>
-                                <input type="radio" name="bew_rueckwaerts" id="rueck_gelb" value="gelb" class="ampel-radio"><label for="rueck_gelb" class="ampel-label w-8 h-8 rounded-full bg-yellow-400 cursor-pointer"></label>
-                                <input type="radio" name="bew_rueckwaerts" id="rueck_gruen" value="gruen" class="ampel-radio"><label for="rueck_gruen" class="ampel-label w-8 h-8 rounded-full bg-green-500 cursor-pointer"></label>
-                            </div>
+                <details class="mb-3 bg-white rounded-xl shadow-sm border border-slate-300 overflow-hidden">
+                    <summary class="p-4 font-bold text-slate-800 bg-slate-100 cursor-pointer flex justify-between items-center active:bg-slate-200">
+                        Aufbaustufe B (Gelände) (35 - 45)
+                        <svg class="w-5 h-5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </summary>
+                    <div class="p-3 divide-y divide-slate-100">
+                        <script>
+                            const aufbauB = [
+                                "Fahren auf Feld-, Wald-, und Wiesenwegen", "Fahren auf unterschiedlichen Bodenverhältnissen", "Materialschonendes Fahren",
+                                "Geschwindigkeit und Gangwahl", "Fahren ohne und mit Geländegang / Getriebesperren", "Befahren von Fahrspuren, Lenkradhaltung",
+                                "Gefahrbremsung auf unbefestigten Wegen (mit ABV)", "Ausweichen von Hindernissen", "Befahren von Steigungen und Gefällen",
+                                "Überwinden von Querrinnen / Bodenunebenheiten", "Geländebeurteilung /-ausnutzung"
+                            ];
+                            aufbauB.forEach((item, index) => {
+                                let i = index + 35;
+                                document.write(`
+                                <div class="flex items-center justify-between py-3">
+                                    <span class="text-xs font-medium text-slate-700 w-2/3 pr-2">${i}. ${item}</span>
+                                    <div class="flex space-x-2 w-1/3 justify-end">
+                                        <input type="radio" name="item_${i}" id="i${i}_rot" value="rot" class="ampel-radio"><label for="i${i}_rot" class="ampel-label w-7 h-7 rounded-full bg-red-500 cursor-pointer"></label>
+                                        <input type="radio" name="item_${i}" id="i${i}_gelb" value="gelb" class="ampel-radio"><label for="i${i}_gelb" class="ampel-label w-7 h-7 rounded-full bg-yellow-400 cursor-pointer"></label>
+                                        <input type="radio" name="item_${i}" id="i${i}_gruen" value="gruen" class="ampel-radio"><label for="i${i}_gruen" class="ampel-label w-7 h-7 rounded-full bg-green-500 cursor-pointer"></label>
+                                    </div>
+                                </div>`);
+                            });
+                        </script>
+                    </div>
+                </details>
+
+                <details class="mb-3 bg-white rounded-xl shadow-sm border border-slate-300 overflow-hidden">
+                    <summary class="p-4 font-bold text-slate-800 bg-slate-100 cursor-pointer flex justify-between items-center active:bg-slate-200">
+                        Aufbaustufe C (46 - 55)
+                        <svg class="w-5 h-5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </summary>
+                    <div class="p-3 divide-y divide-slate-100">
+                        <div class="bg-slate-50 p-2 font-bold text-xs uppercase text-slate-600 mb-2">DFE Kl C</div>
+                        <script>
+                            const aufbauC1 = [
+                                "Rückwärtsfahren in eine Parklücke (Längsaufstellung)", "Rückwärts quer oder schräg einparken", 
+                                "Fahren nach rechts rückwärts unter Ausnutzung einer Einmündung...", "Rückwärtsfahren und Versetzen nach rechts an eine Rampe...",
+                                "Abfahrtkontrolle (Sachgebiete 1 - 6)"
+                            ];
+                            aufbauC1.forEach((item, index) => {
+                                let i = index + 46;
+                                document.write(`
+                                <div class="flex items-center justify-between py-3">
+                                    <span class="text-xs font-medium text-slate-700 w-2/3 pr-2">${i}. ${item}</span>
+                                    <div class="flex space-x-2 w-1/3 justify-end">
+                                        <input type="radio" name="item_${i}" id="i${i}_rot" value="rot" class="ampel-radio"><label for="i${i}_rot" class="ampel-label w-7 h-7 rounded-full bg-red-500 cursor-pointer"></label>
+                                        <input type="radio" name="item_${i}" id="i${i}_gelb" value="gelb" class="ampel-radio"><label for="i${i}_gelb" class="ampel-label w-7 h-7 rounded-full bg-yellow-400 cursor-pointer"></label>
+                                        <input type="radio" name="item_${i}" id="i${i}_gruen" value="gruen" class="ampel-radio"><label for="i${i}_gruen" class="ampel-label w-7 h-7 rounded-full bg-green-500 cursor-pointer"></label>
+                                    </div>
+                                </div>`);
+                            });
+                        </script>
+                        <div class="bg-slate-50 p-2 font-bold text-xs uppercase text-slate-600 mt-2 mb-2">DFE Kl CE</div>
+                        <script>
+                            const aufbauC2 = [
+                                "Rückwärtsfahren geradeaus an eine Rampe...", "Umkehren durch Rückwärtsfahren nach links",
+                                "Sicherheitskontrolle", "Verbinden und Trennen von Fahrzeugen", "Abstellen des Anhängers"
+                            ];
+                            aufbauC2.forEach((item, index) => {
+                                let i = index + 51;
+                                document.write(`
+                                <div class="flex items-center justify-between py-3">
+                                    <span class="text-xs font-medium text-slate-700 w-2/3 pr-2">${i}. ${item}</span>
+                                    <div class="flex space-x-2 w-1/3 justify-end">
+                                        <input type="radio" name="item_${i}" id="i${i}_rot" value="rot" class="ampel-radio"><label for="i${i}_rot" class="ampel-label w-7 h-7 rounded-full bg-red-500 cursor-pointer"></label>
+                                        <input type="radio" name="item_${i}" id="i${i}_gelb" value="gelb" class="ampel-radio"><label for="i${i}_gelb" class="ampel-label w-7 h-7 rounded-full bg-yellow-400 cursor-pointer"></label>
+                                        <input type="radio" name="item_${i}" id="i${i}_gruen" value="gruen" class="ampel-radio"><label for="i${i}_gruen" class="ampel-label w-7 h-7 rounded-full bg-green-500 cursor-pointer"></label>
+                                    </div>
+                                </div>`);
+                            });
+                        </script>
+                    </div>
+                </details>
+
+                <details class="mb-3 bg-white rounded-xl shadow-sm border border-slate-300 overflow-hidden">
+                    <summary class="p-4 font-bold text-slate-800 bg-slate-100 cursor-pointer flex justify-between items-center active:bg-slate-200">
+                        Leistungsstufe A & B (56 - 63)
+                        <svg class="w-5 h-5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </summary>
+                    <div class="p-3 divide-y divide-slate-100">
+                        <div class="bg-slate-50 p-2 font-bold text-xs uppercase text-slate-600 mb-2">Stufe A</div>
+                        <script>
+                            const leistungA = [
+                                "Vorausschauendes Fahren", "Beobachtung anderer Verkehrsteilnehmer", "Beobachtung des Fahrverhaltens anderer FzFhr",
+                                "Beobachtung des Verkehrsraums", "Bremsen in Gefahrensituationen"
+                            ];
+                            leistungA.forEach((item, index) => {
+                                let i = index + 56;
+                                document.write(`
+                                <div class="flex items-center justify-between py-3">
+                                    <span class="text-xs font-medium text-slate-700 w-2/3 pr-2">${i}. ${item}</span>
+                                    <div class="flex space-x-2 w-1/3 justify-end">
+                                        <input type="radio" name="item_${i}" id="i${i}_rot" value="rot" class="ampel-radio"><label for="i${i}_rot" class="ampel-label w-7 h-7 rounded-full bg-red-500 cursor-pointer"></label>
+                                        <input type="radio" name="item_${i}" id="i${i}_gelb" value="gelb" class="ampel-radio"><label for="i${i}_gelb" class="ampel-label w-7 h-7 rounded-full bg-yellow-400 cursor-pointer"></label>
+                                        <input type="radio" name="item_${i}" id="i${i}_gruen" value="gruen" class="ampel-radio"><label for="i${i}_gruen" class="ampel-label w-7 h-7 rounded-full bg-green-500 cursor-pointer"></label>
+                                    </div>
+                                </div>`);
+                            });
+                        </script>
+                        <div class="bg-slate-50 p-2 font-bold text-xs uppercase text-slate-600 mt-2 mb-2">Stufe B (Besondere Ausbildungsfahrten)</div>
+                        <script>
+                            const leistungB = [
+                                "Schulung auf Bundes- oder Landstraßen", "Schulung auf Autobahnen", "Schulung bei Dämmerung oder Dunkelheit"
+                            ];
+                            leistungB.forEach((item, index) => {
+                                let i = index + 61;
+                                document.write(`
+                                <div class="flex items-center justify-between py-3">
+                                    <span class="text-xs font-medium text-slate-700 w-2/3 pr-2">${i}. ${item}</span>
+                                    <div class="flex space-x-2 w-1/3 justify-end">
+                                        <input type="radio" name="item_${i}" id="i${i}_rot" value="rot" class="ampel-radio"><label for="i${i}_rot" class="ampel-label w-7 h-7 rounded-full bg-red-500 cursor-pointer"></label>
+                                        <input type="radio" name="item_${i}" id="i${i}_gelb" value="gelb" class="ampel-radio"><label for="i${i}_gelb" class="ampel-label w-7 h-7 rounded-full bg-yellow-400 cursor-pointer"></label>
+                                        <input type="radio" name="item_${i}" id="i${i}_gruen" value="gruen" class="ampel-radio"><label for="i${i}_gruen" class="ampel-label w-7 h-7 rounded-full bg-green-500 cursor-pointer"></label>
+                                    </div>
+                                </div>`);
+                            });
+                        </script>
+                    </div>
+                </details>
+
+                <details class="mb-6 bg-white rounded-xl shadow-sm border border-slate-300 overflow-hidden">
+                    <summary class="p-4 font-bold text-slate-800 bg-slate-100 cursor-pointer flex justify-between items-center active:bg-slate-200">
+                        Reifestufe & Einweiser (64 - 70)
+                        <svg class="w-5 h-5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </summary>
+                    <div class="p-3 divide-y divide-slate-100">
+                        <script>
+                            const reifestufe = [
+                                "Verhalten in komplizierten Verkehrssituationen", "Vermeiden risikoreicher Verkehrssituationen",
+                                "Fahren in unbekannten Verkehrsräumen", "Fahren unter Prüfungsbedingungen", "Feststellen der Prüfungsreife"
+                            ];
+                            reifestufe.forEach((item, index) => {
+                                let i = index + 64;
+                                document.write(`
+                                <div class="flex items-center justify-between py-3">
+                                    <span class="text-xs font-medium text-slate-700 w-2/3 pr-2">${i}. ${item}</span>
+                                    <div class="flex space-x-2 w-1/3 justify-end">
+                                        <input type="radio" name="item_${i}" id="i${i}_rot" value="rot" class="ampel-radio"><label for="i${i}_rot" class="ampel-label w-7 h-7 rounded-full bg-red-500 cursor-pointer"></label>
+                                        <input type="radio" name="item_${i}" id="i${i}_gelb" value="gelb" class="ampel-radio"><label for="i${i}_gelb" class="ampel-label w-7 h-7 rounded-full bg-yellow-400 cursor-pointer"></label>
+                                        <input type="radio" name="item_${i}" id="i${i}_gruen" value="gruen" class="ampel-radio"><label for="i${i}_gruen" class="ampel-label w-7 h-7 rounded-full bg-green-500 cursor-pointer"></label>
+                                    </div>
+                                </div>`);
+                            });
+                        </script>
+
+                        <div class="bg-slate-50 p-2 font-bold text-xs uppercase text-slate-600 mt-2 mb-2">Einweisertätigkeit (in Minuten)</div>
+                        <div class="flex items-center justify-between py-3">
+                            <label for="einweiser_tag" class="text-xs font-medium text-slate-700 w-2/3 pr-2">69. Einweisertätigkeit bei Tag</label>
+                            <input type="number" id="einweiser_tag" name="item_69_minuten" placeholder="Min." class="w-20 p-2 text-sm rounded border border-slate-300 text-center">
                         </div>
-
-                        <div class="flex items-center justify-between">
-                            <span class="text-sm font-medium text-slate-800 w-2/3">An die Rampe setzen / Einweisen lassen</span>
-                            <div class="flex space-x-3 w-1/3 justify-end">
-                                <input type="radio" name="bew_rampe" id="ramp_rot" value="rot" class="ampel-radio"><label for="ramp_rot" class="ampel-label w-8 h-8 rounded-full bg-red-500 cursor-pointer"></label>
-                                <input type="radio" name="bew_rampe" id="ramp_gelb" value="gelb" class="ampel-radio"><label for="ramp_gelb" class="ampel-label w-8 h-8 rounded-full bg-yellow-400 cursor-pointer"></label>
-                                <input type="radio" name="bew_rampe" id="ramp_gruen" value="gruen" class="ampel-radio"><label for="ramp_gruen" class="ampel-label w-8 h-8 rounded-full bg-green-500 cursor-pointer"></label>
-                            </div>
+                        <div class="flex items-center justify-between py-3">
+                            <label for="einweiser_nacht" class="text-xs font-medium text-slate-700 w-2/3 pr-2">70. Einweisertätigkeit bei Nacht</label>
+                            <input type="number" id="einweiser_nacht" name="item_70_minuten" placeholder="Min." class="w-20 p-2 text-sm rounded border border-slate-300 text-center">
                         </div>
                     </div>
+                </details>
 
-                    <div class="mb-6 bg-slate-50 p-4 rounded-xl border border-slate-200 shadow-sm">
-                        <h3 class="font-bold text-slate-700 mb-3 uppercase text-xs tracking-wider">C. Fahren im Verkehr</h3>
-                        
-                        <div class="flex items-center justify-between border-b border-slate-200 pb-2 mb-3">
-                            <span class="text-sm font-medium text-slate-800 w-2/3">Verkehrsbeobachtung / Spiegel (Toter Winkel!)</span>
-                            <div class="flex space-x-3 w-1/3 justify-end">
-                                <input type="radio" name="bew_spiegel" id="spiegel_rot" value="rot" class="ampel-radio"><label for="spiegel_rot" class="ampel-label w-8 h-8 rounded-full bg-red-500 cursor-pointer"></label>
-                                <input type="radio" name="bew_spiegel" id="spiegel_gelb" value="gelb" class="ampel-radio"><label for="spiegel_gelb" class="ampel-label w-8 h-8 rounded-full bg-yellow-400 cursor-pointer"></label>
-                                <input type="radio" name="bew_spiegel" id="spiegel_gruen" value="gruen" class="ampel-radio"><label for="spiegel_gruen" class="ampel-label w-8 h-8 rounded-full bg-green-500 cursor-pointer"></label>
-                            </div>
-                        </div>
-
-                        <div class="flex items-center justify-between border-b border-slate-200 pb-2 mb-3">
-                            <span class="text-sm font-medium text-slate-800 w-2/3">Fahrbahnplatzierung & Ausschwenken beim Abbiegen</span>
-                            <div class="flex space-x-3 w-1/3 justify-end">
-                                <input type="radio" name="bew_abbiegen" id="ab_rot" value="rot" class="ampel-radio"><label for="ab_rot" class="ampel-label w-8 h-8 rounded-full bg-red-500 cursor-pointer"></label>
-                                <input type="radio" name="bew_abbiegen" id="ab_gelb" value="gelb" class="ampel-radio"><label for="ab_gelb" class="ampel-label w-8 h-8 rounded-full bg-yellow-400 cursor-pointer"></label>
-                                <input type="radio" name="bew_abbiegen" id="ab_gruen" value="gruen" class="ampel-radio"><label for="ab_gruen" class="ampel-label w-8 h-8 rounded-full bg-green-500 cursor-pointer"></label>
-                            </div>
-                        </div>
-
-                        <div class="flex items-center justify-between">
-                            <span class="text-sm font-medium text-slate-800 w-2/3">Vorausschauendes & Ökologisches Fahren</span>
-                            <div class="flex space-x-3 w-1/3 justify-end">
-                                <input type="radio" name="bew_oeko" id="oeko_rot" value="rot" class="ampel-radio"><label for="oeko_rot" class="ampel-label w-8 h-8 rounded-full bg-red-500 cursor-pointer"></label>
-                                <input type="radio" name="bew_oeko" id="oeko_gelb" value="gelb" class="ampel-radio"><label for="oeko_gelb" class="ampel-label w-8 h-8 rounded-full bg-yellow-400 cursor-pointer"></label>
-                                <input type="radio" name="bew_oeko" id="oeko_gruen" value="gruen" class="ampel-radio"><label for="oeko_gruen" class="ampel-label w-8 h-8 rounded-full bg-green-500 cursor-pointer"></label>
-                            </div>
-                        </div>
+                <div class="fixed bottom-0 left-0 w-full p-4 bg-white border-t border-slate-200 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)] z-50">
+                    <div class="max-w-2xl mx-auto">
+                        <button type="submit" class="w-full bg-blue-800 text-white font-bold text-lg py-4 rounded-xl shadow-lg hover:bg-blue-900 active:scale-95 transition-all flex justify-center items-center">
+                            <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                            Dokumentation speichern
+                        </button>
                     </div>
-                </section>
-
-                <section class="mb-8">
-                    <h2 class="text-lg font-bold text-blue-900 mb-3 border-b-2 border-blue-200 pb-1">4. Pädagogische Notizen</h2>
-                    <textarea name="notizen" rows="4" placeholder="Beobachtungen für die Nachbesprechung (ohne Klarnamen!). Z.B.: 'Schüler vergisst oft die Vorwahlgruppe am Getriebe, Fokus nächste Stunde.'" class="w-full p-4 rounded-xl border border-slate-300 focus:ring-2 focus:ring-blue-500 bg-slate-50 text-slate-800 shadow-inner"></textarea>
-                </section>
-
-                <button type="submit" class="w-full bg-blue-700 text-white font-bold text-xl py-5 rounded-xl shadow-lg hover:bg-blue-800 active:scale-95 transition-all flex justify-center items-center">
-                    <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path></svg>
-                    Fahrt sicher lokal speichern
-                </button>
+                </div>
             </form>
         </main>
     </div>
 
     <script>
-        // Setze das heutige Datum automatisch in das Datumsfeld ein
-        document.getElementById('heute').valueAsDate = new Date();
-
         function saveFahrt(event) {
-            event.preventDefault(); // Verhindert Neuladen
+            event.preventDefault(); 
             
-            // Modernes und dynamisches Auslesen ALLER Formular-Daten
             const formData = new FormData(event.target);
-            const fahrtDaten = Object.fromEntries(formData.entries());
+            const ausbildungsstand = Object.fromEntries(formData.entries());
             
-            // Metadaten hinzufügen
-            fahrtDaten.id = "F-" + Date.now(); // Eindeutige ID für diese Fahrt
-            fahrtDaten.speicherZeit = new Date().toISOString();
+            // Metadaten
+            ausbildungsstand.datum = new Date().toISOString();
 
-            // Aus dem Local Storage laden
-            let gespeicherteFahrten = JSON.parse(localStorage.getItem('bw_fahrten')) || [];
-            
-            // Neue Fahrt anhängen
-            gespeicherteFahrten.push(fahrtDaten);
-            
-            // Wieder lokal speichern
-            localStorage.setItem('bw_fahrten', JSON.stringify(gespeicherteFahrten));
+            // Lokal abspeichern
+            let gespeicherteDaten = JSON.parse(localStorage.getItem('bw_ausbildungsstand')) || [];
+            gespeicherteDaten.push(ausbildungsstand);
+            localStorage.setItem('bw_ausbildungsstand', JSON.stringify(gespeicherteDaten));
 
-            // Feedback & Weiterleitung
-            alert('✅ Ausbildungsinhalte erfolgreich lokal gespeichert!');
+            alert('✅ Ausbildungsstand erfolgreich lokal gespeichert!');
             window.location.href = 'index.html';
         }
     </script>
