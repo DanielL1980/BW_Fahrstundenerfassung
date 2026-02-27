@@ -6,140 +6,102 @@
     <title>BW Fahrschul-Manager</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-100 text-slate-800 font-sans antialiased pb-24">
+<body class="bg-gray-100 text-gray-900 font-sans antialiased pb-24">
 
     <div class="max-w-md mx-auto bg-white min-h-screen shadow-2xl relative flex flex-col">
 
-        <header class="bg-slate-800 text-white p-5 rounded-b-2xl shadow-md">
+        <header class="bg-gray-900 text-white p-5 rounded-b-2xl shadow-md border-b-4 border-gray-400">
             <div class="flex justify-between items-center mb-2">
-                <h1 class="text-xl font-bold tracking-wide">Fahrschul-App</h1>
-                <span id="current-date" class="text-sm text-slate-300 font-mono"></span>
+                <h1 class="text-xl font-bold tracking-wide uppercase">Fahrschul-App</h1>
+                <span id="current-date" class="text-sm text-gray-300 font-mono"></span>
             </div>
-            <p class="text-sm text-slate-400">Datenschutzkonformer Modus (Offline)</p>
+            <p class="text-sm text-gray-400">Dienst-Modus (Lokal / Monochrom)</p>
         </header>
 
         <main class="flex-1 p-5">
-            
-            <h2 class="text-lg font-semibold mb-4 text-slate-700">Schnellzugriff</h2>
+            <h2 class="text-lg font-bold mb-4 text-gray-800 uppercase border-b-2 border-gray-200 pb-1">Schnellzugriff</h2>
 
             <div class="grid grid-cols-2 gap-4 mb-8">
-                
-                <button onclick="window.location.href='neue-fahrt.html'" class="bg-blue-50 border-2 border-blue-100 p-4 rounded-2xl flex flex-col items-center justify-center aspect-square hover:bg-blue-100 active:scale-95 transition-all shadow-sm">
-                    <svg class="w-10 h-10 text-blue-600 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                    <span class="font-bold text-blue-800 text-sm">Neue Fahrt</span>
+                <button onclick="window.location.href='neue-fahrt.html'" class="bg-white border-2 border-gray-300 p-4 rounded-xl flex flex-col items-center justify-center aspect-square hover:bg-gray-100 active:bg-gray-200 active:scale-95 transition-all shadow-sm">
+                    <svg class="w-10 h-10 text-gray-800 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    <span class="font-bold text-gray-900 text-sm uppercase">Neue Fahrt</span>
                 </button>
 
-                <button onclick="window.location.href='fortschritt.html'" class="bg-blue-50 border-2 border-blue-100 p-4 rounded-2xl flex flex-col items-center justify-center aspect-square hover:bg-blue-100 active:scale-95 transition-all shadow-sm">
-                    <svg class="w-10 h-10 text-blue-600 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
-                    <span class="font-bold text-blue-800 text-sm">Fortschritt</span>
+                <button onclick="window.location.href='fortschritt.html'" class="bg-white border-2 border-gray-300 p-4 rounded-xl flex flex-col items-center justify-center aspect-square hover:bg-gray-100 active:bg-gray-200 active:scale-95 transition-all shadow-sm">
+                    <svg class="w-10 h-10 text-gray-800 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                    <span class="font-bold text-gray-900 text-sm uppercase">Fortschritt</span>
                 </button>
 
-                <button onclick="toggleBereich('schuelerVerwaltung')" class="bg-slate-50 border-2 border-slate-100 p-4 rounded-2xl flex flex-col items-center justify-center aspect-square hover:bg-slate-100 active:scale-95 transition-all shadow-sm">
-                    <svg class="w-10 h-10 text-slate-600 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
-                    <span class="font-bold text-slate-700 text-sm">Schüler-IDs</span>
+                <button onclick="toggleBereich('schuelerVerwaltung')" class="bg-gray-50 border-2 border-gray-300 p-4 rounded-xl flex flex-col items-center justify-center aspect-square hover:bg-gray-100 active:bg-gray-200 active:scale-95 transition-all shadow-sm">
+                    <svg class="w-10 h-10 text-gray-600 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                    <span class="font-bold text-gray-800 text-sm uppercase">Schüler-IDs</span>
                 </button>
 
-                <button onclick="toggleBereich('exportVerwaltung')" class="bg-slate-50 border-2 border-slate-100 p-4 rounded-2xl flex flex-col items-center justify-center aspect-square hover:bg-slate-100 active:scale-95 transition-all shadow-sm">
-                    <svg class="w-10 h-10 text-slate-600 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path></svg>
-                    <span class="font-bold text-slate-700 text-sm text-center leading-tight">Daten<br>Transfer</span>
+                <button onclick="toggleBereich('exportVerwaltung')" class="bg-gray-50 border-2 border-gray-300 p-4 rounded-xl flex flex-col items-center justify-center aspect-square hover:bg-gray-100 active:bg-gray-200 active:scale-95 transition-all shadow-sm">
+                    <svg class="w-10 h-10 text-gray-600 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path></svg>
+                    <span class="font-bold text-gray-800 text-sm text-center uppercase leading-tight">Daten<br>Transfer</span>
                 </button>
-
             </div>
 
-            <div id="schuelerVerwaltung" class="hidden animate-fade-in-up">
-                <h2 class="text-lg font-semibold mb-3 text-slate-700 border-b pb-2">Schüler-IDs verwalten</h2>
+            <div id="schuelerVerwaltung" class="hidden">
+                <h2 class="text-lg font-bold mb-3 text-gray-800 border-b-2 border-gray-200 pb-1 uppercase">IDs verwalten</h2>
                 <form id="neueIdForm" onsubmit="addSchueler(event)" class="mb-4 flex gap-2">
-                    <input type="text" id="neueId" required placeholder="Neue ID (z.B. MUELLER-01)" class="flex-1 p-3 rounded-xl border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 shadow-inner uppercase">
-                    <button type="submit" class="bg-blue-700 text-white font-bold px-4 rounded-xl hover:bg-blue-800 active:scale-95 shadow-md">
+                    <input type="text" id="neueId" required placeholder="NEUE ID" class="flex-1 p-3 rounded-lg border-2 border-gray-400 bg-white focus:outline-none focus:border-black uppercase font-bold text-black">
+                    <button type="submit" class="bg-black text-white font-bold px-4 rounded-lg hover:bg-gray-800 active:scale-95">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
                     </button>
                 </form>
-                <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
-                    <div class="p-3 bg-slate-50 border-b border-slate-200 text-xs font-bold text-slate-500 uppercase">Aktive IDs auf Tablet</div>
-                    <ul id="schuelerListe" class="divide-y divide-slate-100"></ul>
+                <div class="bg-white border-2 border-gray-300 rounded-lg overflow-hidden">
+                    <div class="p-2 bg-gray-200 border-b-2 border-gray-300 text-xs font-bold text-gray-700 uppercase">Geräte-IDs</div>
+                    <ul id="schuelerListe" class="divide-y divide-gray-200"></ul>
                 </div>
             </div>
 
-            <div id="exportVerwaltung" class="hidden animate-fade-in-up">
-                <h2 class="text-lg font-semibold mb-3 text-slate-700 border-b pb-2">Daten-Transfer</h2>
+            <div id="exportVerwaltung" class="hidden">
+                <h2 class="text-lg font-bold mb-3 text-gray-800 border-b-2 border-gray-200 pb-1 uppercase">Daten-Transfer</h2>
                 
-                <div class="bg-green-50 border border-green-100 p-4 rounded-xl mb-4 shadow-sm">
-                    <h3 class="font-bold text-green-800 mb-1 flex items-center">
-                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
-                        Schüler importieren
-                    </h3>
-                    <p class="text-xs text-slate-600 mb-3">Lade hier die Übergabe-Datei (.json) eines Kollegen hoch, um seinen Schüler in deine App zu übernehmen.</p>
-                    
+                <div class="border-2 border-gray-400 p-4 rounded-lg mb-4 bg-gray-50">
+                    <h3 class="font-bold text-black mb-2 uppercase">1. Import (Übernahme)</h3>
                     <input type="file" id="importFile" accept=".json" class="hidden" onchange="importiereDaten(event)">
-                    <button onclick="document.getElementById('importFile').click()" class="w-full bg-green-600 text-white font-bold py-3 rounded-lg hover:bg-green-700 active:scale-95 transition-all text-sm">
-                        Datei auswählen & Importieren
-                    </button>
+                    <button onclick="document.getElementById('importFile').click()" class="w-full bg-white border-2 border-black text-black font-bold py-3 rounded hover:bg-gray-100 active:scale-95 uppercase text-sm">Datei laden</button>
                 </div>
 
-                <div class="bg-slate-50 border border-slate-200 p-4 rounded-xl mb-4 shadow-sm">
-                    <h3 class="font-bold text-slate-800 mb-1 flex items-center">
-                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path></svg>
-                        Kollegen-Übergabe (Export)
-                    </h3>
-                    <p class="text-xs text-slate-600 mb-3">Wähle einen Schüler, um nur dessen Daten für einen Kollegen zu exportieren.</p>
+                <div class="border-2 border-gray-400 p-4 rounded-lg mb-4 bg-gray-50">
+                    <h3 class="font-bold text-black mb-2 uppercase">2. Export (Übergabe)</h3>
                     <div class="flex gap-2">
-                        <select id="exportSchuelerSelect" class="flex-1 p-3 text-sm rounded-lg border border-slate-300 bg-white font-bold text-slate-800">
-                            </select>
-                        <button onclick="exportiereEinzelschueler()" class="bg-slate-700 text-white font-bold px-4 rounded-lg hover:bg-slate-800 active:scale-95 shadow-md">
-                            Export
-                        </button>
+                        <select id="exportSchuelerSelect" class="flex-1 p-2 text-sm rounded border-2 border-gray-300 bg-white font-bold text-black"></select>
+                        <button onclick="exportiereEinzelschueler()" class="bg-gray-800 text-white font-bold px-4 rounded hover:bg-black active:scale-95 uppercase text-sm">Export</button>
                     </div>
                 </div>
 
-                <div class="bg-blue-50 border border-blue-100 p-4 rounded-xl mb-4 shadow-sm">
-                    <h3 class="font-bold text-blue-800 mb-1 flex items-center">
-                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                        Gesamt-Export für Windows PC
-                    </h3>
-                    <p class="text-xs text-slate-600 mb-3">Erzeugt die vollständige Tages-Sicherung (alle Schüler & Fahrten) für das amtliche Formular.</p>
-                    <button onclick="exportiereDaten()" class="w-full bg-blue-700 text-white font-bold py-3 rounded-lg shadow-md hover:bg-blue-800 active:scale-95 transition-all text-sm">
-                        Gesamt-Sicherung herunterladen
-                    </button>
+                <div class="border-2 border-black p-4 rounded-lg bg-gray-200">
+                    <h3 class="font-bold text-black mb-2 uppercase">3. PC-Gesamtsicherung</h3>
+                    <button onclick="exportiereDaten()" class="w-full bg-black text-white font-bold py-3 rounded shadow-md hover:bg-gray-800 active:scale-95 uppercase text-sm">Herunterladen</button>
                 </div>
             </div>
-
         </main>
     </div>
 
     <script>
-        const dateElement = document.getElementById('current-date');
-        const today = new Date();
-        dateElement.textContent = today.toLocaleDateString('de-DE', { year: 'numeric', month: '2-digit', day: '2-digit' });
+        document.getElementById('current-date').textContent = new Date().toLocaleDateString('de-DE', { year: 'numeric', month: '2-digit', day: '2-digit' });
 
         function toggleBereich(bereichId) {
             document.getElementById('schuelerVerwaltung').classList.add('hidden');
             document.getElementById('exportVerwaltung').classList.add('hidden');
             document.getElementById(bereichId).classList.remove('hidden');
-            
             if(bereichId === 'schuelerVerwaltung') renderSchuelerListe();
             if(bereichId === 'exportVerwaltung') fuelleExportDropdown();
         }
 
         let aktiveSchuelerIds = JSON.parse(localStorage.getItem('bw_aktive_schueler')) || [];
-        
         function renderSchuelerListe() {
             const liste = document.getElementById('schuelerListe');
             liste.innerHTML = '';
-            if (aktiveSchuelerIds.length === 0) {
-                liste.innerHTML = '<li class="p-4 text-sm text-slate-500 italic text-center">Keine IDs angelegt.</li>';
-                return;
-            }
+            if (aktiveSchuelerIds.length === 0) return liste.innerHTML = '<li class="p-4 text-sm font-bold text-center">Keine IDs.</li>';
             aktiveSchuelerIds.forEach(id => {
-                liste.innerHTML += `
-                <li class="p-3 flex justify-between items-center">
-                    <span class="font-bold text-slate-700">${id}</span>
-                    <button onclick="removeSchueler('${id}')" class="text-red-400 hover:text-red-600 p-2">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                    </button>
-                </li>`;
+                liste.innerHTML += `<li class="p-3 flex justify-between items-center"><span class="font-bold text-black">${id}</span><button onclick="removeSchueler('${id}')" class="text-gray-500 hover:text-black font-bold">X</button></li>`;
             });
         }
-
         function addSchueler(event) {
             event.preventDefault();
             const input = document.getElementById('neueId');
@@ -147,135 +109,56 @@
             if (neueId && !aktiveSchuelerIds.includes(neueId)) {
                 aktiveSchuelerIds.push(neueId);
                 localStorage.setItem('bw_aktive_schueler', JSON.stringify(aktiveSchuelerIds));
-                input.value = '';
-                renderSchuelerListe();
-            } else if (aktiveSchuelerIds.includes(neueId)) {
-                alert('Diese ID existiert bereits!');
+                input.value = ''; renderSchuelerListe();
             }
         }
-
         function removeSchueler(id) {
-            if (confirm(`Möchtest du die ID "${id}" entfernen? (Fahrten bleiben im Speicher)`)) {
+            if (confirm(`ID "${id}" entfernen?`)) {
                 aktiveSchuelerIds = aktiveSchuelerIds.filter(item => item !== id);
                 localStorage.setItem('bw_aktive_schueler', JSON.stringify(aktiveSchuelerIds));
                 renderSchuelerListe();
             }
         }
-
-        // --- NEU: DATEN TRANSFER FUNKTIONEN ---
-
-        // Füllt das Dropdown für den Einzelschüler-Export
         function fuelleExportDropdown() {
             const select = document.getElementById('exportSchuelerSelect');
-            select.innerHTML = '<option value="" disabled selected>Schüler wählen...</option>';
-            aktiveSchuelerIds.forEach(id => {
-                select.innerHTML += `<option value="${id}">${id}</option>`;
-            });
+            select.innerHTML = '<option value="" disabled selected>Wählen...</option>';
+            aktiveSchuelerIds.forEach(id => select.innerHTML += `<option value="${id}">${id}</option>`);
         }
-
-        // 1. Export: Nur ein bestimmter Schüler (Für Kollegen)
         function exportiereEinzelschueler() {
             const id = document.getElementById('exportSchuelerSelect').value;
-            if(!id) return alert('Bitte zuerst einen Schüler aus der Liste auswählen!');
-
+            if(!id) return;
             const alleFahrten = JSON.parse(localStorage.getItem('bw_ausbildungsstand')) || [];
             const schuelerFahrten = alleFahrten.filter(f => f.schuelerId === id);
-
-            if(schuelerFahrten.length === 0) {
-                return alert('Für diesen Schüler gibt es noch keine aufgezeichneten Fahrten.');
-            }
-
-            const exportPaket = {
-                typ: "Schueler_Uebergabe",
-                erstellungsDatum: new Date().toISOString(),
-                schuelerIDs: [id], // Format beibehalten, nur eben mit einem Namen
-                alleFahrten: schuelerFahrten
-            };
-
-            const datenString = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(exportPaket, null, 2));
-            const downloadLink = document.createElement('a');
-            downloadLink.href = datenString;
-            downloadLink.download = `Uebergabe_${id}_${new Date().toISOString().split('T')[0]}.json`;
-            document.body.appendChild(downloadLink);
-            downloadLink.click();
-            downloadLink.remove();
+            downloadJSON({typ: "Schueler_Uebergabe", schuelerIDs: [id], alleFahrten: schuelerFahrten}, `Uebergabe_${id}_${new Date().toISOString().split('T')[0]}.json`);
         }
-
-        // 2. Export: Alles (Für Windows PC)
         function exportiereDaten() {
-            const fahrtenDaten = localStorage.getItem('bw_ausbildungsstand') || '[]';
-            const schuelerDaten = localStorage.getItem('bw_aktive_schueler') || '[]';
-
-            const exportPaket = {
-                typ: "Gesamt_Backup",
-                erstellungsDatum: new Date().toISOString(),
-                geraet: "Galaxy Tab S8+",
-                schuelerIDs: JSON.parse(schuelerDaten),
-                alleFahrten: JSON.parse(fahrtenDaten)
-            };
-
-            const datenString = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(exportPaket, null, 2));
-            const downloadLink = document.createElement('a');
-            downloadLink.href = datenString;
-            downloadLink.download = `BW_Gesamt_Export_${new Date().toISOString().split('T')[0]}.json`;
-            document.body.appendChild(downloadLink);
-            downloadLink.click();
-            downloadLink.remove();
+            const fahrten = JSON.parse(localStorage.getItem('bw_ausbildungsstand')) || [];
+            const ids = JSON.parse(localStorage.getItem('bw_aktive_schueler')) || [];
+            downloadJSON({typ: "Gesamt_Backup", schuelerIDs: ids, alleFahrten: fahrten}, `BW_Gesamt_${new Date().toISOString().split('T')[0]}.json`);
         }
-
-        // 3. Import: Daten vom Kollegen einlesen
+        function downloadJSON(data, filename) {
+            const a = document.createElement('a');
+            a.href = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(data, null, 2));
+            a.download = filename; document.body.appendChild(a); a.click(); a.remove();
+        }
         function importiereDaten(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-
             const reader = new FileReader();
             reader.onload = function(e) {
                 try {
-                    const importDaten = JSON.parse(e.target.result);
+                    const data = JSON.parse(e.target.result);
+                    let ids = JSON.parse(localStorage.getItem('bw_aktive_schueler')) || [];
+                    data.schuelerIDs.forEach(id => { if (!ids.includes(id)) ids.push(id); });
+                    localStorage.setItem('bw_aktive_schueler', JSON.stringify(ids));
                     
-                    if (!importDaten.schuelerIDs || !importDaten.alleFahrten) {
-                        alert('Fehler: Die Datei hat nicht das richtige BW-Format.');
-                        return;
-                    }
-
-                    // 1. IDs zusammenführen (keine doppelten)
-                    let gespeicherteIds = JSON.parse(localStorage.getItem('bw_aktive_schueler')) || [];
-                    importDaten.schuelerIDs.forEach(id => {
-                        if (!gespeicherteIds.includes(id)) {
-                            gespeicherteIds.push(id);
-                        }
+                    let fahrten = JSON.parse(localStorage.getItem('bw_ausbildungsstand')) || [];
+                    data.alleFahrten.forEach(n => {
+                        if (!fahrten.some(a => a.datum === n.datum && a.schuelerId === n.schuelerId)) fahrten.push(n);
                     });
-                    localStorage.setItem('bw_aktive_schueler', JSON.stringify(gespeicherteIds));
-
-                    // 2. Fahrten zusammenführen (keine exakt doppelten Einträge basierend aufs Datum)
-                    let gespeicherteFahrten = JSON.parse(localStorage.getItem('bw_ausbildungsstand')) || [];
-                    let neuHinzugefuegt = 0;
-
-                    importDaten.alleFahrten.forEach(importFahrt => {
-                        // Prüfen, ob eine Fahrt von genau diesem Schüler am exakt gleichen Datum (sekundengenau) schon existiert
-                        const existiertSchon = gespeicherteFahrten.some(f => f.datum === importFahrt.datum && f.schuelerId === importFahrt.schuelerId);
-                        
-                        if (!existiertSchon) {
-                            gespeicherteFahrten.push(importFahrt);
-                            neuHinzugefuegt++;
-                        }
-                    });
-
-                    localStorage.setItem('bw_ausbildungsstand', JSON.stringify(gespeicherteFahrten));
-                    
-                    // Lokale Variable aktualisieren, damit UI direkt stimmt
-                    aktiveSchuelerIds = gespeicherteIds;
-
-                    alert(`✅ Import erfolgreich!\n\nEs wurden ${importDaten.schuelerIDs.length} Schüler überprüft.\nEs wurden ${neuHinzugefuegt} neue Fahrten-Einträge hinzugefügt.`);
-                    
-                    // Feld zurücksetzen, falls man nochmal die gleiche Datei wählen will
-                    document.getElementById('importFile').value = '';
-
-                } catch (error) {
-                    alert('Fehler beim Einlesen. Ist dies wirklich eine gültige JSON-Datei der App?');
-                }
+                    localStorage.setItem('bw_ausbildungsstand', JSON.stringify(fahrten));
+                    aktiveSchuelerIds = ids; alert('✅ Import erfolgreich!');
+                } catch (err) { alert('Fehlerhafte Datei.'); }
             };
-            reader.readAsText(file);
+            if(event.target.files[0]) reader.readAsText(event.target.files[0]);
         }
     </script>
 </body>
