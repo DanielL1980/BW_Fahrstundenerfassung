@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Ausbildungsstand - Fortschritt</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 text-slate-800 font-sans antialiased pb-10">
+
+    <div class="max-w-2xl mx-auto bg-white min-h-screen shadow-2xl relative flex flex-col">
+
+        <header class="bg-slate-800 text-white p-4 sticky top-0 z-50 shadow-md flex items-center">
+            <button onclick="window.location.href='index.html'" type="button" class="mr-4 p-2 bg-slate-700 rounded-full hover:bg-slate-600 active:scale-95">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+            </button>
+            <div>
+                <h1 class="text-xl font-bold tracking-wide">Schüler-Fortschritt</h1>
+                <p class="text-xs text-slate-300">Aktueller Leistungsstand</p>
+            </div>
+        </header>
+
+        <main class="flex-1 p-5">
+            
+            <div class="mb-6 bg-slate-50 p-4 rounded-xl border border-slate-200 shadow-sm">
+                <label class="block text-sm font-bold text-slate-700 mb-2 uppercase tracking-wide">Schüler-ID auswählen</label>
+                <select id="schuelerSelect" onchange="ladeFortschritt()" class="w-full p-3 rounded-lg border border-slate-300 bg-white font-bold text-slate-800 text-lg">
+                    <option value="" disabled selected>Bitte wählen...</option>
+                    </select>
+            </div>
+
+            <div id="ergebnisBereich" class="hidden">
+                
+                <h2 class="text-lg font-bold text-blue-900 mb-4 border-b-2 border-blue-200 pb-1">Gesamtübersicht (70 Kriterien)</h2>
+
+                <div class="grid grid-cols-3 gap-3 mb-6">
+                    <div class="bg-green-50 border border-green-200 p-3 rounded-xl text-center shadow-sm">
+                        <div class="text-2xl font-black text-green-600" id="countGruen">0</div>
+                        <div class="text-[10px] font-bold text-green-800 uppercase tracking-wide mt-1">Sicher (Grün)</div>
+                    </div>
+                    <div class="bg-yellow-50 border border-yellow-200 p-3 rounded-xl text-center shadow-sm">
+                        <div class="text-2xl font-black text-yellow-600" id="countGelb">0</div>
+                        <div class="text-[10px] font-bold text-yellow-800 uppercase tracking-wide mt-1">Hilfe (Gelb)</div>
+                    </div>
+                    <div class="bg-red-50 border border-red-200 p-3 rounded-xl text-center shadow-sm">
+                        <div class="text-2xl font-black text-red-600" id="countRot">0</div>
+                        <div class="text-[10px] font-bold text-red-800 uppercase tracking-wide mt-1">Defizit (Rot)</div>
+                    </div>
+                </div>
+
+                <div class="mb-8 bg-slate-50 p-4 rounded-xl border border-slate-200 shadow-sm">
+                    <div class="flex justify-between items-end mb-2">
+                        <span class="text-sm font-bold text-slate-700">Prüfungsreife (Grüne Kriterien)</span>
+                        <span class="text-lg font-black text-blue-700" id="prozentText">0%</span>
+                    </div>
+                    <div class="w-full bg-slate-200 rounded-full h-4 overflow-hidden shadow-inner">
+                        <div id="prozentBalken" class="bg-blue-600 h-4 rounded-full transition-all duration-1000 ease-out" style="width: 0%"></div>
+                    </div>
+                    <p class="text-xs text-slate-500 mt-2 text-center" id="offenePunkteText">0 von 70 Kriterien noch völlig unbearbeitet.</p>
+                </div>
+
+                <h2 class="text-lg font-bold text-red-900 mb-3 border-b-2 border-red-200 pb-1">Aktuelle Schwerpunkte (Rot)</h2>
+                <div id="roteListe" class="bg-white border border-red-100 rounded-xl shadow-sm divide-y divide-red-50">
+                    <div class="p-4 text-sm text-slate-500 italic text-center">Keine kritischen Defizite vorhanden.</div>
+                </div>
+
+            </div>
+
+            <div id="keineDatenMeldung" class="text-center p-8 text-slate-500 hidden">
+                <svg class="w-12 h-12 mx-auto text-slate-300 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path></svg>
+                <p>Noch keine Ausbildungsdaten erfasst.</p>
+            </div>
+
+        </main>
+    </div>
+
+    <script>
+        // Daten beim Laden der Seite auslesen
+        const alleFahrten = JSON.parse(localStorage.getItem('bw_ausbildungsstand')) || [];
+        const selectBox = document.getElementById('schuelerSelect');
+        const ergebnisBereich = document.getElementById('ergebnisBereich');
+        const keineDatenMeldung = document.getElementById('keineDatenMeldung');
+
+        // 1. Alle eindeutigen Schüler-IDs herausfiltern
+        const schuelerIds = [...new Set(alleFahrten.map(fahrt => fahrt.schuelerId))].filter(id => id);
+
+        if (schuelerIds.length === 0) {
+            keineDatenMeldung.classList.remove('hidden');
+            selectBox.disabled = true;
+        } else {
+            // Dropdown mit IDs füllen
+            schuelerIds.forEach(id => {
+                const option = document.createElement('option');
+                option.value = id;
+                option.textContent = id;
+                selectBox.appendChild(option);
+            });
+        }
+
+        // 2. Diese Funktion wird aufgerufen, wenn man eine ID im Dropdown auswählt
+        function ladeFortschritt() {
+            const gewaehlteId = selectBox.value;
+            if (!gewaehlteId) return;
+
+            ergebnisBereich.classList.remove('hidden');
+
+            // Alle Fahrten dieses Schülers filtern
+            const schuelerFahrten = alleFahrten.filter(f => f.schuelerId === gewaehlteId);
+            
+            // Fahrten chronologisch sortieren (damit der letzte Stand gewinnt)
+            schuelerFahrten.sort((a, b) => new Date(a.datum) - new Date(b.datum));
+
+            // Den finalen, aktuellsten Stand berechnen
+            const aktuellerStand = {};
+            
+            schuelerFahrten.forEach(fahrt => {
+                for (const [key, value] of Object.entries(fahrt)) {
+                    // Wir suchen nur nach den Ampel-Werten (item_1 bis item_68)
+                    if (key.startsWith('item_') && (value === 'rot' || value === 'gelb' || value === 'gruen')) {
+                        aktuellerStand[key] = value; // Überschreibt ältere Werte automatisch
+                    }
+                }
+            });
+
+            // Auswertung zählen
+            let gruen = 0, gelb = 0, rot = 0;
+            const rotePunkte = [];
+
+            for (const [key, value] of Object.entries(aktuellerStand)) {
+                if (value === 'gruen') gruen++;
+                if (value === 'gelb') gelb++;
+                if (value === 'rot') {
+                    rot++;
+                    // Die Nummer des Kriteriums aus dem Schlüssel extrahieren (z.B. "item_12" -> "12")
+                    const nr = key.split('_')[1];
+                    rotePunkte.push(`Kriterium Nr. ${nr}`);
+                }
+            }
+
+            // UI aktualisieren
+            document.getElementById('countGruen').textContent = gruen;
+            document.getElementById('countGelb').textContent = gelb;
+            document.getElementById('countRot').textContent = rot;
+
+            const maxKriterien = 68; // Punkt 69 und 70 sind Zeitangaben, keine Ampeln
+            const unbearbeitet = maxKriterien - (gruen + gelb + rot);
+            document.getElementById('offenePunkteText').textContent = `${unbearbeitet} von ${maxKriterien} Kriterien noch völlig unbearbeitet.`;
+
+            // Prozentbalken (Nur Grüne Punkte zählen als "Prüfungsreif")
+            const prozent = Math.round((gruen / maxKriterien) * 100);
+            document.getElementById('prozentBalken').style.width = `${prozent}%`;
+            document.getElementById('prozentText').textContent = `${prozent}%`;
+
+            // Rote Liste aufbauen
+            const roteListeContainer = document.getElementById('roteListe');
+            roteListeContainer.innerHTML = ''; // Liste leeren
+
+            if (rotePunkte.length === 0) {
+                roteListeContainer.innerHTML = `<div class="p-4 text-sm text-slate-500 italic text-center">Keine kritischen Defizite (Rot) vorhanden.</div>`;
+            } else {
+                rotePunkte.forEach(punkt => {
+                    roteListeContainer.innerHTML += `
+                    <div class="p-3 flex items-center">
+                        <div class="w-3 h-3 rounded-full bg-red-500 mr-3"></div>
+                        <span class="text-sm font-bold text-slate-700">${punkt} bedarf sofortiger Nachschulung</span>
+                    </div>`;
+                });
+            }
+        }
+    </script>
+</body>
+</html>
