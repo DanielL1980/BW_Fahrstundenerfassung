@@ -69,11 +69,10 @@
                 </div>
 
                 <div class="border border-blue-100 p-4 rounded-2xl mb-4 bg-blue-50/50">
-                    <h3 class="text-xs font-black text-blue-700 mb-2 uppercase tracking-wider">2. Export (Übergabe)</h3>
-                    <div class="flex gap-2">
-                        <select id="exportSchuelerSelect" class="flex-1 p-3 text-sm rounded-xl border border-blue-200 bg-white font-bold text-slate-800"></select>
-                        <button onclick="exportiereEinzelschueler()" class="bg-blue-600 text-white font-black px-5 rounded-xl hover:bg-blue-700 active:scale-95 shadow-md shadow-blue-200 uppercase text-xs">Export</button>
-                    </div>
+                    <h3 class="text-xs font-black text-blue-700 mb-2 uppercase tracking-wider">2. Export (Mehrfachauswahl)</h3>
+                    <div id="exportListeContainer" class="max-h-40 overflow-y-auto bg-white border border-blue-200 rounded-xl mb-3 p-2 space-y-1 shadow-inner">
+                        </div>
+                    <button onclick="exportiereAusgewaehlteSchueler()" class="w-full bg-blue-600 text-white font-black py-3 rounded-xl hover:bg-blue-700 active:scale-95 shadow-md shadow-blue-200 uppercase text-xs transition-all">Markierte IDs exportieren</button>
                 </div>
 
                 <div class="border-t-2 border-slate-100 pt-4 mt-2">
@@ -92,7 +91,7 @@
             document.getElementById('exportVerwaltung').classList.add('hidden');
             document.getElementById(bereichId).classList.remove('hidden');
             if(bereichId === 'schuelerVerwaltung') renderSchuelerListe();
-            if(bereichId === 'exportVerwaltung') fuelleExportDropdown();
+            if(bereichId === 'exportVerwaltung') renderExportListe();
         }
 
         let aktiveSchuelerIds = JSON.parse(localStorage.getItem('bw_aktive_schueler')) || [];
@@ -121,18 +120,49 @@
                 renderSchuelerListe();
             }
         }
-        function fuelleExportDropdown() {
-            const select = document.getElementById('exportSchuelerSelect');
-            select.innerHTML = '<option value="" disabled selected>Fahrschüler wählen...</option>';
-            aktiveSchuelerIds.forEach(id => select.innerHTML += `<option value="${id}">${id}</option>`);
+
+        function renderExportListe() {
+            const container = document.getElementById('exportListeContainer');
+            container.innerHTML = '';
+            if (aktiveSchuelerIds.length === 0) {
+                container.innerHTML = '<p class="text-[10px] text-slate-400 italic text-center py-2">Keine IDs zum Exportieren.</p>';
+                return;
+            }
+            aktiveSchuelerIds.forEach(id => {
+                container.innerHTML += `
+                    <label class="flex items-center gap-3 p-2 hover:bg-blue-50 rounded-lg cursor-pointer transition-colors">
+                        <input type="checkbox" name="exportCheck" value="${id}" class="w-4 h-4 rounded border-blue-300 text-blue-600 focus:ring-blue-500">
+                        <span class="text-sm font-bold text-slate-700">${id}</span>
+                    </label>
+                `;
+            });
         }
-        function exportiereEinzelschueler() {
-            const id = document.getElementById('exportSchuelerSelect').value;
-            if(!id) return;
+
+        function exportiereAusgewaehlteSchueler() {
+            const checkedBoxes = document.querySelectorAll('input[name="exportCheck"]:checked');
+            const ausgewaehlteIds = Array.from(checkedBoxes).map(cb => cb.value);
+            
+            if(ausgewaehlteIds.length === 0) {
+                alert("Bitte mindestens einen Schüler zum Exportieren auswählen.");
+                return;
+            }
+
             const alleFahrten = JSON.parse(localStorage.getItem('bw_ausbildungsstand')) || [];
-            const schuelerFahrten = alleFahrten.filter(f => f.schuelerId === id);
-            downloadJSON({typ: "Schueler_Uebergabe", schuelerIDs: [id], alleFahrten: schuelerFahrten}, `Uebergabe_${id}_${new Date().toISOString().split('T')[0]}.json`);
+            const gefilterteFahrten = alleFahrten.filter(f => ausgewaehlteIds.includes(f.schuelerId));
+            
+            const exportData = {
+                typ: "Sammel_Uebergabe",
+                schuelerIDs: ausgewaehlteIds,
+                alleFahrten: gefilterteFahrten
+            };
+
+            const dateiname = ausgewaehlteIds.length === 1 
+                ? `Uebergabe_${ausgewaehlteIds[0]}_${new Date().toISOString().split('T')[0]}.json`
+                : `Sammel_Export_${ausgewaehlteIds.length}_Schueler_${new Date().toISOString().split('T')[0]}.json`;
+
+            downloadJSON(exportData, dateiname);
         }
+
         function exportiereDaten() {
             const fahrten = JSON.parse(localStorage.getItem('bw_ausbildungsstand')) || [];
             const ids = JSON.parse(localStorage.getItem('bw_aktive_schueler')) || [];
