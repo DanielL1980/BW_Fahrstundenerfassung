@@ -42,19 +42,19 @@
 
             <div id="ergebnisBereich" class="hidden">
                 <div class="grid grid-cols-4 gap-2 mb-4">
-                    <div onclick="setFilter('gruen')" id="box-gruen" class="bg-emerald-50 border-2 border-emerald-100 p-3 rounded-2xl text-center cursor-pointer shadow-sm">
+                    <div onclick="setFilter('gruen')" id="box-gruen" class="bg-emerald-50 border-2 border-emerald-100 p-3 rounded-2xl text-center cursor-pointer shadow-sm transition-all">
                         <div class="text-2xl font-black text-emerald-600" id="countGruen">0</div>
                         <div class="text-[8px] font-black text-emerald-800 uppercase tracking-tighter">Sicher</div>
                     </div>
-                    <div onclick="setFilter('gelb')" id="box-gelb" class="bg-amber-50 border-2 border-amber-100 p-3 rounded-2xl text-center cursor-pointer shadow-sm">
+                    <div onclick="setFilter('gelb')" id="box-gelb" class="bg-amber-50 border-2 border-amber-100 p-3 rounded-2xl text-center cursor-pointer shadow-sm transition-all">
                         <div class="text-2xl font-black text-amber-500" id="countGelb">0</div>
                         <div class="text-[8px] font-black text-amber-800 uppercase tracking-tighter">Hilfe</div>
                     </div>
-                    <div onclick="setFilter('rot')" id="box-rot" class="bg-rose-50 border-2 border-rose-100 p-3 rounded-2xl text-center cursor-pointer shadow-sm">
+                    <div onclick="setFilter('rot')" id="box-rot" class="bg-rose-50 border-2 border-rose-100 p-3 rounded-2xl text-center cursor-pointer shadow-sm transition-all">
                         <div class="text-2xl font-black text-rose-500" id="countRot">0</div>
                         <div class="text-[8px] font-black text-rose-800 uppercase tracking-tighter">Defizit</div>
                     </div>
-                    <div onclick="setFilter('offen')" id="box-offen" class="bg-slate-100 border-2 border-slate-200 p-3 rounded-2xl text-center cursor-pointer shadow-sm">
+                    <div onclick="setFilter('offen')" id="box-offen" class="bg-slate-100 border-2 border-slate-200 p-3 rounded-2xl text-center cursor-pointer shadow-sm transition-all">
                         <div class="text-2xl font-black text-slate-400" id="countOffen">0</div>
                         <div class="text-[8px] font-black text-slate-500 uppercase tracking-tighter">Offen</div>
                     </div>
@@ -80,6 +80,7 @@
         const alleFahrten = JSON.parse(localStorage.getItem('bw_ausbildungsstand')) || [];
         const ids = [...new Set(alleFahrten.map(f => f.schuelerId))].filter(id => id);
         
+        // Katalog mit den exakten Volltexten
         const kriterienKatalog = ["Einweisung in das Ausbildungsfahrzeug", "Techn. Durchsichten (vor, während, nach der Benutzung)", "Ladungssicherung (Ladung, Zubehör und pers. Ausrüstung)", "Fahrtechn. Vorbereitungen (Sitz/Spiegel / Lenkrad/Gurt)", "Handhabung der Bedienungseinrichtung", "Bedienung EG-Kontrollgerät", "Anfahr-, Schalt- und Lenkübungen", "Fahren mit geringer Geschwindigkeit", "Abbremsen aus geringer Geschwindigkeit", "Rückwärtsfahren mit Einweiser / Sicherungsposten", "An- und Abkuppeln des Anhängers", "Maßnahmen beim Verlassen des Fahrzeugs", "Verhalten beim Anfahren (Ebene/Steigung/Gefälle)", "Gangwechsel", "Fahrbahnbenutzung (Kurven/ein- und mehrspurig)", "Abbiegen an Kreuzungen / Einmündungen", "Fahrstreifenwechsel", "Beobachtung Verkehrsraum", "Beachten der Verkehrszeichen und -einrichtungen", "Geschwindigkeit (Straßen-/Verkehrsverhältnisse)", "Sicherheitsabstände", "Überholen und Vorbeifahren", "Regelung durch Lichtzeichen oder Polizeibeamte", "mit und ohne Verkehrszeichen", "Verhalten am und im Kreisverkehr", "Verhalten an Bahnübergängen", "Verhalten gegenüber Fußgängern und Radfahrern", "Verhalten an Fußgängerüberwegen", "Verhalten in verkehrsberuhigten Bereichen", "Haltende öffentliche Verkehrsmittel u. Schulbusse", "Durchfahren von Engstellen", "Benutzung der Warneinrichtungen", "Maßnahmen zur Sicherung liegengebliebener fzg", "Wenden und Rückwärtsfahren mit und ohne Anhänger", "Fahren auf Feld-, Wald-, und Wiesenwegen", "Fahren auf unterschiedlichen Bodenverhältnissen", "Materialschonendes Fahren", "Geschwindigkeit und Gangwahl", "Fahren ohne und mit Geländegang / Getriebesperren", "Befahren von Fahrspuren, Lenkradhaltung", "Gefahrbremsung auf unbefestigten Wegen (mit ABV)", "Ausweichen von Hindernissen", "Befahren von Steigungen und Gefällen", "Überwinden von Querrinnen / Bodenunebenheiten", "Geländebeurteilung /-ausnutzung", "Rückwärtsfahren in eine Parklücke (Längsaufstellung)", "Rückwärts quer oder schräg einparken", "Fahren nach rechts rückwärts unter Ausnutzung einer Einmündung, Kreuzung oder Einfahrt", "Rückwärtsfahren und Versetzen nach rechts an eine Rampe zum Be- oder Entladen", "Abfahrtkontrolle (Sachgebiete 1-6)", "Rückwärtsfahren geradeaus an eine Rampe zum Be- oder Entladen", "Umkehren durch Rückwärtsfahren nach links", "Sicherheitskontrolle", "Verbinden und Trennen von Fahrzeugen", "Abstellen des Anhängers", "Vorausschauendes Fahren", "Beobachtung anderer Verkehrsteilnehmer", "Beobachtung des Fahrverhaltens anderer fzfhr", "Beobachtung des Verkehrsraums", "Bremsen in Gefahrensituationen", "Schulung auf Bundes- oder Landstraßen", "Schulung auf Autobahnen", "Schulung bei Dämmerung oder Dunkelheit", "Verhalten in komplizierten Verkehrssituationen", "Vermeiden risikoreicher Verkehrssituationen", "Fahren in unbekannten Verkehrsräumen", "Fahren unter Prüfungsbedingungen", "Feststellen der Prüfungsreife"];
 
         let aktuellerStand = {}; let aktuellerFilter = 'all';
@@ -96,6 +97,7 @@
         function updateDashboard(klasse) {
             let s = { gruen: 0, gelb: 0, rot: 0, offen: 0 }; let total = 0;
             for (let i = 1; i <= 68; i++) {
+                // Synchronisierte Hide-Logik mit neue-fahrt.html
                 let hide = (klasse === 'C' && i >= 51 && i <= 55) || (klasse === 'E für C' && i >= 35 && i <= 50);
                 if (!hide) { total++; const st = aktuellerStand[i]; if (st) s[st]++; else s.offen++; }
             }
@@ -116,7 +118,8 @@
             const box = document.getElementById('notizenHistorie'); box.innerHTML = ''; let ok = false;
             [...fahrten].reverse().forEach(f => {
                 const dat = new Date(f.datum).toLocaleDateString('de-DE'); let t = '';
-                const lbls = { 'notizen_grundstufe': 'Grundstufe', 'notizen_aufbauA': 'Aufbaustufe A', 'notizen_dfe': 'DFE', 'notizen_aufbauC': 'Aufbaustufe B/C', 'notizen_leistung': 'Leistung', 'notizen_reifestufe': 'Reife' };
+                // Labels synchronisiert mit neuen Sektionen (B/C getrennt)
+                const lbls = { 'notizen_grundstufe': 'Grundstufe', 'notizen_aufbauA': 'Aufbaustufe A', 'notizen_dfe': 'DFE', 'notizen_aufbauB': 'Aufbaustufe B', 'notizen_aufbauC': 'Aufbaustufe C', 'notizen_leistung': 'Leistung', 'notizen_reifestufe': 'Reife' };
                 for (const [k, l] of Object.entries(lbls)) { if(f[k] && f[k].trim() !== '') t += `<div class="mt-2 p-2 rounded bg-slate-50 border-l-2 border-blue-400 text-xs"><span class="font-black text-blue-800 uppercase text-[9px] mr-1">${l}:</span>${f[k]}</div>`; }
                 if(t) { ok = true; box.innerHTML += `<div class="p-5 border-b border-slate-50 text-[9px] font-black text-blue-400 uppercase tracking-widest italic mb-2">Eintrag ${dat}${t}</div>`; }
             });
