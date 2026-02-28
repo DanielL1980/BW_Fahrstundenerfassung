@@ -17,8 +17,9 @@
         input[type=number]::-webkit-inner-spin-button, 
         input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
         .row-hidden { display: none !important; }
-        /* Style für die C/CE Weiche */
-        .type-toggle input:checked + label { background-color: #1e293b; color: white; border-color: #1e293b; }
+        .badge { font-size: 8px; padding: 2px 6px; border-radius: 4px; font-weight: 900; margin-left: 8px; text-transform: uppercase; }
+        .badge-c { background-color: #fee2e2; color: #991b1b; border: 1px solid #f87171; }
+        .badge-ce { background-color: #dcfce7; color: #166534; border: 1px solid #4ade80; }
     </style>
 </head>
 <body class="bg-slate-50 text-slate-800 font-sans antialiased pb-32">
@@ -32,7 +33,7 @@
                 </button>
                 <div>
                     <h1 class="text-xl font-black tracking-tight uppercase italic">Dokumentation</h1>
-                    <p class="text-[10px] text-emerald-300 font-bold uppercase tracking-widest">Fahrt & Ausbildungsstand</p>
+                    <p class="text-[10px] text-emerald-300 font-bold uppercase tracking-widest italic">Fahrt & Ausbildungsstand</p>
                 </div>
             </div>
         </header>
@@ -40,9 +41,21 @@
         <main class="flex-1 p-5">
             <form id="fahrtForm" onsubmit="saveFahrt(event)">
                 
-                <div class="mb-8 bg-slate-100 p-5 rounded-2xl border border-slate-200 shadow-inner">
-                    <label class="block text-[10px] font-black text-slate-500 mb-1 uppercase tracking-widest">Fahrschüler</label>
-                    <select name="schuelerId" id="schuelerSelect" required onchange="ladeBestehendenStand()" class="w-full p-3 rounded-xl border-2 border-white bg-white font-black text-slate-800 shadow-sm outline-none focus:border-emerald-500 transition-all"></select>
+                <div class="mb-8 bg-slate-100 p-5 rounded-2xl border border-slate-200 shadow-inner space-y-4">
+                    <div class="grid grid-cols-1 gap-4">
+                        <div>
+                            <label class="block text-[10px] font-black text-slate-500 mb-1 uppercase tracking-widest">Fahrschüler</label>
+                            <select name="schuelerId" id="schuelerSelect" required onchange="ladeBestehendenStand()" class="w-full p-3 rounded-xl border-2 border-white bg-white font-black text-slate-800 shadow-sm outline-none focus:border-emerald-500 transition-all"></select>
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-black text-slate-500 mb-1 uppercase tracking-widest">DFE Ausbildungsklasse</label>
+                            <select name="dfeKlasse" id="dfeKlasse" onchange="applyDFEFilter()" class="w-full p-3 rounded-xl border-2 border-emerald-200 bg-emerald-50 font-black text-emerald-900 shadow-sm outline-none transition-all">
+                                <option value="C/CE">Kombiniert: C / CE</option>
+                                <option value="C">Solo: Klasse C</option>
+                                <option value="E für C">Anhänger: E für C</option>
+                            </select>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="space-y-4" id="formContent"></div>
@@ -66,46 +79,40 @@
             aufbauB: ["Fahren auf Feld-, Wald-, und Wiesenwegen", "Fahren auf unterschiedlichen Bodenverhältnissen", "Materialschonendes Fahren", "Geschwindigkeit und Gangwahl", "Fahren ohne und mit Geländegang", "Befahren von Fahrspuren", "Gefahrbremsung unbefestigt", "Ausweichen von Hindernissen", "Befahren von Steigungen und Gefällen", "Überwinden von Querrinnen", "Geländebeurteilung"],
             aufbauC: ["Rückwärtsfahren Parklücke", "Rückwärts quer oder schräg einparken", "Fahren nach rechts rückwärts (Einmündung)", "Rückwärts Versetzen Rampe", "Abfahrtkontrolle", "Rückwärts Rampe gerade", "Umkehren durch Rückwärtsfahren links", "Sicherheitskontrolle", "Verbinden und Trennen", "Abstellen des Anhängers"],
             leistungA: ["Vorausschauendes Fahren", "Beobachtung anderer Verkehrsteilnehmer", "Beobachtung Fahrverhalten anderer", "Beobachtung des Verkehrsraums", "Bremsen in Gefahrensituationen"],
-            leistungB: ["Schulung auf Bundes- oder Landstraßen", "Schulung auf Autobahnen", "Schulung bei Dämmerung oder Dunkelheit"],
+            leistungB_C: ["Überlandfahrt (Solo C)", "Autobahnfahrt (Solo C)", "Nachtfahrt (Solo C)"],
+            leistungB_CE: ["Überlandfahrt (Zug CE)", "Autobahnfahrt (Zug CE)", "Nachtfahrt (Zug CE)"],
             reife: ["Verhalten in komplizierten Verkehrssituationen", "Vermeiden risikoreicher Verkehrssituationen", "Fahren in unbekannten Verkehrsräumen", "Fahren unter Prüfungsbedingungen", "Feststellen der Prüfungsreife", "Einweisertätigkeit bei Tag", "Einweisertätigkeit bei Nacht"]
         };
 
-        const titles = { grundstufe: "Grundstufe (1-13)", aufbauA: "Aufbau A (14-34)", dfe: "DFE (35)", aufbauB: "Aufbau B (36-46)", aufbauC: "Aufbau C (47-56)", leistungA: "Leistungsstufe A (57-61)", leistungB: "Besondere Ausbildungsfahrten (62-64)", reife: "Reife / Einweiser (65-71)" };
+        const titles = { grundstufe: "Grundstufe (1-13)", aufbauA: "Aufbau A (14-34)", dfe: "DFE (35)", aufbauB: "Aufbau B (36-46)", aufbauC: "Aufbau C (47-56)", leistungA: "Leistungsstufe A (57-61)", leistungB_C: "Sonderfahrten Klasse C (62-64)", leistungB_CE: "Sonderfahrten Klasse CE (65-67)", reife: "Reife / Einweiser (68-74)" };
 
         function generateRow(nr, text) {
-            const isSonder = (nr >= 62 && nr <= 64);
-            const isEinweiser = (nr >= 70);
-            const maxVal = (nr === 70) ? 2 : (nr === 71) ? 1 : 99;
+            const isEinweiser = (nr >= 73);
+            const maxVal = (nr === 73) ? 2 : (nr === 74) ? 1 : 99;
+            const badge = (nr >= 62 && nr <= 64) ? '<span class="badge badge-c">C</span>' : (nr >= 65 && nr <= 67) ? '<span class="badge badge-ce">CE</span>' : '';
 
             return `
-            <div id="row-${nr}" class="flex flex-col py-4 border-b border-slate-50 last:border-0">
-                <div class="flex items-center justify-between">
-                    <span class="text-xs font-bold text-slate-600 w-1/2 pr-2 leading-tight">${nr}. ${text}</span>
-                    <div class="flex items-center justify-end w-1/2 space-x-4">
-                        <div class="flex items-center bg-slate-100 rounded-xl p-1 border border-slate-200">
-                            <button type="button" onclick="changeCount(${nr}, -1, ${maxVal})" class="w-7 h-7 bg-white rounded-lg shadow-sm flex items-center justify-center font-black text-slate-400">-</button>
-                            <input type="number" name="count_${nr}" id="count_${nr}" value="0" class="w-8 text-center bg-transparent font-black text-xs text-slate-700 outline-none" ${nr <= 69 ? "" : "readonly"}>
-                            <button type="button" onclick="changeCount(${nr}, 1, ${maxVal})" class="w-7 h-7 bg-white rounded-lg shadow-sm flex items-center justify-center font-black text-slate-600">+</button>
-                        </div>
-                        ${!isEinweiser ? `<div class="flex space-x-2">
-                            <input type="radio" name="item_${nr}" id="i${nr}_rot" value="rot" class="ampel-radio"><label for="i${nr}_rot" class="ampel-label w-7 h-7 rounded-full bg-rose-500 cursor-pointer shadow-sm"></label>
-                            <input type="radio" name="item_${nr}" id="i${nr}_gelb" value="gelb" class="ampel-radio"><label for="i${nr}_gelb" class="ampel-label w-7 h-7 rounded-full bg-amber-400 cursor-pointer shadow-sm"></label>
-                            <input type="radio" name="item_${nr}" id="i${nr}_gruen" value="gruen" class="ampel-radio"><label for="i${nr}_gruen" class="ampel-label w-7 h-7 rounded-full bg-emerald-500 cursor-pointer shadow-sm"></label>
-                        </div>` : `<div class="w-[92px]"></div>`}
+            <div id="row-${nr}" class="flex items-center justify-between py-4 border-b border-slate-50 last:border-0 group">
+                <span class="text-xs font-bold text-slate-600 w-1/2 pr-2 leading-tight">${nr}. ${text}${badge}</span>
+                <div class="flex items-center justify-end w-1/2 space-x-4">
+                    <div class="flex items-center bg-slate-100 rounded-xl p-1 border border-slate-200">
+                        <button type="button" onclick="changeCount(${nr}, -1, ${maxVal})" class="w-7 h-7 bg-white rounded-lg shadow-sm flex items-center justify-center font-black text-slate-400">-</button>
+                        <input type="number" name="count_${nr}" id="count_${nr}" value="0" class="w-8 text-center bg-transparent font-black text-xs text-slate-700 outline-none" ${nr <= 72 ? "" : "readonly"}>
+                        <button type="button" onclick="changeCount(${nr}, 1, ${maxVal})" class="w-7 h-7 bg-white rounded-lg shadow-sm flex items-center justify-center font-black text-slate-600">+</button>
                     </div>
+                    ${!isEinweiser ? `<div class="flex space-x-2">
+                        <input type="radio" name="item_${nr}" id="i${nr}_rot" value="rot" class="ampel-radio"><label for="i${nr}_rot" class="ampel-label w-7 h-7 rounded-full bg-rose-500 cursor-pointer shadow-sm"></label>
+                        <input type="radio" name="item_${nr}" id="i${nr}_gelb" value="gelb" class="ampel-radio"><label for="i${nr}_gelb" class="ampel-label w-7 h-7 rounded-full bg-amber-400 cursor-pointer shadow-sm"></label>
+                        <input type="radio" name="item_${nr}" id="i${nr}_gruen" value="gruen" class="ampel-radio"><label for="i${nr}_gruen" class="ampel-label w-7 h-7 rounded-full bg-emerald-500 cursor-pointer shadow-sm"></label>
+                    </div>` : `<div class="w-[92px]"></div>`}
                 </div>
-                ${isSonder ? `
-                <div class="flex gap-2 mt-2 ml-[10%] type-toggle">
-                    <input type="radio" name="type_${nr}" id="type_${nr}_C" value="C" checked class="hidden"><label for="type_${nr}_C" class="px-4 py-1 border border-slate-300 rounded-full text-[10px] font-black uppercase cursor-pointer transition-all">Solo (C)</label>
-                    <input type="radio" name="type_${nr}" id="type_${nr}_CE" value="CE" class="hidden"><label for="type_${nr}_CE" class="px-4 py-1 border border-slate-300 rounded-full text-[10px] font-black uppercase cursor-pointer transition-all">Zug (CE)</label>
-                </div>` : ''}
             </div>`;
         }
 
         function renderAll() {
             const main = document.getElementById('formContent');
             main.innerHTML = ''; let currentNr = 1;
-            ['grundstufe', 'aufbauA', 'dfe', 'aufbauB', 'aufbauC', 'leistungA', 'leistungB', 'reife'].forEach(key => {
+            ['grundstufe', 'aufbauA', 'dfe', 'aufbauB', 'aufbauC', 'leistungA', 'leistungB_C', 'leistungB_CE', 'reife'].forEach(key => {
                 let html = `<details id="section-${key}" class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden mb-4">
                     <summary class="p-5 font-black text-xs text-slate-500 bg-slate-50/50 cursor-pointer flex justify-between items-center uppercase tracking-widest">${titles[key]} <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7" stroke-width="2"></path></svg></summary>
                     <div class="p-5">`;
@@ -113,6 +120,7 @@
                 html += `</div></details>`;
                 main.innerHTML += html;
             });
+            applyDFEFilter();
         }
 
         function ladeBestehendenStand() {
@@ -122,10 +130,9 @@
             const alleFahrten = JSON.parse(localStorage.getItem('bw_ausbildungsstand')) || [];
             const schuelerFahrten = alleFahrten.filter(f => f.schuelerId === id).sort((a,b) => new Date(a.datum) - new Date(b.datum));
             schuelerFahrten.forEach(f => {
-                for(let i=1; i<=71; i++) {
+                for(let i=1; i<=74; i++) {
                     if(f[`item_${i}`]) { const rb = document.getElementById(`i${i}_${f['item_'+i]}`); if(rb) rb.checked = true; }
                     if(f[`count_${i}`]) { const inp = document.getElementById(`count_${i}`); if(inp) inp.value = parseInt(inp.value) + parseInt(f[`count_${i}`]); }
-                    if(f[`type_${i}`]) { const tb = document.getElementById(`type_${i}_${f['type_'+i]}`); if(tb) tb.checked = true; }
                 }
             });
         }
@@ -136,10 +143,28 @@
             if (newVal >= 0 && newVal <= max) inp.value = newVal; 
         }
 
+        function applyDFEFilter() {
+            const klasse = document.getElementById('dfeKlasse').value;
+            // Alle Zeilen einblenden
+            for(let i=1; i<=74; i++) { if(document.getElementById(`row-${i}`)) document.getElementById(`row-${i}`).classList.remove('row-hidden'); }
+            
+            // Sektionen steuern
+            if (klasse === 'C') { 
+                for(let i=52; i<=56; i++) document.getElementById(`row-${i}`).classList.add('row-hidden'); // CE Manöver
+                for(let i=65; i<=67; i++) document.getElementById(`row-${i}`).classList.add('row-hidden'); // CE Sonder
+                document.getElementById('section-leistungB_CE').classList.add('row-hidden');
+            } else if (klasse === 'E für C') { 
+                for(let i=36; i<=51; i++) document.getElementById(`row-${i}`).classList.add('row-hidden'); // C Manöver & Aufbau B
+                for(let i=62; i<=64; i++) document.getElementById(`row-${i}`).classList.add('row-hidden'); // C Sonder
+                document.getElementById('section-leistungB_C').classList.add('row-hidden');
+                document.getElementById('section-dfe').classList.add('row-hidden');
+            }
+        }
+
         const ids = JSON.parse(localStorage.getItem('bw_aktive_schueler')) || [];
         const select = document.getElementById('schuelerSelect');
         if (ids.length > 0) { 
-            select.innerHTML = '<option value="" disabled selected>Wählen...</option>'; 
+            select.innerHTML = '<option value="" disabled selected>Fahrschüler wählen...</option>'; 
             ids.forEach(id => select.innerHTML += `<option value="${id}">${id}</option>`); 
         } else { select.innerHTML = '<option value="">Keine Schüler!</option>'; }
 
