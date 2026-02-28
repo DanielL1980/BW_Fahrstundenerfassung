@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Ausbildungsstand - BW Fahrschul-Manager</title>
+    <title>Dokumentation - BW Fahrschul-Manager</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         input[type="radio"].ampel-radio { display: none; }
@@ -22,7 +22,9 @@
     </style>
 </head>
 <body class="bg-slate-50 text-slate-800 font-sans antialiased pb-32">
+
     <div class="max-w-2xl mx-auto bg-white min-h-screen shadow-2xl relative flex flex-col">
+
         <header class="bg-slate-800 text-white p-5 sticky top-0 z-50 shadow-lg flex items-center justify-between border-b-4 border-emerald-500">
             <div class="flex items-center">
                 <button onclick="window.location.href='index.html'" type="button" class="mr-4 p-2 bg-slate-700 rounded-xl hover:bg-slate-600 active:scale-95 transition-all">
@@ -30,25 +32,35 @@
                 </button>
                 <div>
                     <h1 class="text-xl font-black tracking-tight uppercase italic">Dokumentation</h1>
-                    <p class="text-[10px] text-emerald-300 font-bold uppercase tracking-widest">Fahrt & Ausbildungsstand</p>
+                    <p class="text-[10px] text-emerald-300 font-bold uppercase tracking-widest italic">Fahrt & Ausbildungsstand</p>
                 </div>
             </div>
         </header>
 
         <main class="flex-1 p-5">
             <form id="fahrtForm" onsubmit="saveFahrt(event)">
+                
                 <div class="mb-8 bg-slate-100 p-5 rounded-2xl border border-slate-200 shadow-inner space-y-4">
-                    <div>
-                        <label class="block text-[10px] font-black text-slate-500 mb-1 uppercase tracking-widest">Fahrschüler</label>
-                        <select name="schuelerId" id="schuelerSelect" required onchange="ladeBestehendenStand()" class="w-full p-3 rounded-xl border-2 border-white bg-white font-black text-slate-800 shadow-sm outline-none focus:border-emerald-500 transition-all"></select>
-                    </div>
-                    <div>
-                        <label class="block text-[10px] font-black text-slate-500 mb-1 uppercase tracking-widest">DFE Klasse auswählen</label>
-                        <select name="dfeKlasse" id="dfeKlasse" onchange="applyDFEFilter()" class="w-full p-3 rounded-xl border-2 border-emerald-200 bg-emerald-50 font-black text-emerald-900 shadow-sm outline-none focus:border-emerald-500 transition-all">
-                            <option value="C/CE">Klasse C / CE (Gesamt)</option>
-                            <option value="C">Klasse C (Nur Solo)</option>
-                            <option value="E für C">Klasse E für C (Anhänger)</option>
-                        </select>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="col-span-2">
+                            <label class="block text-[10px] font-black text-slate-500 mb-1 uppercase tracking-widest">Fahrschüler</label>
+                            <select name="schuelerId" id="schuelerSelect" required onchange="ladeBestehendenStand()" class="w-full p-3 rounded-xl border-2 border-white bg-white font-black text-slate-800 shadow-sm outline-none focus:border-emerald-500 transition-all"></select>
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-black text-slate-500 mb-1 uppercase tracking-widest">DFE Klasse</label>
+                            <select name="dfeKlasse" id="dfeKlasse" onchange="applyDFEFilter()" class="w-full p-3 rounded-xl border-2 border-emerald-200 bg-emerald-50 font-black text-emerald-900 shadow-sm outline-none transition-all">
+                                <option value="C/CE">C / CE</option>
+                                <option value="C">C (Solo)</option>
+                                <option value="E für C">E für C</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-black text-slate-500 mb-1 uppercase tracking-widest">Fahrzeug-Konfig</label>
+                            <select name="mitAnhaenger" id="mitAnhaenger" class="w-full p-3 rounded-xl border-2 border-emerald-200 bg-emerald-50 font-black text-emerald-900 shadow-sm outline-none transition-all">
+                                <option value="nein">OHNE Anhänger</option>
+                                <option value="ja">MIT Anhänger</option>
+                            </select>
+                        </div>
                     </div>
                 </div>
 
@@ -74,7 +86,7 @@
 
     <script>
         const katalog = {
-            grundstufe: ["Einweisung in das Ausbildungsfahrzeug", "Techn. Durchsichten (vor, während, nach der Benutzung)", "Ladungssicherung (Ladung, Zubehör und pers. Ausrüstung)", "Fahrtechn. Vorbereitungen (Sitz/Spiegel / Lenkrad/Gurt)", "Handhabung der Bedienungseinrichtung", "Bedienung EG-Kontrollgerät", "Anfahr-, Schalt- und Lenkübungen", "Fahren mit geringer Geschwindigkeit", "Abbremsen aus geringer Geschwindigkeit", "Rückwärtsfahren mit Einweiser / Sicherungsposten", "An- und Abkuppeln des Anhängers", "Maßnahmen beim Verlassen des Fahrzeugs"],
+            grundstufe: ["Einweisung in das Ausbildungsfahrzeug", "Techn. Durchsichten (vor, während, nach der Benutzung)", "Ladungssicherung (Ladung, Zubehör und pers. Ausrüstung)", "Fahrtechn. Vorbereitungen (Sitz/Spiegel / Lenkrad/Gurt)", "Führung Fahrauftrag", "Handhabung der Bedienungseinrichtung", "Bedienung EG-Kontrollgerät", "Anfahr-, Schalt- und Lenkübungen", "Fahren mit geringer Geschwindigkeit", "Abbremsen aus geringer Geschwindigkeit", "Rückwärtsfahren mit Einweiser / Sicherungsposten", "An- und Abkuppeln des Anhängers", "Maßnahmen beim Verlassen des Fahrzeugs"],
             aufbauA: ["Verhalten beim Anfahren (Ebene/Steigung/Gefälle)", "Gangwechsel", "Fahrbahnbenutzung (Kurven/ein- und mehrspurig)", "Abbiegen an Kreuzungen / Einmündungen", "Fahrstreifenwechsel", "Beobachtung Verkehrsraum", "Beachten der Verkehrszeichen und -einrichtungen", "Geschwindigkeit (Straßen-/Verkehrsverhältnisse)", "Sicherheitsabstände", "Überholen und Vorbeifahren", "Regelung durch Lichtzeichen oder Polizeibeamte", "mit und ohne Verkehrszeichen", "Verhalten am und im Kreisverkehr", "Verhalten an Bahnübergängen", "Verhalten gegenüber Fußgängern und Radfahrern", "Verhalten an Fußgängerüberwegen", "Verhalten in verkehrsberuhigten Bereichen", "Haltende öffentliche Verkehrsmittel u. Schulbusse", "Durchfahren von Engstellen", "Benutzung der Warneinrichtungen", "Maßnahmen zur Sicherung liegengebliebener fzg"],
             dfe: ["Wenden und Rückwärtsfahren mit und ohne Anhänger"],
             aufbauB: ["Fahren auf Feld-, Wald-, und Wiesenwegen", "Fahren auf unterschiedlichen Bodenverhältnissen", "Materialschonendes Fahren", "Geschwindigkeit und Gangwahl", "Fahren ohne und mit Geländegang / Getriebesperren", "Befahren von Fahrspuren, Lenkradhaltung", "Gefahrbremsung auf unbefestigten Wegen (mit ABV)", "Ausweichen von Hindernissen", "Befahren von Steigungen und Gefällen", "Überwinden von Querrinnen / Bodenunebenheiten", "Geländebeurteilung /-ausnutzung"],
@@ -84,18 +96,23 @@
             reife: ["Verhalten in komplizierten Verkehrssituationen", "Vermeiden risikoreicher Verkehrssituationen", "Fahren in unbekannten Verkehrsräumen", "Fahren unter Prüfungsbedingungen", "Feststellen der Prüfungsreife", "Einweisertätigkeit bei Tag", "Einweisertätigkeit bei Nacht"]
         };
 
-        const titles = { grundstufe: "Grundstufe (1-12)", aufbauA: "Aufbaustufe A (13-33)", dfe: "DFE (34)", aufbauB: "Aufbaustufe B - Leichtes Gelände (35-45)", aufbauC: "Aufbaustufe C - Manöver (46-55)", leistungA: "Leistungsstufe A (56-60)", leistungB: "Leistungsstufe B - Besondere Ausbildungsfahrten (61-63)", reife: "Reifestufe / Einweiser (64-70)" };
+        const titles = { 
+            grundstufe: "Grundstufe (1-13)", 
+            aufbauA: "Aufbaustufe A (14-34)", 
+            dfe: "DFE (35)", 
+            aufbauB: "Aufbaustufe B - Leichtes Gelände (36-46)", 
+            aufbauC: "Aufbaustufe C - Manöver (47-56)", 
+            leistungA: "Leistungsstufe A (57-61)", 
+            leistungB: "Leistungsstufe B - Besondere Ausbildungsfahrten (62-64)", 
+            reife: "Reife / Einweiser (65-71)" 
+        };
 
         function generateRow(nr, text) {
-            const isEinweiser = (nr >= 69);
-            const isManualAllowed = (nr <= 68);
-            const maxVal = (nr === 69) ? 2 : (nr === 70) ? 1 : 99;
-            let extraHeader = "";
-            if (nr === 46) extraHeader = `<div class="sub-header">Grundfahraufgaben DFE Kl. C</div>`;
-            if (nr === 51) extraHeader = `<div class="sub-header">Grundfahraufgaben DFE Kl. CE</div>`;
-
+            const isEinweiser = (nr >= 70);
+            const isManualAllowed = (nr <= 69);
+            const maxVal = (nr === 70) ? 2 : (nr === 71) ? 1 : 99;
+            
             return `
-            ${extraHeader}
             <div id="row-${nr}" class="flex items-center justify-between py-4 border-b border-slate-50 last:border-0 group">
                 <span class="text-xs font-bold text-slate-600 w-1/2 pr-2 leading-tight">${nr}. ${text}</span>
                 <div class="flex items-center justify-end w-1/2 space-x-4">
@@ -135,17 +152,14 @@
 
         function ladeBestehendenStand() {
             const id = document.getElementById('schuelerSelect').value; if(!id) return;
-            const allRadios = document.querySelectorAll('input[type="radio"]');
-            allRadios.forEach(r => r.checked = false);
-            const allCounts = document.querySelectorAll('input[type="number"]');
-            allCounts.forEach(c => c.value = 0);
-            const allNotes = document.querySelectorAll('textarea');
-            allNotes.forEach(n => n.value = '');
+            document.querySelectorAll('input[type="radio"]').forEach(r => r.checked = false);
+            document.querySelectorAll('input[type="number"]').forEach(c => c.value = 0);
+            document.querySelectorAll('textarea').forEach(n => n.value = '');
 
             const alleFahrten = JSON.parse(localStorage.getItem('bw_ausbildungsstand')) || [];
             const schuelerFahrten = alleFahrten.filter(f => f.schuelerId === id).sort((a,b) => new Date(a.datum) - new Date(b.datum));
             schuelerFahrten.forEach(f => {
-                for(let i=1; i<=70; i++) {
+                for(let i=1; i<=71; i++) {
                     if(f[`item_${i}`]) { const rb = document.getElementById(`i${i}_${f['item_'+i]}`); if(rb) rb.checked = true; }
                     if(f[`count_${i}`]) { const inp = document.getElementById(`count_${i}`); if(inp) inp.value = parseInt(inp.value) + parseInt(f[`count_${i}`]); }
                 }
@@ -161,20 +175,17 @@
         
         function applyDFEFilter() {
             const klasse = document.getElementById('dfeKlasse').value;
-            for(let i=1; i<=70; i++) { if(document.getElementById(`row-${i}`)) document.getElementById(`row-${i}`).classList.remove('row-hidden'); }
-            if (klasse === 'C') { for(let i=51; i<=55; i++) { if(document.getElementById(`row-${i}`)) document.getElementById(`row-${i}`).classList.add('row-hidden'); } }
-            else if (klasse === 'E für C') { 
-                for(let i=35; i<=50; i++) { if(document.getElementById(`row-${i}`)) document.getElementById(`row-${i}`).classList.add('row-hidden'); } 
-                document.getElementById('section-dfe').classList.add('row-hidden'); 
-            }
+            for(let i=1; i<=71; i++) { if(document.getElementById(`row-${i}`)) document.getElementById(`row-${i}`).classList.remove('row-hidden'); }
+            if (klasse === 'C') { for(let i=52; i<=56; i++) { if(document.getElementById(`row-${i}`)) document.getElementById(`row-${i}`).classList.add('row-hidden'); } }
+            else if (klasse === 'E für C') { for(let i=36; i<=51; i++) { if(document.getElementById(`row-${i}`)) document.getElementById(`row-${i}`).classList.add('row-hidden'); } document.getElementById('section-dfe').classList.add('row-hidden'); }
         }
 
         const ids = JSON.parse(localStorage.getItem('bw_aktive_schueler')) || [];
         const select = document.getElementById('schuelerSelect');
         if (ids.length > 0) { 
-            select.innerHTML = '<option value="" disabled selected>Fahrschüler auswählen...</option>'; 
+            select.innerHTML = '<option value="" disabled selected>Wählen...</option>'; 
             ids.forEach(id => select.innerHTML += `<option value="${id}">${id}</option>`); 
-        } else { select.innerHTML = '<option value="">Keine Schüler vorhanden!</option>'; }
+        } else { select.innerHTML = '<option value="">Keine Schüler!</option>'; }
 
         renderAll();
 
@@ -183,12 +194,15 @@
             const formData = new FormData(event.target); 
             const data = Object.fromEntries(formData.entries()); 
             data.datum = new Date().toISOString();
-            if(data.count_69) data.item_69_minuten = (parseInt(data.count_69) >= 2) ? 90 : (parseInt(data.count_69) == 1 ? 45 : 0);
-            if(data.count_70) data.item_70_minuten = (parseInt(data.count_70) >= 1) ? 45 : 0;
+            
+            // Einweiser-Minuten Berechnung (neue IDs 70/71)
+            if(data.count_70) data.item_70_minuten = (parseInt(data.count_70) >= 2) ? 90 : (parseInt(data.count_70) == 1 ? 45 : 0);
+            if(data.count_71) data.item_71_minuten = (parseInt(data.count_71) >= 1) ? 45 : 0;
+            
             let arr = JSON.parse(localStorage.getItem('bw_ausbildungsstand')) || []; 
             arr.push(data); 
             localStorage.setItem('bw_ausbildungsstand', JSON.stringify(arr)); 
-            alert('✅ Stand aktualisiert!'); 
+            alert('✅ Dokumentation gespeichert!'); 
             window.location.href = 'index.html';
         }
     </script>
