@@ -80,8 +80,9 @@
         const alleFahrten = JSON.parse(localStorage.getItem('bw_ausbildungsstand')) || [];
         const ids = [...new Set(alleFahrten.map(f => f.schuelerId))].filter(id => id);
         
-        // Katalog mit den exakten Volltexten
-        const kriterienKatalog = ["Einweisung in das Ausbildungsfahrzeug", "Techn. Durchsichten (vor, während, nach der Benutzung)", "Ladungssicherung (Ladung, Zubehör und pers. Ausrüstung)", "Fahrtechn. Vorbereitungen (Sitz/Spiegel / Lenkrad/Gurt)", "Handhabung der Bedienungseinrichtung", "Bedienung EG-Kontrollgerät", "Anfahr-, Schalt- und Lenkübungen", "Fahren mit geringer Geschwindigkeit", "Abbremsen aus geringer Geschwindigkeit", "Rückwärtsfahren mit Einweiser / Sicherungsposten", "An- und Abkuppeln des Anhängers", "Maßnahmen beim Verlassen des Fahrzeugs", "Verhalten beim Anfahren (Ebene/Steigung/Gefälle)", "Gangwechsel", "Fahrbahnbenutzung (Kurven/ein- und mehrspurig)", "Abbiegen an Kreuzungen / Einmündungen", "Fahrstreifenwechsel", "Beobachtung Verkehrsraum", "Beachten der Verkehrszeichen und -einrichtungen", "Geschwindigkeit (Straßen-/Verkehrsverhältnisse)", "Sicherheitsabstände", "Überholen und Vorbeifahren", "Regelung durch Lichtzeichen oder Polizeibeamte", "mit und ohne Verkehrszeichen", "Verhalten am und im Kreisverkehr", "Verhalten an Bahnübergängen", "Verhalten gegenüber Fußgängern und Radfahrern", "Verhalten an Fußgängerüberwegen", "Verhalten in verkehrsberuhigten Bereichen", "Haltende öffentliche Verkehrsmittel u. Schulbusse", "Durchfahren von Engstellen", "Benutzung der Warneinrichtungen", "Maßnahmen zur Sicherung liegengebliebener fzg", "Wenden und Rückwärtsfahren mit und ohne Anhänger", "Fahren auf Feld-, Wald-, und Wiesenwegen", "Fahren auf unterschiedlichen Bodenverhältnissen", "Materialschonendes Fahren", "Geschwindigkeit und Gangwahl", "Fahren ohne und mit Geländegang / Getriebesperren", "Befahren von Fahrspuren, Lenkradhaltung", "Gefahrbremsung auf unbefestigten Wegen (mit ABV)", "Ausweichen von Hindernissen", "Befahren von Steigungen und Gefällen", "Überwinden von Querrinnen / Bodenunebenheiten", "Geländebeurteilung /-ausnutzung", "Rückwärtsfahren in eine Parklücke (Längsaufstellung)", "Rückwärts quer oder schräg einparken", "Fahren nach rechts rückwärts unter Ausnutzung einer Einmündung, Kreuzung oder Einfahrt", "Rückwärtsfahren und Versetzen nach rechts an eine Rampe zum Be- oder Entladen", "Abfahrtkontrolle (Sachgebiete 1-6)", "Rückwärtsfahren geradeaus an eine Rampe zum Be- oder Entladen", "Umkehren durch Rückwärtsfahren nach links", "Sicherheitskontrolle", "Verbinden und Trennen von Fahrzeugen", "Abstellen des Anhängers", "Vorausschauendes Fahren", "Beobachtung anderer Verkehrsteilnehmer", "Beobachtung des Fahrverhaltens anderer fzfhr", "Beobachtung des Verkehrsraums", "Bremsen in Gefahrensituationen", "Schulung auf Bundes- oder Landstraßen", "Schulung auf Autobahnen", "Schulung bei Dämmerung oder Dunkelheit", "Verhalten in komplizierten Verkehrssituationen", "Vermeiden risikoreicher Verkehrssituationen", "Fahren in unbekannten Verkehrsräumen", "Fahren unter Prüfungsbedingungen", "Feststellen der Prüfungsreife"];
+        const kriterienKatalog = [
+            "Einweisung in das Ausbildungsfahrzeug", "Techn. Durchsichten (vor, während, nach der Benutzung)", "Ladungssicherung (Ladung, Zubehör und pers. Ausrüstung)", "Fahrtechn. Vorbereitungen (Sitz/Spiegel/Lenkrad/Gurt)", "Führung Fahrauftrag", "Handhabung der Bedienungseinrichtung", "Bedienung EG-Kontrollgerät", "Anfahr-, Schalt- und Lenkübungen", "Fahren mit geringer Geschwindigkeit", "Abbremsen aus geringer Geschwindigkeit", "Rückwärtsfahren mit Einweiser / Sicherungsposten", "An- und Abkuppeln des Anhängers", "Maßnahmen beim Verlassen des Fahrzeugs", "Verhalten beim Anfahren ( Ebene, Steigung / Gefälle)", "Gangwechsel", "Fahrbahnbenutzung (Kurven / ein- und mehrspurig)", "Abbiegen an Kreuzungen / Einmündungen", "Fahrstreifenwechsel", "Beobachtung Verkehrsraum", "Beachten der Verkehrszeichen und -einrichtungen", "Geschwindigkeit ( Straßen - / Verkehrsverhältnisse)", "Sicherheitsabstände", "Überholen und Vorbeifahren", "- Regelung durch Lichtzeichen oder Polizeibeamte", "- mit und ohne Verkehrszeichen", "Verhalten am Kreisverkehr", "Verhalten an Bahnübergängen", "Verhalten gegenüber Fußgängern und Radfahrern", "Verhalten an Fußgängerüberwegen", "Verhalten in verkehrsberuhigten Bereichen", "Haltende öfftl. Verkehrsmittel und Schulbusse", "Durchfahren von Engstellen", "Benutzung der Warneinrichtungen", "Maßnahmen zur Sicherung liegengebliebener Fzg", "Wenden und Rückwärtsfahren mit und ohne Anhänger", "Fahren auf Feld-, Wald-, und Wiesenwegen", "Fahren auf unterschiedlichen Bodenverhältnissen", "Materialschonendes Fahren", "Geschwindigkeit und Gangwahl", "Fahren ohne und mit Geländegang / Getriebesperre", "Befahren von Fahrspuren, Lenkradhaltung", "Gefahrbremsung auf losem Untergrund (mit/ohne ABV)", "Ausweichen von Hindernissen", "Befahren von Steigungen und Gefällen", "Überwinden von Querrinnen / Bodenunebenheiten", "Geländebeurteilung / - ausnutzung", "Abfahrtkontrolle (Sachgebiete 1-6)", "Sicherheitskontrolle", "Verbinden und Trennen von Fahrzeugen", "Abstellen des Anhängers", "Rückwärtsfahren in eine Parklücke (Längsaufstellung)", "Rückwärts quer oder schräg einparken", "Fahren nach rechts rückwärts unter Ausnutzung einer Einmündung, Kreuzung oder Einfahrt", "Rückwärtsfahren und Versetzen nach rechts an eine Rampe zum Be- oder Entladen", "Rückwärtsfahren geradeaus an eine Rampe zum Be- oder Entladen", "Umkehren durch Rückwärtsfahren nach links", "Vorausschauendes Fahren", "Beobachtung anderer Verkehrsteilnehmer", "Beobachtung Fahrverhalten anderer FzFhr", "Beobachtung des Verkehrsraums", "Bremsen in Gefahrensituationen", "Schulung auf Bundes - oder Landstraßen", "Schulung auf Autobahnen", "Schulung bei Dämmerung oder Dunkelheit", "Verhalten in komplizierten Verkehrssituationen", "Vermeiden risikoreicher Verkehrssituationen", "Fahren in unbekannten Verkehrsräumen", "Fahren unter Prüfungsbedingungen", "Feststellen der Prüfungsreife", "Einweisertätigkeiten bei Tag --> Minuten", "Einweisertätigkeieten bei Nacht --> Minuten"
+        ];
 
         let aktuellerStand = {}; let aktuellerFilter = 'all';
         const selectBox = document.getElementById('schuelerSelect');
@@ -91,34 +92,36 @@
         function ladeFortschritt() {
             const id = selectBox.value; if (!id) return; document.getElementById('ergebnisBereich').classList.remove('hidden');
             const klasse = document.getElementById('dfeKlasse').value; const fahrten = alleFahrten.filter(f => f.schuelerId === id).sort((a, b) => new Date(a.datum) - new Date(b.datum));
-            aktuellerStand = {}; fahrten.forEach(f => { for (let i = 1; i <= 68; i++) { if (f[`item_${i}`]) aktuellerStand[i] = f[`item_${i}`]; } });
+            aktuellerStand = {}; fahrten.forEach(f => { for (let i = 1; i <= 71; i++) { if (f[`item_${i}`]) aktuellerStand[i] = f[`item_${i}`]; } });
             updateDashboard(klasse); renderList(klasse); renderNotizen(fahrten);
         }
+
         function updateDashboard(klasse) {
             let s = { gruen: 0, gelb: 0, rot: 0, offen: 0 }; let total = 0;
-            for (let i = 1; i <= 68; i++) {
-                // Synchronisierte Hide-Logik mit neue-fahrt.html
-                let hide = (klasse === 'C' && i >= 51 && i <= 55) || (klasse === 'E für C' && i >= 35 && i <= 50);
+            for (let i = 1; i <= 71; i++) {
+                let hide = (klasse === 'C' && ((i >= 49 && i <= 51) || i === 54 || (i >= 65 && i <= 67))) || (klasse === 'E für C' && ((i >= 36 && i <= 46) || (i >= 51 && i <= 53) || (i >= 62 && i <= 64) || i === 35));
                 if (!hide) { total++; const st = aktuellerStand[i]; if (st) s[st]++; else s.offen++; }
             }
             ['gruen','gelb','rot','offen'].forEach(k => document.getElementById('count'+k.charAt(0).toUpperCase()+k.slice(1)).textContent = s[k]);
             const proz = Math.round((s.gruen / total) * 100) || 0; document.getElementById('prozentBalken').style.width = `${proz}%`; document.getElementById('prozentText').textContent = `${proz}%`;
         }
+
         function setFilter(t) { aktuellerFilter = t; ['gruen','gelb','rot','offen'].forEach(k => document.getElementById('box-'+k).classList.remove('filter-active')); if(t !== 'all') { document.getElementById('box-'+t).classList.add('filter-active'); document.getElementById('resetBtn').classList.remove('hidden'); } else { document.getElementById('resetBtn').classList.add('hidden'); } ladeFortschritt(); }
+
         function renderList(klasse) {
             const list = document.getElementById('kriterienListe'); list.innerHTML = '';
-            for (let i = 1; i <= 68; i++) {
-                let hideClass = (klasse === 'C' && i >= 51 && i <= 55) || (klasse === 'E für C' && i >= 35 && i <= 50);
-                if (hideClass) continue; const st = aktuellerStand[i] || 'offen'; if (aktuellerFilter !== 'all' && st !== aktuellerFilter) continue;
+            for (let i = 1; i <= 71; i++) {
+                let hide = (klasse === 'C' && ((i >= 49 && i <= 51) || i === 54 || (i >= 65 && i <= 67))) || (klasse === 'E für C' && ((i >= 36 && i <= 46) || (i >= 51 && i <= 53) || (i >= 62 && i <= 64) || i === 35));
+                if (hide) continue; const st = aktuellerStand[i] || 'offen'; if (aktuellerFilter !== 'all' && st !== aktuellerFilter) continue;
                 const colors = { gruen: 'bg-emerald-500', gelb: 'bg-amber-400', rot: 'bg-rose-500', offen: 'bg-slate-200' };
                 list.innerHTML += `<div class="p-4 flex items-center justify-between"><div class="flex items-center gap-3"><span class="text-[10px] font-black text-slate-300 w-4">${i}</span><span class="text-sm font-bold text-slate-700 leading-tight">${kriterienKatalog[i-1]}</span></div><div class="w-3 h-3 rounded-full ${colors[st]}"></div></div>`;
             }
         }
+
         function renderNotizen(fahrten) {
             const box = document.getElementById('notizenHistorie'); box.innerHTML = ''; let ok = false;
             [...fahrten].reverse().forEach(f => {
                 const dat = new Date(f.datum).toLocaleDateString('de-DE'); let t = '';
-                // Labels synchronisiert mit neuen Sektionen (B/C getrennt)
                 const lbls = { 'notizen_grundstufe': 'Grundstufe', 'notizen_aufbauA': 'Aufbaustufe A', 'notizen_dfe': 'DFE', 'notizen_aufbauB': 'Aufbaustufe B', 'notizen_aufbauC': 'Aufbaustufe C', 'notizen_leistung': 'Leistung', 'notizen_reifestufe': 'Reife' };
                 for (const [k, l] of Object.entries(lbls)) { if(f[k] && f[k].trim() !== '') t += `<div class="mt-2 p-2 rounded bg-slate-50 border-l-2 border-blue-400 text-xs"><span class="font-black text-blue-800 uppercase text-[9px] mr-1">${l}:</span>${f[k]}</div>`; }
                 if(t) { ok = true; box.innerHTML += `<div class="p-5 border-b border-slate-50 text-[9px] font-black text-blue-400 uppercase tracking-widest italic mb-2">Eintrag ${dat}${t}</div>`; }
