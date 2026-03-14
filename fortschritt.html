@@ -1,141 +1,92 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Analyse - BW Fahrschul-Manager</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        .dot { height: 12px; width: 12px; border-radius: 50%; display: inline-block; margin-right: 6px; }
-        .bg-rot { background-color: #f43f5e; }
-        .bg-gelb { background-color: #fbbf24; }
-        .bg-gruen { background-color: #10b981; }
-        .bg-leer { background-color: #e2e8f0; }
-        details > summary { list-style: none; }
-        details > summary::-webkit-details-marker { display: none; }
-        .badge { font-size: 8px; padding: 2px 6px; border-radius: 4px; font-weight: 900; margin-left: 8px; text-transform: uppercase; }
-        .badge-c { background-color: #fee2e2; color: #991b1b; border: 1px solid #f87171; }
-        .badge-ce { background-color: #dcfce7; color: #166534; border: 1px solid #4ade80; }
-    </style>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analyse</title><script src="https://cdn.tailwindcss.com"></script>
+    <style>.dot { height: 10px; width: 10px; border-radius: 50%; display: inline-block; }</style>
 </head>
-<body class="bg-slate-50 text-slate-900 font-sans antialiased pb-20">
-
-    <div class="max-w-2xl mx-auto bg-white min-h-screen shadow-2xl flex flex-col border-x border-slate-200">
-        
-        <header class="bg-slate-800 text-white p-6 sticky top-0 z-50 shadow-lg flex items-center justify-between border-b-4 border-blue-500">
-            <div class="flex items-center">
-                <button onclick="window.location.href='index.html'" class="mr-4 p-2 bg-slate-700 rounded-xl hover:bg-slate-600 transition-all">
-                    <svg class="w-6 h-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
-                </button>
-                <div>
-                    <h1 class="text-xl font-black tracking-tight uppercase italic">Ausbildungsstand</h1>
-                    <p class="text-[10px] text-blue-300 font-bold uppercase tracking-widest italic">Analyse & Fortschritt</p>
-                </div>
-            </div>
+<body class="bg-slate-50 text-slate-900 pb-20">
+    <div class="max-w-2xl mx-auto bg-white min-h-screen shadow-xl flex flex-col">
+        <header class="bg-slate-800 text-white p-5 sticky top-0 z-50 flex items-center border-b-4 border-blue-500">
+            <button onclick="window.location.href='index.html'" class="mr-4 p-2 bg-slate-700 rounded-xl"><svg class="w-6 h-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M15 19l-7-7 7-7" stroke-width="2"></path></svg></button>
+            <h1 class="text-xl font-black uppercase italic italic">Analyse</h1>
         </header>
 
-        <main class="p-5 flex-1">
-            <div class="mb-6">
-                <label class="block text-[10px] font-black text-slate-500 mb-1 uppercase tracking-widest italic">Fahrschüler wählen</label>
-                <select id="schuelerSelect" onchange="renderAnalyse()" class="w-full p-4 rounded-2xl border-2 border-slate-200 bg-slate-50 font-black text-slate-800 shadow-sm outline-none focus:border-blue-500 transition-all italic uppercase"></select>
+        <main class="p-5">
+            <div class="mb-6 bg-slate-100 p-5 rounded-2xl">
+                <select id="schuelerSelect" onchange="renderAnalyse()" class="w-full p-4 rounded-xl font-black text-slate-800 uppercase"></select>
             </div>
 
-            <div id="analyseContent" class="space-y-4">
-                <div class="p-10 text-center text-slate-400 font-bold italic uppercase text-xs">Bitte Schüler auswählen...</div>
+            <div id="statsBereich" class="hidden grid grid-cols-4 gap-2 mb-6">
+                <div onclick="setFilter('gruen')" class="bg-emerald-50 border-2 border-emerald-100 p-3 rounded-2xl text-center cursor-pointer shadow-sm">
+                    <div id="countGruen" class="text-xl font-black text-emerald-600">0</div>
+                    <div class="text-[8px] font-black uppercase">Sicher</div>
+                </div>
+                <div onclick="setFilter('gelb')" class="bg-amber-50 border-2 border-amber-100 p-3 rounded-2xl text-center cursor-pointer shadow-sm">
+                    <div id="countGelb" class="text-xl font-black text-amber-500">0</div>
+                    <div class="text-[8px] font-black uppercase">Hilfe</div>
+                </div>
+                <div onclick="setFilter('rot')" class="bg-rose-50 border-2 border-rose-100 p-3 rounded-2xl text-center cursor-pointer shadow-sm">
+                    <div id="countRot" class="text-xl font-black text-rose-500">0</div>
+                    <div class="text-[8px] font-black uppercase">Defizit</div>
+                </div>
+                <div onclick="setFilter('offen')" class="bg-slate-100 border-2 border-slate-200 p-3 rounded-2xl text-center cursor-pointer shadow-sm">
+                    <div id="countOffen" class="text-xl font-black text-slate-400">0</div>
+                    <div class="text-[8px] font-black uppercase">Offen</div>
+                </div>
             </div>
+
+            <div id="progressContainer" class="hidden mb-6 bg-slate-50 p-4 rounded-2xl">
+                <div class="flex justify-between mb-1"><span class="text-[9px] font-black uppercase">Fortschritt</span><span id="prozentText" class="text-sm font-black text-blue-600">0%</span></div>
+                <div class="w-full bg-slate-200 h-2 rounded-full overflow-hidden"><div id="prozentBalken" class="bg-blue-600 h-full transition-all duration-1000"></div></div>
+            </div>
+
+            <div id="analyseContent" class="space-y-3"></div>
         </main>
     </div>
 
     <script>
-        const katalog = {
-            grundstufe: { title: "Grundstufe (1-13)", items: [
-                {id: 1, text: "Einweisung Fahrzeug"}, {id: 2, text: "Techn. Durchsichten"}, {id: 3, text: "Ladungssicherung"}, {id: 4, text: "Fahrtechn. Vorber."}, {id: 5, text: "Führung Fahrauftrag"}, {id: 6, text: "Bedienungseinricht."}, {id: 7, text: "EG-Kontrollgerät"}, {id: 8, text: "Anfahr/Schalt/Lenk"}, {id: 9, text: "Geringe Geschw."}, {id: 10, text: "Abbremsen"}, {id: 11, text: "Rückwärts m. Einw."}, {id: 12, text: "An/Abkuppeln"}, {id: 13, text: "Verlassen d. Fzg"}
-            ], noteKey: "notizen_grundstufe" },
-            aufbaustufeA: { title: "Aufbaustufe A (14-35)", items: [
-                {id: 14, text: "Anfahren Ebene/Berg"}, {id: 15, text: "Gangwechsel"}, {id: 16, text: "Fahrbahnbenutzung"}, {id: 17, text: "Abbiegen"}, {id: 18, text: "Fahrstreifenwechsel"}, {id: 19, text: "Beobachtung"}, {id: 20, text: "Verkehrszeichen"}, {id: 21, text: "Geschwindigkeit"}, {id: 22, text: "Sicherheitsabstände"}, {id: 23, text: "Überholen/Vorbeif."}, {id: 24, text: "Lichtzeichen/Polizei"}, {id: 25, text: "mit/ohne Zeichen"}, {id: 26, text: "Kreisverkehr"}, {id: 27, text: "Bahnübergänge"}, {id: 28, text: "Fußgänger/Radfahrer"}, {id: 29, text: "Fußgängerüberwege"}, {id: 30, text: "Verk.beruhigt. Ber."}, {id: 31, text: "Haltende öfftl. VKM"}, {id: 32, text: "Engstellen"}, {id: 33, text: "Warneinrichtungen"}, {id: 34, text: "Liegenbleiben"}, {id: 35, text: "Wenden/Rückwärts"}
-            ], noteKey: "notizen_aufbauA" },
-            aufbaustufeB: { title: "Aufbaustufe B (36-46)", items: [
-                {id: 36, text: "Feld/Wald/Wiese"}, {id: 37, text: "Bodenverhältnisse"}, {id: 38, text: "Materialschonung"}, {id: 39, text: "Geschw./Gangwahl"}, {id: 40, text: "Geländegang/Sperre"}, {id: 41, text: "Spuren/Lenkrad"}, {id: 42, text: "Gefahrbremsung"}, {id: 43, text: "Ausweichen"}, {id: 44, text: "Steigung/Gefälle"}, {id: 45, text: "Bodenunebenheiten"}, {id: 46, text: "Geländebeurteilung"}
-            ], noteKey: "notizen_aufbauB" },
-            aufbaustufeC: { title: "Aufbaustufe C (47-56)", items: [
-                {id: 47, text: "Abfahrtkontrolle"}, {id: 48, text: "Sicherheitskontrolle"}, {id: 49, text: "Verbinden/Trennen"}, {id: 50, text: "Abstellen Anhänger"}, {id: 51, text: "Parklücke (C)"}, {id: 52, text: "Quer/Schräg (C)"}, {id: 53, text: "Rückwärts Rechts (C)"}, {id: 54, text: "Rampe Rechts (C)"}, {id: 55, text: "Rampe Gerade (CE)"}, {id: 56, text: "Umkehren Links (CE)"}
-            ], noteKey: "notizen_aufbauC" },
-            leistung: { title: "Leistungsstufe A & Sonderfahrten", items: [
-                {id: 57, text: "Vorausschauen"}, {id: 58, text: "Verkehrsteilnehmer"}, {id: 59, text: "Fahrverhalten andere"}, {id: 60, text: "Verkehrsraum"}, {id: 61, text: "Gefahrbremsung"}, {id: 62, text: "Überland (C)", badge: "c"}, {id: 63, text: "Autobahn (C)", badge: "c"}, {id: 64, text: "Nachtfahrt (C)", badge: "c"}, {id: 65, text: "Überland (CE)", badge: "ce"}, {id: 66, text: "Autobahn (CE)", badge: "ce"}, {id: 67, text: "Nachtfahrt (CE)", badge: "ce"}
-            ], noteKey: "notizen_leistung" },
-            reife: { title: "Reife & Einweiser", items: [
-                {id: 68, text: "Kompl. Situationen"}, {id: 69, text: "Risiko-Vermeidung"}, {id: 70, text: "Unbek. Verkehrsraum"}, {id: 71, text: "Prüfungsbeding."}, {id: 72, text: "Prüfungsreife"}, {id: 73, text: "Einweiser Tag (min)"}, {id: 74, text: "Einweiser Nacht (min)"}
-            ], noteKey: "notizen_reifestufe" }
-        };
+        let currentFilter = 'all';
+        const kKatalog = ["Einweisung Fzg", "Techn. Durchsichten", "Ladungssicherung", "Fahrtechn. Vorber.", "Führung Fahrauftrag", "Handhabung Bedien.", "EG-Kontrollgerät", "Anf/Sch/Lenk", "Geringe Geschw.", "Abbremsen", "Rückwärts m. Einw.", "An/Abkuppeln", "Verlassen Fzg", "Anfahren", "Gangwechsel", "Fahrbahnbenutzung", "Abbiegen", "Fahrstreifenwechsel", "Beobachtung", "Verkehrszeichen", "Geschwindigkeit", "Sicherheitsabstände", "Überholen/Vorbeif.", "Lichtzeichen/Polizei", "mit/ohne Zeichen", "Kreisverkehr", "Bahnübergänge", "Fußgänger/Rad", "Fußgängerüberwege", "Verk.beruhigt. Ber.", "Haltende öfftl. VKM", "Engstellen", "Warneinrichtungen", "Liegenbleiben", "Wenden/Rückwärts", "Feld/Wald/Wiese", "Bodenverhältnisse", "Materialschonung", "Geschw./Gangwahl", "Geländegang/Sperre", "Spuren/Lenkrad", "Gefahrbremsung", "Ausweichen", "Steigung/Gefälle", "Bodenunebenheiten", "Geländebeurteilung", "Abfahrtkontrolle", "Sicherheitskontrolle", "Verbinden/Trennen", "Abstellen Anhänger", "Parklücke (C)", "Quer/Schräg (C)", "Rückwärts Rechts (C)", "Rampe Rechts (C)", "Rampe Gerade (CE)", "Umkehren Links (CE)", "Vorausschauen", "Verkehrsteilnehmer", "Fahrverhalten andere", "Verkehrsraum", "Gefahrbremsung", "Überland (C)", "Autobahn (C)", "Nacht (C)", "Überland (CE)", "Autobahn (CE)", "Nacht (CE)", "Kompl. Situationen", "Risiko-Vermeidung", "Unbek. Verkehrsraum", "Prüfungsbeding.", "Prüfungsreife", "Tag (min)", "Nacht (min)"];
+
+        function setFilter(f) { currentFilter = (currentFilter === f) ? 'all' : f; renderAnalyse(); }
 
         function renderAnalyse() {
-            const schuelerId = document.getElementById('schuelerSelect').value;
+            const id = document.getElementById('schuelerSelect').value; if(!id) return;
             const container = document.getElementById('analyseContent');
-            if(!schuelerId) return;
+            const fahrten = (JSON.parse(localStorage.getItem('bw_ausbildungsstand')) || []).filter(f => f.schuelerId === id).sort((a,b) => new Date(a.datum) - new Date(b.datum));
+            
+            document.getElementById('statsBereich').classList.remove('hidden');
+            document.getElementById('progressContainer').classList.remove('hidden');
 
-            const alleFahrten = JSON.parse(localStorage.getItem('bw_ausbildungsstand')) || [];
-            const fahrten = alleFahrten.filter(f => f.schuelerId === schuelerId).sort((a,b) => new Date(a.datum) - new Date(b.datum));
+            let stand = {}; let counts = {gruen:0, gelb:0, rot:0, offen:0};
+            fahrten.forEach(f => { for(let i=1; i<=74; i++) if(f[`item_${i}`]) stand[i] = f[`item_${i}`]; });
 
-            if(fahrten.length === 0) {
-                container.innerHTML = '<div class="p-10 text-center text-slate-400 font-bold italic uppercase text-xs">Keine Daten vorhanden.</div>';
-                return;
-            }
+            for(let i=1; i<=74; i++) { const s = stand[i] || 'offen'; counts[s]++; }
+            ['gruen','gelb','rot','offen'].forEach(k => document.getElementById('count'+k.charAt(0).toUpperCase()+k.slice(1)).textContent = counts[k]);
+            const p = Math.round((counts.gruen/74)*100); document.getElementById('prozentText').textContent = p+'%'; document.getElementById('prozentBalken').style.width = p+'%';
 
             container.innerHTML = '';
-            
-            Object.keys(katalog).forEach(key => {
-                const section = katalog[key];
-                let sectionHtml = `<details class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden mb-4">
-                    <summary class="p-5 font-black text-xs text-slate-500 bg-slate-50/50 cursor-pointer flex justify-between items-center uppercase tracking-widest">${section.title}</summary>
-                    <div class="p-4 space-y-2">`;
+            for(let i=1; i<=74; i++) {
+                const s = stand[i] || 'offen';
+                if(currentFilter !== 'all' && s !== currentFilter) continue;
+                const col = {gruen:'bg-emerald-500', gelb:'bg-amber-400', rot:'bg-rose-500', offen:'bg-slate-200'}[s];
+                container.innerHTML += `<div class="p-3 flex items-center justify-between border-b text-[11px] font-bold"><span class="text-slate-500 mr-2">${i}</span><span class="flex-1">${kKatalog[i-1]}</span><span class="dot ${col}"></span></div>`;
+            }
 
-                // Items Rendern
-                section.items.forEach(item => {
-                    let lastStatus = 'leer';
-                    let totalCount = 0;
-                    fahrten.forEach(f => {
-                        if(f[`item_${item.id}`]) lastStatus = f[`item_${item.id}`];
-                        if(f[`count_${item.id}`]) totalCount += parseInt(f[`count_${item.id}`]);
-                    });
-
-                    sectionHtml += `<div class="flex items-center justify-between text-[11px] border-b border-slate-50 pb-2 last:border-0">
-                        <span class="font-bold text-slate-600">${item.id}. ${item.text} ${item.badge ? `<span class="badge badge-${item.badge}">${item.badge}</span>`:''}</span>
-                        <div class="flex items-center">
-                            <span class="mr-4 font-black text-blue-600 bg-blue-50 px-2 py-0.5 rounded text-[10px]">${totalCount}</span>
-                            <span class="dot bg-${lastStatus}"></span>
-                        </div>
-                    </div>`;
-                });
-
-                // Notizen-Historie (Logbuch)
-                let notesHtml = '';
-                fahrten.forEach(f => {
-                    if(f[section.noteKey]) {
-                        const date = new Date(f.datum).toLocaleDateString('de-DE');
-                        notesHtml += `<div class="mt-2 p-2 bg-slate-100 rounded-lg text-[10px] border-l-2 border-slate-300">
-                            <span class="font-black text-slate-500 uppercase text-[8px]">${date}:</span><br>
-                            <span class="font-bold text-slate-700 italic">"${f[section.noteKey]}"</span>
-                        </div>`;
-                    }
-                });
-
-                if(notesHtml) {
-                    sectionHtml += `<div class="mt-4 pt-4 border-t border-slate-100">
-                        <p class="text-[9px] font-black text-slate-400 uppercase mb-2 tracking-widest">Verlauf Bemerkungen</p>
-                        ${notesHtml}
-                    </div>`;
-                }
-
-                sectionHtml += `</div></details>`;
-                container.innerHTML += sectionHtml;
+            // Notizen Historie (Chronologisch)
+            let notesHtml = '';
+            fahrten.reverse().forEach(f => {
+                const keys = ['notizen_grundstufe','notizen_aufbauA','notizen_aufbauB','notizen_aufbauC','notizen_leistung','notizen_reifestufe'];
+                keys.forEach(k => { if(f[k]) notesHtml += `<div class="p-2 mb-2 bg-blue-50 border-l-2 border-blue-400 text-[10px] font-bold"># ${new Date(f.datum).toLocaleDateString()}: ${f[k]}</div>`; });
             });
+            if(notesHtml) container.innerHTML += `<div class="mt-8 border-t pt-4 font-black uppercase text-[10px] text-slate-400 italic">Verlauf Notizen</div>` + notesHtml;
         }
 
-        // Init
-        const schuelerIds = JSON.parse(localStorage.getItem('bw_aktive_schueler')) || [];
-        const select = document.getElementById('schuelerSelect');
-        select.innerHTML = '<option value="" disabled selected>Fahrschüler wählen...</option>';
-        schuelerIds.forEach(id => select.innerHTML += `<option value="${id}">${id}</option>`);
+        const ids = JSON.parse(localStorage.getItem('bw_aktive_schueler')) || [];
+        const sel = document.getElementById('schuelerSelect');
+        sel.innerHTML = '<option disabled selected>Fahrschüler wählen...</option>';
+        ids.forEach(id => sel.innerHTML += `<option value="${id}">${id}</option>`);
     </script>
 </body>
 </html>
