@@ -3,68 +3,40 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Dokumentation - BW Fahrschul-Manager</title>
+    <title>Dokumentation - BW</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         input[type="radio"].ampel-radio { display: none; }
-        input[type="radio"].ampel-radio:checked + label {
-            opacity: 1; transform: scale(1.1); border: 3px solid white;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2);
-        }
-        .ampel-label { opacity: 0.25; transition: all 0.2s; }
+        input[type="radio"].ampel-radio:checked + label { opacity: 1; transform: scale(1.1); border: 2px solid white; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .ampel-label { opacity: 0.2; transition: all 0.2s; }
         details > summary { list-style: none; }
-        details > summary::-webkit-details-marker { display: none; }
-        .row-hidden { display: none !important; }
-        .badge { font-size: 8px; padding: 2px 6px; border-radius: 4px; font-weight: 900; margin-left: 8px; text-transform: uppercase; }
-        .badge-c { background-color: #fee2e2; color: #991b1b; border: 1px solid #f87171; }
-        .badge-ce { background-color: #dcfce7; color: #166534; border: 1px solid #4ade80; }
-        .header-row { background-color: #f8fafc; padding: 12px; font-weight: 900; font-size: 13px; color: #1e293b; border-left: 4px solid #3b82f6; margin: 10px 0; text-transform: uppercase; }
-        .gray-row { background-color: #e2e8f0; padding: 12px; font-weight: 900; font-size: 13px; color: #475569; border-left: 4px solid #94a3b8; margin: 10px 0; text-transform: uppercase; }
-        .note-area { width: 100%; margin-top: 10px; padding: 10px; border-radius: 12px; border: 2px dashed #cbd5e1; font-size: 12px; background: #fdfdfd; }
+        .header-row { background: #f1f5f9; padding: 10px; font-weight: 900; font-size: 11px; color: #475569; border-left: 4px solid #3b82f6; margin-top: 15px; text-transform: uppercase; }
+        .gray-row { background: #e2e8f0; padding: 10px; font-weight: 900; font-size: 11px; border-left: 4px solid #64748b; margin-top: 15px; text-transform: uppercase; }
+        .note-area { width: 100%; margin-top: 10px; padding: 10px; border-radius: 8px; border: 1px dashed #cbd5e1; font-size: 11px; background: #fafafa; }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-800 font-sans antialiased pb-48">
-
-    <div class="max-w-2xl mx-auto bg-white min-h-screen shadow-2xl relative flex flex-col border-x border-slate-200">
-
-        <header class="bg-slate-800 text-white p-5 sticky top-0 z-50 shadow-lg flex items-center justify-between border-b-4 border-emerald-500">
+<body class="bg-slate-50 text-slate-800 pb-48">
+    <div class="max-w-2xl mx-auto bg-white min-h-screen shadow-xl flex flex-col">
+        <header class="bg-slate-800 text-white p-5 sticky top-0 z-50 flex items-center justify-between border-b-4 border-emerald-500">
             <div class="flex items-center">
-                <button onclick="window.location.href='index.html'" type="button" class="mr-4 p-2 bg-slate-700 rounded-xl hover:bg-slate-600 active:scale-95 transition-all">
-                    <svg class="w-6 h-6 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
-                </button>
-                <div>
-                    <h1 class="text-xl font-black tracking-tight uppercase italic">Dokumentation</h1>
-                    <p class="text-[10px] text-emerald-300 font-bold uppercase tracking-widest italic">Fahrt & Ausbildungsstand</p>
-                </div>
+                <button onclick="window.location.href='index.html'" class="mr-4 p-2 bg-slate-700 rounded-xl"><svg class="w-6 h-6 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M15 19l-7-7 7-7" stroke-width="2"></path></svg></button>
+                <h1 class="text-xl font-black uppercase italic italic">Dokumentation</h1>
             </div>
         </header>
 
-        <main class="flex-1 p-5">
+        <main class="p-5">
             <form id="fahrtForm" onsubmit="saveFahrt(event)">
-                
-                <div class="mb-8 bg-slate-100 p-5 rounded-2xl border border-slate-200 shadow-inner space-y-4">
-                    <div>
-                        <label class="block text-[10px] font-black text-slate-500 mb-1 uppercase tracking-widest">Fahrschüler</label>
-                        <select name="schuelerId" id="schuelerSelect" required onchange="ladeBestehendenStand()" class="w-full p-3 rounded-xl border-2 border-white bg-white font-black text-slate-800 shadow-sm outline-none focus:border-emerald-500 transition-all"></select>
-                    </div>
-                    <div>
-                        <label class="block text-[10px] font-black text-slate-500 mb-1 uppercase tracking-widest">Ausbildungsklasse</label>
-                        <select name="dfeKlasse" id="dfeKlasse" onchange="applyDFEFilter()" class="w-full p-3 rounded-xl border-2 border-emerald-200 bg-emerald-50 font-black text-emerald-900 shadow-sm outline-none transition-all">
-                            <option value="C/CE">Kombiniert: C / CE</option>
-                            <option value="C">Solo: Klasse C</option>
-                            <option value="E für C">Anhänger: E für C</option>
-                        </select>
-                    </div>
+                <div class="mb-8 bg-slate-100 p-5 rounded-2xl space-y-4">
+                    <select name="schuelerId" id="schuelerSelect" required onchange="ladeBestehendenStand()" class="w-full p-3 rounded-xl border-2 border-white font-black text-slate-800 shadow-sm"></select>
+                    <select name="dfeKlasse" id="dfeKlasse" onchange="applyDFEFilter()" class="w-full p-3 rounded-xl border-2 border-emerald-200 bg-emerald-50 font-black text-emerald-900">
+                        <option value="C/CE">Klasse C / CE</option>
+                        <option value="C">Klasse C (Solo)</option>
+                        <option value="E für C">Klasse E für C</option>
+                    </select>
                 </div>
-
-                <div class="space-y-4" id="formContent"></div>
-
-                <div class="fixed bottom-0 left-0 w-full p-6 bg-white/95 backdrop-blur-md border-t border-slate-200 shadow-2xl z-50">
-                    <div class="max-w-2xl mx-auto flex flex-col gap-3">
-                        <button type="submit" class="w-full bg-slate-800 text-white font-black text-lg py-5 rounded-2xl shadow-xl active:scale-95 transition-all uppercase tracking-widest border-b-4 border-emerald-600 flex items-center justify-center gap-3 italic">
-                             Dokumentation Speichern
-                        </button>
-                    </div>
+                <div id="formContent" class="space-y-4"></div>
+                <div class="fixed bottom-0 left-0 w-full p-6 bg-white shadow-2xl z-50">
+                    <button type="submit" class="w-full bg-slate-800 text-white font-black py-5 rounded-2xl uppercase tracking-widest border-b-4 border-emerald-600 active:scale-95 transition-all">Dokumentation Speichern</button>
                 </div>
             </form>
         </main>
@@ -72,136 +44,69 @@
 
     <script>
         const katalog = {
-            grundstufe: { title: "Grundstufe (1-13)", items: [
-                {id: 1, text: "Einweisung in das Ausbildungsfahrzeug"}, {id: 2, text: "Techn. Durchsichten (vor, während, nach der Benutzung)"}, {id: 3, text: "Ladungssicherung (Ladung, Zubehör und pers. Ausrüstung)"}, {id: 4, text: "Fahrtechn. Vorbereitungen (Sitz/Spiegel/Lenkrad/Gurt)"}, {id: 5, text: "Führung Fahrauftrag"}, {id: 6, text: "Handhabung der Bedienungseinrichtung"}, {id: 7, text: "Bedienung EG-Kontrollgerät"}, {id: 8, text: "Anfahr-, Schalt- und Lenkübungen"}, {id: 9, text: "Fahren mit geringer Geschwindigkeit"}, {id: 10, text: "Abbremsen aus geringer Geschwindigkeit"}, {id: 11, text: "Rückwärtsfahren mit Einweiser / Sicherungsposten"}, {id: 12, text: "An- und Abkuppeln des Anhängers"}, {id: 13, text: "Maßnahmen beim Verlassen des Fahrzeugs"}
-            ], noteKey: "notizen_grundstufe" },
-            aufbaustufeA: { title: "Aufbaustufe A (14-35)", items: [
-                {id: 14, text: "Verhalten beim Anfahren ( Ebene, Steigung / Gefälle)"}, {id: 15, text: "Gangwechsel"}, {id: 16, text: "Fahrbahnbenutzung (Kurven / ein- und mehrspurig)"}, {id: 17, text: "Abbiegen an Kreuzungen / Einmündungen"}, {type: "hint", text: "Verhalten an Kreuzungen und Einmündungen prüfen!"}, {id: 18, text: "Fahrstreifenwechsel"}, {id: 19, text: "Beobachtung Verkehrsraum"}, {id: 20, text: "Beachten der Verkehrszeichen und -einrichtungen"}, {id: 21, text: "Geschwindigkeit ( Straßen - / Verkehrsverhältnisse)"}, {id: 22, text: "Sicherheitsabstände"}, {id: 23, text: "Überholen und Vorbeifahren"}, {id: 24, text: "- Regelung durch Lichtzeichen oder Polizeibeamte"}, {id: 25, text: "- mit und ohne Verkehrszeichen"}, {id: 26, text: "Verhalten am Kreisverkehr"}, {id: 27, text: "Verhalten an Bahnübergängen"}, {id: 28, text: "Verhalten gegenüber Fußgängern und Radfahrern"}, {id: 29, text: "Verhalten an Fußgängerüberwegen"}, {id: 30, text: "Verhalten in verkehrsberuhigten Bereichen"}, {id: 31, text: "Haltende öfftl. Verkehrsmittel und Schulbusse"}, {id: 32, text: "Durchfahren von Engstellen"}, {id: 33, text: "Benutzung der Warneinrichtungen"}, {id: 34, text: "Maßnahmen zur Sicherung liegengebliebener Fzg"}, {id: 35, text: "Wenden und Rückwärtsfahren mit und ohne Anhänger"}
-            ], noteKey: "notizen_aufbauA" },
-            aufbaustufeB: { title: "Aufbaustufe B (36-46)", items: [
-                {id: 36, text: "Fahren auf Feld-, Wald-, und Wiesenwegen"}, {id: 37, text: "Fahren auf unterschiedlichen Bodenverhältnissen"}, {id: 38, text: "Materialschonendes Fahren"}, {id: 39, text: "Geschwindigkeit und Gangwahl"}, {id: 40, text: "Fahren ohne und mit Geländegang / Getriebesperre"}, {id: 41, text: "Befahren von Fahrspuren, Lenkradhaltung"}, {id: 42, text: "Gefahrbremsung auf losem Untergrund (mit/ohne ABV)"}, {id: 43, text: "Ausweichen von Hindernissen"}, {id: 44, text: "Befahren von Steigungen und Gefällen"}, {id: 45, text: "Überwinden von Querrinnen / Bodenunebenheiten"}, {id: 46, text: "Geländebeurteilung / - ausnutzung"}
-            ], noteKey: "notizen_aufbauB" },
-            aufbaustufeC: { title: "Aufbaustufe C (47-56)", items: [
-                {id: 47, text: "Abfahrtkontrolle (Sachgebiete 1-6)"}, {id: 48, text: "Sicherheitskontrolle"}, {id: 49, text: "Verbinden und Trennen von Fahrzeugen"}, {id: 50, text: "Abstellen des Anhängers"}, {type: "header", text: "Grundfahraufgaben DFE Kl C"}, {id: 51, text: "Rückwärtsfahren in eine Parklücke (Längsaufstellung)"}, {id: 52, text: "Rückwärts quer oder schräg einparken"}, {id: 53, text: "Fahren nach rechts rückwärts unter Ausnutzung einer Einmündung, Kreuzung oder Einfahrt"}, {id: 54, text: "Rückwärtsfahren und Versetzen nach rechts an eine Rampe zum Be- oder Entladen"}, {type: "header", text: "Grundfahraufgaben DFE Kl CE"}, {id: 55, text: "Rückwärtsfahren geradeaus an eine Rampe zum Be- oder Entladen"}, {id: 56, text: "Umkehren durch Rückwärtsfahren nach links"}
-            ], noteKey: "notizen_aufbauC" },
-            leistung: { title: "Leistungsstufe A & Sonderfahrten (57-67)", items: [
-                {id: 57, text: "Vorausschauendes Fahren"}, {id: 58, text: "Beobachtung anderer Verkehrsteilnehmer"}, {id: 59, text: "Beobachtung Fahrverhalten anderer FzFhr"}, {id: 60, text: "Beobachtung des Verkehrsraums"}, {id: 61, text: "Bremsen in Gefahrensituationen"}, {id: 62, text: "Schulung auf Bundes - oder Landstraßen", badge: "c"}, {id: 63, text: "Schulung auf Autobahnen", badge: "c"}, {id: 64, text: "Schulung bei Dämmerung oder Dunkelheit", badge: "c"}, {id: 65, text: "Schulung auf Bundes - oder Landstraßen", badge: "ce"}, {id: 66, text: "Schulung auf Autobahnen", badge: "ce"}, {id: 67, text: "Schulung bei Dämmerung oder Dunkelheit", badge: "ce"}
-            ], noteKey: "notizen_leistung" },
-            reife: { title: "Reife & Einweiser (68-71)", items: [
-                {id: 68, text: "Verhalten in komplizierten Verkehrssituationen"}, {id: 69, text: "Vermeiden risikoreicher Verkehrssituationen"}, {id: 70, text: "Fahren in unbekannten Verkehrsräumen"}, {id: 71, text: "Fahren unter Prüfungsbedingungen"}, {id: 72, text: "Feststellen der Prüfungsreife"}, {type: "gray", text: "Einweisertätigkeiten"}, {id: 73, text: "Einweisertätigkeiten bei Tag --> Minuten"}, {id: 74, text: "Einweisertätigkeieten bei Nacht --> Minuten"}
-            ], noteKey: "notizen_reifestufe" }
+            grundstufe: { title: "Grundstufe (1-13)", items: [1,2,3,4,5,6,7,8,9,10,11,12,13], texts: ["Einweisung Fzg", "Techn. Durchsichten", "Ladungssicherung", "Fahrtechn. Vorber.", "Führung Fahrauftrag", "Handhabung Bedien.", "EG-Kontrollgerät", "Anf/Sch/Lenk", "Geringe Geschw.", "Abbremsen", "Rückwärts m. Einw.", "An/Abkuppeln", "Verlassen Fzg"], noteKey: "notizen_grundstufe" },
+            aufbaustufeA: { title: "Aufbaustufe A (14-35)", items: [14,15,16,17,'hint',18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35], texts: ["Anfahren", "Gangwechsel", "Fahrbahnbenutzung", "Abbiegen", "Kreuzungs-Check!", "Fahrstreifenwechsel", "Beobachtung", "Verkehrszeichen", "Geschwindigkeit", "Sicherheitsabstände", "Überholen/Vorbeif.", "Lichtzeichen/Polizei", "mit/ohne Zeichen", "Kreisverkehr", "Bahnübergänge", "Fußgänger/Rad", "Fußgängerüberwege", "Verk.beruhigt. Ber.", "Haltende öfftl. VKM", "Engstellen", "Warneinrichtungen", "Liegenbleiben", "Wenden/Rückwärts"], noteKey: "notizen_aufbauA" },
+            aufbaustufeB: { title: "Aufbaustufe B (36-46)", items: [36,37,38,39,40,41,42,43,44,45,46], texts: ["Feld/Wald/Wiese", "Bodenverhältnisse", "Materialschonung", "Geschw./Gangwahl", "Geländegang/Sperre", "Spuren/Lenkrad", "Gefahrbremsung", "Ausweichen", "Steigung/Gefälle", "Bodenunebenheiten", "Geländebeurteilung"], noteKey: "notizen_aufbauB" },
+            aufbaustufeC: { title: "Aufbaustufe C (47-56)", items: [47,48,49,50,'h1',51,52,53,54,'h2',55,56], texts: ["Abfahrtkontrolle", "Sicherheitskontrolle", "Verbinden/Trennen", "Abstellen Anhänger", "Grundfahraufgaben DFE Kl C", "Parklücke (C)", "Quer/Schräg (C)", "Rückwärts Rechts (C)", "Rampe Rechts (C)", "Grundfahraufgaben DFE Kl CE", "Rampe Gerade (CE)", "Umkehren Links (CE)"], noteKey: "notizen_aufbauC" },
+            leistung: { title: "Leistungsstufe A & Sonderfahrten", items: [57,58,59,60,61,62,63,64,65,66,67], texts: ["Vorausschauen", "Verkehrsteilnehmer", "Fahrverhalten andere", "Verkehrsraum", "Gefahrbremsung", "Überland (C)", "Autobahn (C)", "Nacht (C)", "Überland (CE)", "Autobahn (CE)", "Nacht (CE)"], noteKey: "notizen_leistung" },
+            reife: { title: "Reife & Einweiser", items: [68,69,70,71,72,'g1',73,74], texts: ["Kompl. Situationen", "Risiko-Vermeidung", "Unbek. Verkehrsraum", "Prüfungsbeding.", "Prüfungsreife", "Einweisertätigkeiten", "Tag (min)", "Nacht (min)"], noteKey: "notizen_reifestufe" }
         };
 
-        function generateRow(item) {
-            if(item.type === 'header') return `<div class="header-row">${item.text}</div>`;
-            if(item.type === 'gray') return `<div class="gray-row">${item.text}</div>`;
-            if(item.type === 'hint') return `<div class="text-[10px] bg-yellow-50 p-2 my-2 border-l-4 border-yellow-400 font-bold italic text-yellow-800">${item.text}</div>`;
-            
-            const badgeClass = item.badge ? `badge badge-${item.badge}` : '';
-            const maxVal = (item.id === 73) ? 2 : (item.id === 74) ? 1 : 99;
-
-            return `
-            <div id="row-${item.id}" class="flex items-center justify-between py-4 border-b border-slate-50 last:border-0">
-                <span class="text-xs font-bold text-slate-600 w-1/2 pr-2 leading-tight">${item.id}. ${item.text} <span class="${badgeClass}">${item.badge || ''}</span></span>
-                <div class="flex items-center justify-end w-1/2 space-x-4">
-                    <div class="flex items-center bg-slate-100 rounded-xl p-1 border border-slate-200">
-                        <button type="button" onclick="changeCount(${item.id}, -1, ${maxVal})" class="w-7 h-7 bg-white rounded-lg shadow-sm flex items-center justify-center font-black text-slate-400">-</button>
-                        <input type="number" name="count_${item.id}" id="count_${item.id}" value="0" class="w-8 text-center bg-transparent font-black text-xs text-slate-700 outline-none" readonly>
-                        <button type="button" onclick="changeCount(${item.id}, 1, ${maxVal})" class="w-7 h-7 bg-white rounded-lg shadow-sm flex items-center justify-center font-black text-slate-600">+</button>
+        function generateRow(id, text) {
+            if(id === 'hint') return `<div class="text-[9px] bg-yellow-50 p-2 my-1 border-l-4 border-yellow-400 font-bold italic">Check: Kreuzungen/Einmündungen</div>`;
+            if(id === 'h1' || id === 'h2') return `<div class="header-row">${text}</div>`;
+            if(id === 'g1') return `<div class="gray-row">${text}</div>`;
+            const badge = (id >= 62 && id <= 64) ? 'badge-c' : (id >= 65 && id <= 67) ? 'badge-ce' : '';
+            return `<div id="row-${id}" class="flex items-center justify-between py-3 border-b border-slate-50">
+                <span class="text-[11px] font-bold text-slate-600 w-1/2">${id}. ${text}</span>
+                <div class="flex items-center gap-2">
+                    <div class="flex items-center bg-slate-100 rounded-lg p-1">
+                        <button type="button" onclick="changeCount(${id},-1)" class="w-6 h-6 bg-white rounded font-black">-</button>
+                        <input type="number" name="count_${id}" id="count_${id}" value="0" class="w-8 text-center bg-transparent font-black text-xs" readonly>
+                        <button type="button" onclick="changeCount(${id},1)" class="w-6 h-6 bg-white rounded font-black">+</button>
                     </div>
-                    <div class="flex space-x-2">
-                        <input type="radio" name="item_${item.id}" id="i${item.id}_rot" value="rot" class="ampel-radio"><label for="i${item.id}_rot" class="ampel-label w-7 h-7 rounded-full bg-rose-500 cursor-pointer shadow-sm"></label>
-                        <input type="radio" name="item_${item.id}" id="i${item.id}_gelb" value="gelb" class="ampel-radio"><label for="i${item.id}_gelb" class="ampel-label w-7 h-7 rounded-full bg-amber-400 cursor-pointer shadow-sm"></label>
-                        <input type="radio" name="item_${item.id}" id="i${item.id}_gruen" value="gruen" class="ampel-radio"><label for="i${item.id}_gruen" class="ampel-label w-7 h-7 rounded-full bg-emerald-500 cursor-pointer shadow-sm"></label>
+                    <div class="flex gap-1">
+                        <input type="radio" name="item_${id}" id="i${id}_rot" value="rot" class="ampel-radio"><label for="i${id}_rot" class="ampel-label w-6 h-6 rounded-full bg-rose-500 cursor-pointer"></label>
+                        <input type="radio" name="item_${id}" id="i${id}_gelb" value="gelb" class="ampel-radio"><label for="i${id}_gelb" class="ampel-label w-6 h-6 rounded-full bg-amber-400 cursor-pointer"></label>
+                        <input type="radio" name="item_${id}" id="i${id}_gruen" value="gruen" class="ampel-radio"><label for="i${id}_gruen" class="ampel-label w-6 h-6 rounded-full bg-emerald-500 cursor-pointer"></label>
                     </div>
                 </div>
             </div>`;
         }
-
         function renderAll() {
             const main = document.getElementById('formContent'); main.innerHTML = '';
             Object.keys(katalog).forEach(key => {
-                const section = katalog[key];
-                let html = `<details id="section-${key}" class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden mb-4">
-                    <summary class="p-5 font-black text-xs text-slate-500 bg-slate-50/50 cursor-pointer flex justify-between items-center uppercase tracking-widest">${section.title} <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7" stroke-width="2"></path></svg></summary>
-                    <div class="p-5">`;
-                section.items.forEach(item => { html += generateRow(item); });
-                html += `<textarea name="${section.noteKey}" placeholder="Notizen zu diesem Bereich..." class="note-area" rows="3"></textarea></div></details>`;
+                const s = katalog[key];
+                let html = `<details class="bg-white rounded-xl border border-slate-200 overflow-hidden mb-3"><summary class="p-4 font-black text-[10px] text-slate-500 bg-slate-50 uppercase tracking-widest cursor-pointer">${s.title}</summary><div class="p-4">`;
+                s.items.forEach((id, idx) => { html += generateRow(id, s.texts[idx]); });
+                html += `<textarea name="${s.noteKey}" placeholder="Notizen..." class="note-area" rows="2"></textarea></div></details>`;
                 main.innerHTML += html;
             });
             applyDFEFilter();
         }
-
-        function changeCount(id, val, max) { 
-            const inp = document.getElementById(`count_${id}`); 
-            let newVal = (parseInt(inp.value) || 0) + val; 
-            if (newVal >= 0 && newVal <= max) inp.value = newVal; 
-        }
-
+        function changeCount(id, v) { const i = document.getElementById(`count_${id}`); let n = (parseInt(i.value)||0)+v; if(n>=0) i.value=n; }
         function applyDFEFilter() {
-            const klasse = document.getElementById('dfeKlasse').value;
-            // Vereinfachte Filter-Logik für IDs
-            for(let i=1; i<=74; i++) { if(document.getElementById(`row-${i}`)) document.getElementById(`row-${i}`).classList.remove('row-hidden'); }
-            if (klasse === 'C') { 
-                [49, 50, 54, 65, 66, 67].forEach(id => { if(document.getElementById(`row-${id}`)) document.getElementById(`row-${id}`).classList.add('row-hidden'); });
-            } else if (klasse === 'E für C') { 
-                [35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 51, 52, 53, 62, 63, 64].forEach(id => { if(document.getElementById(`row-${id}`)) document.getElementById(`row-${id}`).classList.add('row-hidden'); });
-            }
+            const k = document.getElementById('dfeKlasse').value;
+            for(let i=1; i<=74; i++) if(document.getElementById(`row-${i}`)) document.getElementById(`row-${i}`).classList.remove('hidden');
+            if(k==='C') [49,50,54,65,66,67].forEach(id => document.getElementById(`row-${id}`)?.classList.add('hidden'));
+            if(k==='E für C') [35,36,37,38,39,40,41,42,43,44,45,46,51,52,53,62,63,64].forEach(id => document.getElementById(`row-${id}`)?.classList.add('hidden'));
         }
-
+        async function saveFahrt(e) {
+            e.preventDefault(); const d = Object.fromEntries(new FormData(e.target).entries()); d.datum = new Date().toISOString();
+            let arr = JSON.parse(localStorage.getItem('bw_ausbildungsstand')) || []; arr.push(d); localStorage.setItem('bw_ausbildungsstand', JSON.stringify(arr));
+            const u = localStorage.getItem('nc_user'); const p = localStorage.getItem('nc_pass');
+            if(u && p) {
+                const url = `https://nextcloud.auf.bundeswehr.de/remote.php/dav/files/${encodeURIComponent(u)}/Testordner%20Erfassung/Stand_${d.schuelerId}.json`;
+                try { await fetch(url, { method: 'PUT', headers: { 'Authorization': 'Basic ' + btoa(u + ":" + p) }, body: JSON.stringify(arr) }); alert("Lokal & Cloud gespeichert!"); } 
+                catch(e) { alert("Lokal gespeichert (Cloud Fehler)."); }
+            } else alert("Lokal gespeichert.");
+            window.location.href='index.html';
+        }
         const ids = JSON.parse(localStorage.getItem('bw_aktive_schueler')) || [];
-        const select = document.getElementById('schuelerSelect');
-        if (ids.length > 0) { 
-            select.innerHTML = '<option value="" disabled selected>Fahrschüler wählen...</option>'; 
-            ids.forEach(id => select.innerHTML += `<option value="${id}">${id}</option>`); 
-        } else { select.innerHTML = '<option value="">Keine Schüler!</option>'; }
-
+        const sel = document.getElementById('schuelerSelect');
+        sel.innerHTML = '<option disabled selected>Schüler wählen...</option>';
+        ids.forEach(id => sel.innerHTML += `<option value="${id}">${id}</option>`);
         renderAll();
-
-        async function saveFahrt(event) {
-            event.preventDefault(); 
-            const formData = new FormData(event.target); 
-            const data = Object.fromEntries(formData.entries()); 
-            data.datum = new Date().toISOString();
-            
-            // Lokal speichern
-            let arr = JSON.parse(localStorage.getItem('bw_ausbildungsstand')) || []; 
-            arr.push(data); 
-            localStorage.setItem('bw_ausbildungsstand', JSON.stringify(arr)); 
-
-            // Cloud-Sync Versuch
-            const user = localStorage.getItem('nc_user');
-            const pass = localStorage.getItem('nc_pass');
-            
-            if(user && pass) {
-                const url = `https://nextcloud.auf.bundeswehr.de/remote.php/dav/files/${encodeURIComponent(user)}/Testordner%20Erfassung/Stand_${data.schuelerId}.json`;
-                const auth = btoa(user + ":" + pass);
-                try {
-                    const res = await fetch(url, { method: 'PUT', headers: { 'Authorization': 'Basic ' + auth, 'Content-Type': 'application/json' }, body: JSON.stringify(arr) });
-                    if(res.ok) alert("✅ Lokal & Cloud gespeichert!"); else alert("✅ Lokal gespeichert (Cloud-Fehler).");
-                } catch(e) { alert("✅ Lokal gespeichert (Keine Verbindung)."); }
-            } else {
-                alert("✅ Lokal gespeichert! (Keine Cloud-Daten)");
-            }
-            window.location.href = 'index.html';
-        }
-
-        function ladeBestehendenStand() {
-            const id = document.getElementById('schuelerSelect').value; if(!id) return;
-            document.querySelectorAll('input[type="radio"]').forEach(r => r.checked = false);
-            document.querySelectorAll('input[type="number"]').forEach(c => c.value = 0);
-            document.querySelectorAll('textarea').forEach(t => t.value = '');
-            const alleFahrten = JSON.parse(localStorage.getItem('bw_ausbildungsstand')) || [];
-            const schuelerFahrten = alleFahrten.filter(f => f.schuelerId === id).sort((a,b) => new Date(a.datum) - new Date(b.datum));
-            schuelerFahrten.forEach(f => {
-                for(let i=1; i<=74; i++) {
-                    if(f[`item_${i}`]) { const rb = document.getElementById(`i${i}_${f['item_'+i]}`); if(rb) rb.checked = true; }
-                    if(f[`count_${i}`]) { const inp = document.getElementById(`count_${i}`); if(inp) inp.value = parseInt(inp.value) + parseInt(f[`count_${i}`]); }
-                }
-                // Notizen laden (letzter Stand)
-                Object.keys(katalog).forEach(k => { if(f[katalog[k].noteKey]) document.getElementsByName(katalog[k].noteKey)[0].value = f[katalog[k].noteKey]; });
-            });
-        }
     </script>
 </body>
 </html>
