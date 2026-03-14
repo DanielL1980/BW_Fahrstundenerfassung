@@ -3,154 +3,99 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>BW Fahrschul-Manager - Zentral</title>
+    <title>BW Fahrschul-Manager</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        .animate-slide-in { animation: slideIn 0.3s ease-out; }
-        @keyframes slideIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
-    </style>
 </head>
 <body class="bg-slate-50 text-slate-900 font-sans antialiased pb-24">
-
-    <div class="max-w-md mx-auto bg-white min-h-screen shadow-2xl relative flex flex-col">
-
+    <div class="max-w-md mx-auto bg-white min-h-screen shadow-2xl flex flex-col">
         <header class="bg-slate-800 text-white p-6 rounded-b-3xl shadow-lg border-b-4 border-blue-600">
             <div class="flex justify-between items-center mb-2">
-                <h1 class="text-xl font-black tracking-tighter uppercase italic text-blue-500">Fahrschul-App</h1>
-                <div class="flex gap-2">
-                    <span id="current-date" class="text-[10px] bg-slate-700 px-3 py-1 rounded-full text-blue-200 font-bold self-center"></span>
-                    <button onclick="toggleBereich('settings')" class="p-2 bg-slate-700 rounded-xl hover:bg-slate-600 active:scale-90 transition-all shadow-lg border border-slate-600">
-                        <svg class="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-                    </button>
-                </div>
+                <h1 class="text-xl font-black tracking-tighter uppercase italic">Fahrschul-App</h1>
+                <button onclick="toggleBereich('settings')" class="p-2 bg-slate-700 rounded-xl border border-slate-600 shadow-lg active:scale-90 transition-all">
+                    <svg class="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                </button>
             </div>
-            <p class="text-[10px] text-slate-400 font-medium tracking-widest uppercase italic">Zentral-Modus • Cloud-Synchronisiert</p>
+            <p class="text-[10px] text-slate-400 font-medium tracking-widest uppercase italic">Zentral-Modus • Nextcloud Sync</p>
         </header>
 
         <main class="flex-1 p-5">
             <div class="grid grid-cols-2 gap-4 mb-8">
-                <button onclick="window.location.href='neue-fahrt.html'" class="bg-emerald-50 border-2 border-emerald-100 p-4 rounded-2xl flex flex-col items-center justify-center aspect-square hover:bg-emerald-100 active:scale-95 transition-all shadow-sm group">
-                    <svg class="w-12 h-12 text-emerald-600 mb-2 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                <button onclick="window.location.href='neue-fahrt.html'" class="bg-emerald-50 border-2 border-emerald-100 p-4 rounded-2xl flex flex-col items-center justify-center aspect-square shadow-sm active:scale-95 transition-all">
+                    <svg class="w-12 h-12 text-emerald-600 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                     <span class="font-black text-emerald-800 text-xs uppercase italic">Neue Fahrt</span>
                 </button>
-
-                <button onclick="window.location.href='fortschritt.html'" class="bg-blue-50 border-2 border-blue-100 p-4 rounded-2xl flex flex-col items-center justify-center aspect-square hover:bg-blue-100 active:scale-95 transition-all shadow-sm group">
-                    <svg class="w-12 h-12 text-blue-600 mb-2 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                <button onclick="window.location.href='fortschritt.html'" class="bg-blue-50 border-2 border-blue-100 p-4 rounded-2xl flex flex-col items-center justify-center aspect-square shadow-sm active:scale-95 transition-all">
+                    <svg class="w-12 h-12 text-blue-600 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
                     <span class="font-black text-blue-800 text-xs uppercase italic">Analyse</span>
                 </button>
-
-                <button onclick="toggleBereich('schuelerVerwaltung')" class="bg-amber-50 border-2 border-amber-100 p-4 rounded-2xl flex flex-col items-center justify-center aspect-square hover:bg-amber-100 active:scale-95 transition-all shadow-sm group">
-                    <svg class="w-12 h-12 text-amber-600 mb-2 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                <button onclick="toggleBereich('schuelerVerwaltung')" class="bg-amber-50 border-2 border-amber-100 p-4 rounded-2xl flex flex-col items-center justify-center aspect-square shadow-sm active:scale-95 transition-all">
+                    <svg class="w-12 h-12 text-amber-600 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
                     <span class="font-black text-amber-800 text-xs uppercase italic">Schüler-IDs</span>
                 </button>
-
-                <button onclick="toggleBereich('exportVerwaltung')" class="bg-slate-50 border-2 border-slate-200 p-4 rounded-2xl flex flex-col items-center justify-center aspect-square hover:bg-slate-100 active:scale-95 transition-all shadow-sm group">
-                    <svg class="w-12 h-12 text-slate-600 mb-2 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
+                <button onclick="toggleBereich('exportVerwaltung')" class="bg-slate-50 border-2 border-slate-200 p-4 rounded-2xl flex flex-col items-center justify-center aspect-square shadow-sm active:scale-95 transition-all">
+                    <svg class="w-12 h-12 text-slate-600 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
                     <span class="font-black text-slate-800 text-[10px] text-center uppercase leading-tight italic">Cloud<br>Sync</span>
                 </button>
             </div>
 
-            <div id="settings" class="hidden animate-slide-in mb-8">
-                <h2 class="text-sm font-black mb-3 text-slate-800 border-l-4 border-blue-500 pl-3 uppercase italic italic">Cloud-Setup</h2>
-                <div class="bg-slate-100 p-4 rounded-2xl border-2 border-white shadow-inner space-y-3">
-                    <p class="text-[9px] text-slate-500 font-bold uppercase mb-1">Dienstliche Nextcloud-Daten (Lokal auf Tablet)</p>
-                    <input type="text" id="ncUser" placeholder="Dienst-Nutzer (z.B. 10182872@...)" class="w-full p-3 rounded-xl border-2 border-slate-200 text-xs font-bold focus:border-blue-500 outline-none">
-                    <input type="password" id="ncPass" placeholder="App-Passwort (aus NC-Sicherheit)" class="w-full p-3 rounded-xl border-2 border-slate-200 text-xs font-bold focus:border-blue-500 outline-none">
-                    <button onclick="saveSettings()" class="w-full bg-blue-600 text-white font-black py-3 rounded-xl uppercase text-xs shadow-md active:scale-95 transition-all">Setup Speichern</button>
-                </div>
+            <div id="settings" class="hidden mb-6 p-4 bg-slate-100 rounded-2xl border-2 border-white shadow-inner space-y-3">
+                <h2 class="text-xs font-black uppercase italic">Cloud-Setup</h2>
+                <input type="text" id="ncUser" placeholder="Dienst-Nutzer (z.B. 10182872@...)" class="w-full p-3 rounded-xl border text-xs font-bold">
+                <input type="password" id="ncPass" placeholder="App-Passwort" class="w-full p-3 rounded-xl border text-xs font-bold">
+                <button onclick="saveSettings()" class="w-full bg-blue-600 text-white font-black py-3 rounded-xl uppercase text-xs">Setup Speichern</button>
             </div>
 
-            <div id="schuelerVerwaltung" class="hidden animate-slide-in">
-                <h2 class="text-sm font-black mb-3 text-slate-800 border-l-4 border-amber-400 pl-3 uppercase italic italic text-sm">IDs verwalten</h2>
-                <form onsubmit="addSchueler(event)" class="mb-4 flex gap-2">
-                    <input type="text" id="neueId" required placeholder="NEUE ID" class="flex-1 p-3 rounded-xl border-2 border-slate-200 bg-white focus:outline-none focus:border-amber-500 uppercase font-bold text-slate-800 transition-all text-sm">
-                    <button type="submit" class="bg-amber-500 text-white font-bold px-5 rounded-xl hover:bg-amber-600 active:scale-95 shadow-md shadow-amber-200">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
-                    </button>
+            <div id="exportVerwaltung" class="hidden space-y-4">
+                <h2 class="text-sm font-black border-l-4 border-emerald-500 pl-3 uppercase italic">Zentraler Sync</h2>
+                <button onclick="syncFromCloud()" class="w-full bg-emerald-600 text-white font-black py-4 rounded-2xl shadow-lg active:scale-95 transition-all text-xs uppercase italic">Synchronisation starten</button>
+                <div id="cloudStatus" class="text-[9px] text-center font-bold text-slate-400 uppercase italic"></div>
+            </div>
+
+            <div id="schuelerVerwaltung" class="hidden space-y-4">
+                <form onsubmit="addSchueler(event)" class="flex gap-2">
+                    <input type="text" id="neueId" required placeholder="NEUE ID" class="flex-1 p-3 rounded-xl border-2 border-slate-200 uppercase font-bold text-sm">
+                    <button type="submit" class="bg-amber-500 text-white font-bold px-5 rounded-xl shadow-md">ADD</button>
                 </form>
-                <div class="bg-slate-50 border border-slate-200 rounded-xl overflow-hidden shadow-sm">
-                    <ul id="schuelerListe" class="divide-y divide-slate-200"></ul>
-                </div>
-            </div>
-
-            <div id="exportVerwaltung" class="hidden animate-slide-in">
-                <h2 class="text-sm font-black mb-3 text-slate-800 border-l-4 border-slate-500 pl-3 uppercase italic italic text-sm italic">Zentraler Cloud-Sync</h2>
-                
-                <div class="bg-emerald-50 border-2 border-emerald-100 p-4 rounded-2xl mb-4 text-center">
-                    <p class="text-[10px] font-black text-emerald-700 uppercase mb-3 italic">Daten aus Cloud laden (Backup/Kollegen)</p>
-                    <button onclick="alert('Funktion wird nach Struktur-Update 2 freigeschaltet.')" class="w-full bg-emerald-600 text-white font-black py-4 rounded-xl shadow-md active:scale-95 transition-all text-xs uppercase italic">Sync von Nextcloud</button>
-                </div>
-
-                <div class="bg-blue-50 border-2 border-blue-100 p-4 rounded-2xl mb-4">
-                    <h3 class="text-[10px] font-black text-blue-700 mb-2 uppercase tracking-wider italic text-center">Lokale Sicherung (Downloads)</h3>
-                    <button onclick="exportiereDaten()" class="w-full bg-blue-600 text-white font-black py-3 rounded-xl hover:bg-blue-700 active:scale-95 shadow-md uppercase text-[10px] transition-all italic">Backup auf Tablet speichern</button>
-                </div>
+                <ul id="schuelerListe" class="bg-slate-50 rounded-xl divide-y divide-slate-200"></ul>
             </div>
         </main>
     </div>
-
     <script>
-        document.getElementById('current-date').textContent = new Date().toLocaleDateString('de-DE');
-
         function toggleBereich(id) {
-            ['schuelerVerwaltung', 'exportVerwaltung', 'settings'].forEach(b => {
-                if(b === id) {
-                    document.getElementById(b).classList.toggle('hidden');
-                } else {
-                    document.getElementById(b).classList.add('hidden');
-                }
-            });
+            ['schuelerVerwaltung', 'exportVerwaltung', 'settings'].forEach(b => document.getElementById(b).classList.add('hidden'));
+            document.getElementById(id).classList.toggle('hidden');
             if(id === 'schuelerVerwaltung') renderSchuelerListe();
         }
-
-        // SETTINGS LOGIK
         function saveSettings() {
-            const user = document.getElementById('ncUser').value.trim();
-            const pass = document.getElementById('ncPass').value.trim();
-            if(!user || !pass) return alert("Bitte beide Felder ausfüllen.");
-            localStorage.setItem('nc_user', user);
-            localStorage.setItem('nc_pass', pass);
-            alert("✅ Zugangsdaten sicher auf diesem Tablet gespeichert.");
+            localStorage.setItem('nc_user', document.getElementById('ncUser').value.trim());
+            localStorage.setItem('nc_pass', document.getElementById('ncPass').value.trim());
+            alert("✅ Zugangsdaten gespeichert.");
             document.getElementById('settings').classList.add('hidden');
         }
-
-        // SCHÜLER LOGIK
+        async function syncFromCloud() {
+            const user = localStorage.getItem('nc_user'); const pass = localStorage.getItem('nc_pass');
+            if(!user || !pass) return alert("Zuerst Setup ausfüllen!");
+            document.getElementById('cloudStatus').textContent = "Verbinde mit Nextcloud...";
+            const url = `https://nextcloud.auf.bundeswehr.de/remote.php/dav/files/${encodeURIComponent(user)}/Testordner%20Erfassung/`;
+            try {
+                const res = await fetch(url, { method: 'PROPFIND', headers: { 'Authorization': 'Basic ' + btoa(user + ":" + pass), 'Depth': '1' } });
+                if(res.ok) { alert("✅ Cloud-Verbindung erfolgreich!"); document.getElementById('cloudStatus').textContent = "Online & Bereit"; }
+                else alert("❌ Login fehlgeschlagen.");
+            } catch(e) { alert("❌ Netzwerkfehler."); }
+        }
         let aktiveSchuelerIds = JSON.parse(localStorage.getItem('bw_aktive_schueler')) || [];
         function renderSchuelerListe() {
-            const liste = document.getElementById('schuelerListe');
-            liste.innerHTML = '';
-            if (aktiveSchuelerIds.length === 0) return liste.innerHTML = '<li class="p-6 text-xs font-bold text-center text-slate-400 italic">Keine IDs hinterlegt.</li>';
+            const liste = document.getElementById('schuelerListe'); liste.innerHTML = '';
             aktiveSchuelerIds.forEach(id => {
-                liste.innerHTML += `<li class="p-3 flex justify-between items-center px-4"><span class="font-black text-slate-700">${id}</span><button onclick="removeSchueler('${id}')" class="text-slate-300 hover:text-red-500 font-black transition-colors text-xs">LÖSCHEN</button></li>`;
+                liste.innerHTML += `<li class="p-3 flex justify-between items-center px-4 font-bold text-sm"><span>${id}</span><button onclick="removeSchueler('${id}')" class="text-red-400 text-xs">LÖSCHEN</button></li>`;
             });
         }
         function addSchueler(event) {
-            event.preventDefault();
-            const input = document.getElementById('neueId');
-            const neueId = input.value.trim().toUpperCase();
-            if (neueId && !aktiveSchuelerIds.includes(neueId)) {
-                aktiveSchuelerIds.push(neueId);
-                localStorage.setItem('bw_aktive_schueler', JSON.stringify(aktiveSchuelerIds));
-                input.value = ''; renderSchuelerListe();
-            }
+            event.preventDefault(); const input = document.getElementById('neueId'); const neueId = input.value.trim().toUpperCase();
+            if (neueId && !aktiveSchuelerIds.includes(neueId)) { aktiveSchuelerIds.push(neueId); localStorage.setItem('bw_aktive_schueler', JSON.stringify(aktiveSchuelerIds)); input.value = ''; renderSchuelerListe(); }
         }
         function removeSchueler(id) {
-            if (confirm(`ID "${id}" entfernen?`)) {
-                aktiveSchuelerIds = aktiveSchuelerIds.filter(item => item !== id);
-                localStorage.setItem('bw_aktive_schueler', JSON.stringify(aktiveSchuelerIds));
-                renderSchuelerListe();
-            }
-        }
-
-        // BACKUP EXPORT (ALT)
-        function exportiereDaten() {
-            const fahrten = JSON.parse(localStorage.getItem('bw_ausbildungsstand')) || [];
-            const ids = JSON.parse(localStorage.getItem('bw_aktive_schueler')) || [];
-            const data = {typ: "Gesamt_Backup", schuelerIDs: ids, alleFahrten: fahrten};
-            const a = document.createElement('a');
-            a.href = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(data, null, 2));
-            a.download = `BW_Gesamt_${new Date().toISOString().split('T')[0]}.json`;
-            a.click();
+            if (confirm(`ID "${id}" entfernen?`)) { aktiveSchuelerIds = aktiveSchuelerIds.filter(item => item !== id); localStorage.setItem('bw_aktive_schueler', JSON.stringify(aktiveSchuelerIds)); renderSchuelerListe(); }
         }
     </script>
 </body>
