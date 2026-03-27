@@ -173,16 +173,18 @@ function renderPins() {
 
             const datum = new Date(pin.datum).toLocaleDateString('de-DE');
             const gmapsUrl = `https://www.google.com/maps?q=${pin.lat},${pin.lng}`;
+            const streetViewUrl = `https://www.google.com/maps?layer=c&cbll=${pin.lat},${pin.lng}&cbp=12,0,,0,0`;
             const marker = L.marker([pin.lat, pin.lng], { icon })
                 .addTo(karteInstanz)
                 .bindPopup(`
-                    <div style="min-width:200px;font-family:sans-serif">
+                    <div style="min-width:210px;font-family:sans-serif">
                         <b style="color:#ef4444;font-size:13px">Pin #${pin.nummer}</b>
                         <span style="color:#94a3b8;font-size:11px;margin-left:6px">${datum} · ${pin.zeit}</span><br>
                         <span style="font-size:12px;margin-top:4px;display:block;color:#334155">${pin.notiz || '(keine Notiz)'}</span>
-                        <a href="${gmapsUrl}" target="_blank" style="color:#6366f1;font-size:11px;margin-top:6px;display:inline-block">
-                            📍 In Google Maps öffnen →
-                        </a>
+                        <div style="display:flex;gap:8px;margin-top:8px">
+                            <a href="${gmapsUrl}" target="_blank" style="color:#6366f1;font-size:11px;text-decoration:none">📍 Google Maps →</a>
+                            <a href="${streetViewUrl}" target="_blank" style="color:#16a34a;font-size:11px;text-decoration:none">🧍 Street View →</a>
+                        </div>
                     </div>
                 `);
             markers.push(marker);
@@ -210,6 +212,7 @@ function renderPins() {
     liste.innerHTML = [...pins].reverse().map(pin => {
         const datum = new Date(pin.datum).toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' });
         const gmapsUrl = `https://www.google.com/maps?q=${pin.lat},${pin.lng}`;
+        const streetViewUrl = `https://www.google.com/maps?layer=c&cbll=${pin.lat},${pin.lng}&cbp=12,0,,0,0`;
         return `
         <div class="flex items-start gap-3 p-4 bg-slate-50 border border-slate-100 rounded-2xl group">
             <div class="w-8 h-8 rounded-full bg-rose-500 text-white flex items-center justify-center text-xs font-black flex-shrink-0 mt-0.5">
@@ -223,6 +226,10 @@ function renderPins() {
                 <a href="${gmapsUrl}" target="_blank"
                     class="p-1.5 rounded-lg bg-indigo-50 text-indigo-600 hover:bg-indigo-100 transition flex items-center justify-center" title="In Google Maps öffnen">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                </a>
+                <a href="${streetViewUrl}" target="_blank"
+                    class="p-1.5 rounded-lg bg-emerald-50 text-emerald-600 hover:bg-emerald-100 transition flex items-center justify-center" title="Street View öffnen">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
                 </a>
                 <button onclick="pinLoeschen('${pin.id}')"
                     class="p-1.5 rounded-lg bg-red-50 text-red-500 hover:bg-red-100 transition flex items-center justify-center" title="Pin löschen">
