@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Ortsnotizen - BW</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        #karte { height: 380px; }
+        .leaflet-container { font-family: inherit; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900 pb-12">
+<div class="max-w-2xl mx-auto bg-white min-h-screen shadow-xl flex flex-col">
+
+    <header class="bg-slate-800 text-white p-5 sticky top-0 z-50 flex items-center border-b-4 border-rose-500">
+        <button onclick="window.location.href='index.html'" class="mr-4 p-2 bg-slate-700 rounded-xl">
+            <svg class="w-6 h-6 text-rose-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M15 19l-7-7 7-7" stroke-width="2"></path></svg>
+        </button>
+        <div>
+            <h1 class="text-xl font-black uppercase italic">Ortsnotizen</h1>
+            <p class="text-[10px] text-slate-400 font-medium tracking-widest uppercase mt-0.5">Kartenpins je Fahrschüler</p>
+        </div>
+    </header>
+
+    <main class="p-5 flex flex-col gap-5">
+
+        <!-- Schüler-Auswahl -->
+        <div class="bg-slate-100 p-4 rounded-2xl">
+            <select id="schuelerSelect" onchange="ladeKarte()"
+                class="w-full p-3 rounded-xl border-2 border-white font-black text-slate-800 shadow-sm">
+                <option disabled selected>Fahrschüler wählen...</option>
+            </select>
+        </div>
+
+        <!-- Leer-Zustand -->
+        <div id="leerZustand" class="text-center py-16 text-slate-400">
+            <div class="text-5xl mb-4">📍</div>
+            <p class="font-black uppercase text-sm">Fahrschüler wählen</p>
+            <p class="text-xs mt-1">um Ortsnotizen anzuzeigen</p>
+        </div>
+
+        <!-- Karten-Bereich (versteckt bis Schüler gewählt) -->
+        <div id="kartenBereich" class="hidden space-y-4">
+
+            <!-- Stats -->
+            <div class="flex items-center justify-between bg-rose-50 border border-rose-100 p-4 rounded-2xl">
+                <div>
+                    <span id="pinAnzahl" class="text-2xl font-black text-rose-600">0</span>
+                    <span class="text-xs font-black text-rose-400 ml-2 uppercase">Pins gesetzt</span>
+                </div>
+                <button onclick="alleLoeschen()" class="text-[10px] font-black text-slate-400 hover:text-red-500 uppercase tracking-wide transition-colors">
+                    Alle löschen
+                </button>
+            </div>
+
+            <!-- Kartentyp Toggle -->
+            <div class="flex gap-2">
+                <button id="btnSatellit" onclick="setKartentyp('satellit')"
+                    class="flex-1 py-2.5 rounded-xl text-sm font-black border-2 border-indigo-500 bg-indigo-50 text-indigo-700 transition-all">
+                    🛰️ Satellit
+                </button>
+                <button id="btnStrasse" onclick="setKartentyp('strasse')"
+                    class="flex-1 py-2.5 rounded-xl text-sm font-black border-2 border-slate-200 text-slate-500 transition-all">
+                    🗺️ Straßenkarte
+                </button>
+            </div>
+
+            <!-- Leaflet Karte -->
+            <div id="karte" class="rounded-2xl border border-slate-200 overflow-hidden shadow-sm"></div>
+
+            <!-- Pins Liste -->
+            <div>
+                <h2 class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">Alle Positionen</h2>
+                <div id="pinListe" class="space-y-2"></div>
+            </div>
+        </div>
+
+    </main>
+</div>
+
+<script>
+let karteInstanz = null;
+let markerLayer = null;
+let aktuellerKartentyp = 'satellit';
+let aktuelleSchuelerId = null;
+
+const LAYER_URLS = {
+    satellit: {
+        url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+        attribution: '© Esri World Imagery'
+    },
+    strasse: {
+        url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+        attribution: '© OpenStreetMap'
+    }
+};
+
+// Leaflet dynamisch laden
+function leafletLaden(callback) {
+    if (window.L) { callback(); return; }
+
+    if (!document.querySelector('link[href*="leaflet"]')) {
+        const link = document.createElement('link');
+        link.rel = 'stylesheet';
+        link.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
+        document.head.appendChild(link);
+    }
+
+    const script = document.createElement('script');
+    script.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
+    script.onload = () => setTimeout(callback, 100);
+    document.head.appendChild(script);
+}
+
+function karteInitialisieren() {
+    if (karteInstanz) return;
+    const L = window.L;
+    karteInstanz = L.map('karte').setView([51.1657, 10.4515], 6);
+    const l = LAYER_URLS[aktuellerKartentyp];
+    markerLayer = L.tileLayer(l.url, { attribution: l.attribution }).addTo(karteInstanz);
+}
+
+function setKartentyp(typ) {
+    aktuellerKartentyp = typ;
+
+    document.getElementById('btnSatellit').className = `flex-1 py-2.5 rounded-xl text-sm font-black border-2 transition-all ${typ === 'satellit' ? 'border-indigo-500 bg-indigo-50 text-indigo-700' : 'border-slate-200 text-slate-500'}`;
+    document.getElementById('btnStrasse').className = `flex-1 py-2.5 rounded-xl text-sm font-black border-2 transition-all ${typ === 'strasse' ? 'border-indigo-500 bg-indigo-50 text-indigo-700' : 'border-slate-200 text-slate-500'}`;
+
+    if (!karteInstanz || !window.L) return;
+    const L = window.L;
+    if (markerLayer) markerLayer.remove();
+    const l = LAYER_URLS[typ];
+    markerLayer = L.tileLayer(l.url, { attribution: l.attribution }).addTo(karteInstanz);
+}
+
+function ladeKarte() {
+    aktuelleSchuelerId = document.getElementById('schuelerSelect').value;
+    if (!aktuelleSchuelerId || aktuelleSchuelerId === 'Fahrschüler wählen...') return;
+
+    document.getElementById('leerZustand').classList.add('hidden');
+    document.getElementById('kartenBereich').classList.remove('hidden');
+
+    leafletLaden(() => {
+        karteInitialisieren();
+        renderPins();
+    });
+}
+
+function renderPins() {
+    if (!aktuelleSchuelerId) return;
+    const pins = JSON.parse(localStorage.getItem(`bw_pins_${aktuelleSchuelerId}`)) || [];
+
+    document.getElementById('pinAnzahl').textContent = pins.length;
+
+    // Marker aktualisieren
+    if (karteInstanz && window.L) {
+        const L = window.L;
+
+        // Alle alten Marker entfernen
+        karteInstanz.eachLayer(layer => {
+            if (layer instanceof L.Marker) karteInstanz.removeLayer(layer);
+        });
+
+        const markers = [];
+        pins.forEach(pin => {
+            const icon = L.divIcon({
+                html: `<div style="background:#ef4444;color:white;border-radius:50%;width:30px;height:30px;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:13px;border:2px solid white;box-shadow:0 2px 8px rgba(0,0,0,0.4)">${pin.nummer}</div>`,
+                iconSize: [30, 30],
+                iconAnchor: [15, 15],
+                className: ''
+            });
+
+            const datum = new Date(pin.datum).toLocaleDateString('de-DE');
+            const gmapsUrl = `https://www.google.com/maps?q=${pin.lat},${pin.lng}`;
+            const marker = L.marker([pin.lat, pin.lng], { icon })
+                .addTo(karteInstanz)
+                .bindPopup(`
+                    <div style="min-width:200px;font-family:sans-serif">
+                        <b style="color:#ef4444;font-size:13px">Pin #${pin.nummer}</b>
+                        <span style="color:#94a3b8;font-size:11px;margin-left:6px">${datum} · ${pin.zeit}</span><br>
+                        <span style="font-size:12px;margin-top:4px;display:block;color:#334155">${pin.notiz || '(keine Notiz)'}</span>
+                        <a href="${gmapsUrl}" target="_blank" style="color:#6366f1;font-size:11px;margin-top:6px;display:inline-block">
+                            📍 In Google Maps öffnen →
+                        </a>
+                    </div>
+                `);
+            markers.push(marker);
+        });
+
+        if (markers.length > 0) {
+            try {
+                const gruppe = L.featureGroup(markers);
+                karteInstanz.fitBounds(gruppe.getBounds().pad(0.3));
+                setTimeout(() => karteInstanz.invalidateSize(), 200);
+            } catch (e) {}
+        } else {
+            karteInstanz.setView([51.1657, 10.4515], 6);
+            setTimeout(() => karteInstanz.invalidateSize(), 200);
+        }
+    }
+
+    // Pin-Liste rendern
+    const liste = document.getElementById('pinListe');
+    if (pins.length === 0) {
+        liste.innerHTML = '<p class="text-center text-slate-400 text-sm py-8 font-bold">Noch keine Pins für diesen Fahrschüler.</p>';
+        return;
+    }
+
+    liste.innerHTML = [...pins].reverse().map(pin => {
+        const datum = new Date(pin.datum).toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' });
+        const gmapsUrl = `https://www.google.com/maps?q=${pin.lat},${pin.lng}`;
+        return `
+        <div class="flex items-start gap-3 p-4 bg-slate-50 border border-slate-100 rounded-2xl group">
+            <div class="w-8 h-8 rounded-full bg-rose-500 text-white flex items-center justify-center text-xs font-black flex-shrink-0 mt-0.5">
+                ${pin.nummer}
+            </div>
+            <div class="flex-1 min-w-0">
+                <p class="text-sm font-black text-slate-700">${pin.notiz || '<span class="text-slate-400 font-medium italic">Keine Notiz</span>'}</p>
+                <p class="text-[10px] text-slate-400 font-mono mt-1">${datum} · ${pin.zeit} · ${pin.lat.toFixed(5)}, ${pin.lng.toFixed(5)} ±${pin.genauigkeit || '?'}m</p>
+            </div>
+            <div class="flex flex-col gap-1.5 flex-shrink-0">
+                <a href="${gmapsUrl}" target="_blank"
+                    class="p-1.5 rounded-lg bg-indigo-50 text-indigo-600 hover:bg-indigo-100 transition flex items-center justify-center" title="In Google Maps öffnen">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                </a>
+                <button onclick="pinLoeschen('${pin.id}')"
+                    class="p-1.5 rounded-lg bg-red-50 text-red-500 hover:bg-red-100 transition flex items-center justify-center" title="Pin löschen">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                </button>
+            </div>
+        </div>`;
+    }).join('');
+}
+
+function pinLoeschen(id) {
+    if (!aktuelleSchuelerId) return;
+    if (!confirm('Diesen Pin löschen?')) return;
+    let pins = JSON.parse(localStorage.getItem(`bw_pins_${aktuelleSchuelerId}`)) || [];
+    pins = pins.filter(p => String(p.id) !== String(id));
+    // Nummern neu vergeben
+    pins.forEach((p, idx) => p.nummer = idx + 1);
+    localStorage.setItem(`bw_pins_${aktuelleSchuelerId}`, JSON.stringify(pins));
+    renderPins();
+}
+
+function alleLoeschen() {
+    if (!aktuelleSchuelerId) return;
+    const pins = JSON.parse(localStorage.getItem(`bw_pins_${aktuelleSchuelerId}`)) || [];
+    if (pins.length === 0) return;
+    if (!confirm(`Alle ${pins.length} Pins für diesen Fahrschüler löschen?`)) return;
+    localStorage.removeItem(`bw_pins_${aktuelleSchuelerId}`);
+    renderPins();
+}
+
+// Init: Schüler-Liste laden
+const ids = JSON.parse(localStorage.getItem('bw_aktive_schueler')) || [];
+const sel = document.getElementById('schuelerSelect');
+ids.forEach(id => sel.innerHTML += `<option value="${id}">${id}</option>`);
+</script>
+</body>
+</html>
