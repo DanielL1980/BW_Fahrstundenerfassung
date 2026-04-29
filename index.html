@@ -5,201 +5,301 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>BW Fahrschul-Manager</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+        import { getAuth, onAuthStateChanged, signInWithPopup, signOut, GoogleAuthProvider } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+        import { getFirestore, collection, query, where, getDocs } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+
+        const firebaseConfig = {
+            apiKey: "DEINE_API_KEY",
+            authDomain: "DEIN_PROJEKT.firebaseapp.com",
+            projectId: "DEIN_PROJEKT_ID",
+            storageBucket: "DEIN_PROJEKT.appspot.com",
+            messagingSenderId: "DEINE_SENDER_ID",
+            appId: "DEINE_APP_ID"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        window._auth = auth; window._db = db;
+        window._collection = collection; window._query = query;
+        window._where = where; window._getDocs = getDocs;
+        window._GoogleAuthProvider = GoogleAuthProvider;
+        window._signInWithPopup = signInWithPopup;
+        window._signOut = signOut;
+
+        onAuthStateChanged(auth, (user) => {
+            window._currentUser = user;
+            const statusEl = document.getElementById('authStatus');
+            const btnEl = document.getElementById('authBtn');
+            if (statusEl && btnEl) {
+                if (user) {
+                    statusEl.textContent = `🔒 ${user.displayName || user.email}`;
+                    statusEl.className = 'text-xs text-emerald-400 font-bold truncate max-w-[160px]';
+                    btnEl.textContent = 'Abmelden';
+                    btnEl.onclick = () => window._signOut(auth);
+                } else {
+                    statusEl.textContent = '⚠️ Nicht angemeldet – nur lokal';
+                    statusEl.className = 'text-xs text-amber-400 font-bold';
+                    btnEl.textContent = 'Mit Google anmelden';
+                    btnEl.onclick = async () => {
+                        try {
+                            await window._signInWithPopup(auth, new GoogleAuthProvider());
+                        } catch(e) { alert('Anmeldung fehlgeschlagen: ' + e.message); }
+                    };
+                }
+            }
+            ladeLetzenSchueler();
+        });
+    </script>
 </head>
 <body class="bg-slate-50 text-slate-900 font-sans antialiased pb-24">
+<div class="max-w-md mx-auto bg-white min-h-screen shadow-2xl relative flex flex-col">
 
-    <div class="max-w-md mx-auto bg-white min-h-screen shadow-2xl relative flex flex-col">
+    <header class="bg-slate-800 text-white p-5 rounded-b-3xl shadow-lg border-b-4 border-blue-600">
+        <div class="flex justify-between items-center mb-1">
+            <h1 class="text-xl font-black tracking-tighter uppercase italic">BW Fahrschul-App</h1>
+            <span id="current-date" class="text-xs bg-slate-700 px-3 py-1 rounded-full text-blue-200 font-bold"></span>
+        </div>
+        <div class="flex items-center justify-between mt-2">
+            <span id="authStatus" class="text-xs text-slate-400 font-medium">…</span>
+            <button id="authBtn" class="text-[10px] font-black bg-slate-700 hover:bg-slate-600 px-3 py-1.5 rounded-xl transition-all active:scale-95 uppercase tracking-wide">…</button>
+        </div>
+    </header>
 
-        <header class="bg-slate-800 text-white p-6 rounded-b-3xl shadow-lg border-b-4 border-blue-600">
-            <div class="flex justify-between items-center mb-2">
-                <h1 class="text-xl font-black tracking-tighter uppercase italic">Fahrschul-App</h1>
-                <span id="current-date" class="text-xs bg-slate-700 px-3 py-1 rounded-full text-blue-200 font-bold"></span>
-            </div>
-            <p class="text-xs text-slate-400 font-medium tracking-widest uppercase">Dienst-Modus • Lokal</p>
-        </header>
+    <main class="flex-1 p-5">
 
-        <main class="flex-1 p-5">
-            <h2 class="text-xs font-black mb-4 text-slate-400 uppercase tracking-widest flex items-center gap-2">
-                <span class="w-8 h-[2px] bg-slate-200"></span> Schnellzugriff
-            </h2>
-
-            <div class="grid grid-cols-2 gap-4 mb-8">
-                <button onclick="window.location.href='neue-fahrt.html'" class="bg-emerald-50 border-2 border-emerald-100 p-4 rounded-2xl flex flex-col items-center justify-center aspect-square hover:bg-emerald-100 active:scale-95 transition-all shadow-sm group">
-                    <svg class="w-12 h-12 text-emerald-600 mb-2 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                    <span class="font-black text-emerald-800 text-xs uppercase">Neue Fahrt</span>
-                </button>
-
-                <button onclick="window.location.href='fortschritt.html'" class="bg-blue-50 border-2 border-blue-100 p-4 rounded-2xl flex flex-col items-center justify-center aspect-square hover:bg-blue-100 active:scale-95 transition-all shadow-sm group">
-                    <svg class="w-12 h-12 text-blue-600 mb-2 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
-                    <span class="font-black text-blue-800 text-xs uppercase">Fortschritt</span>
-                </button>
-
-                <button onclick="toggleBereich('schuelerVerwaltung')" class="bg-amber-50 border-2 border-amber-100 p-4 rounded-2xl flex flex-col items-center justify-center aspect-square hover:bg-amber-100 active:scale-95 transition-all shadow-sm group">
-                    <svg class="w-12 h-12 text-amber-600 mb-2 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
-                    <span class="font-black text-amber-800 text-xs uppercase">Schüler-IDs</span>
-                </button>
-
-                <button onclick="toggleBereich('exportVerwaltung')" class="bg-slate-50 border-2 border-slate-200 p-4 rounded-2xl flex flex-col items-center justify-center aspect-square hover:bg-slate-100 active:scale-95 transition-all shadow-sm group">
-                    <svg class="w-12 h-12 text-slate-600 mb-2 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path></svg>
-                    <span class="font-black text-slate-800 text-[10px] text-center uppercase leading-tight">Daten<br>Transfer</span>
-                </button>
-
-                <button onclick="window.location.href='karte.html'" class="col-span-2 bg-rose-50 border-2 border-rose-100 p-4 rounded-2xl flex flex-row items-center justify-center gap-4 hover:bg-rose-100 active:scale-95 transition-all shadow-sm group">
-                    <svg class="w-10 h-10 text-rose-500 group-hover:scale-110 transition-transform flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-                    <div class="text-left">
-                        <span class="font-black text-rose-800 text-sm uppercase block">Ortsnotizen</span>
-                        <span class="text-rose-400 text-[10px] font-medium uppercase tracking-wide">Kartenpins je Fahrschüler</span>
-                    </div>
-                </button>
-            </div>
-
-            <div id="schuelerVerwaltung" class="hidden animate-in fade-in slide-in-from-bottom-4">
-                <h2 class="text-sm font-black mb-3 text-slate-800 border-l-4 border-amber-400 pl-3 uppercase">IDs verwalten</h2>
-                <form id="neueIdForm" onsubmit="addSchueler(event)" class="mb-4 flex gap-2">
-                    <input type="text" id="neueId" required placeholder="NEUE ID" class="flex-1 p-3 rounded-xl border-2 border-slate-200 bg-white focus:outline-none focus:border-amber-500 uppercase font-bold text-slate-800 transition-all">
-                    <button type="submit" class="bg-amber-500 text-white font-bold px-5 rounded-xl hover:bg-amber-600 active:scale-95 shadow-md shadow-amber-200">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+        <!-- Letzter Schüler Schnellzugriff -->
+        <div id="letzterSchuelerCard" class="hidden mb-5 bg-gradient-to-r from-emerald-600 to-teal-600 rounded-2xl p-4 shadow-lg shadow-emerald-100">
+            <p class="text-[10px] font-black text-emerald-200 uppercase tracking-widest mb-1">Zuletzt bearbeitet</p>
+            <div class="flex items-center justify-between">
+                <div>
+                    <p id="letzterSchuelerId" class="text-white font-black text-lg leading-none"></p>
+                    <p id="letzterSchuelerDatum" class="text-emerald-200 text-xs mt-0.5"></p>
+                </div>
+                <div class="flex gap-2">
+                    <button onclick="schnellNeueFahrt()"
+                        class="bg-white text-emerald-700 font-black text-xs px-3 py-2 rounded-xl active:scale-95 transition-all shadow-sm">
+                        + Neue Fahrt
                     </button>
-                </form>
-                <div class="bg-slate-50 border border-slate-200 rounded-xl overflow-hidden shadow-sm">
-                    <div class="p-2 bg-slate-200 text-[10px] font-black text-slate-600 uppercase text-center tracking-widest">Registrierte IDs</div>
-                    <ul id="schuelerListe" class="divide-y divide-slate-200"></ul>
+                    <button onclick="schnellFortschritt()"
+                        class="bg-emerald-500 text-white font-black text-xs px-3 py-2 rounded-xl active:scale-95 transition-all border border-emerald-400">
+                        Fortschritt
+                    </button>
                 </div>
             </div>
+        </div>
 
-            <div id="exportVerwaltung" class="hidden animate-in fade-in slide-in-from-bottom-4">
-                <h2 class="text-sm font-black mb-3 text-slate-800 border-l-4 border-blue-500 pl-3 uppercase">Daten-Transfer</h2>
-                
-                <div class="border border-emerald-100 p-4 rounded-2xl mb-4 bg-emerald-50/50">
-                    <h3 class="text-xs font-black text-emerald-700 mb-2 uppercase tracking-wider">1. Import (Vom Schüler)</h3>
-                    <input type="file" id="importFile" accept=".json" class="hidden" onchange="importiereDaten(event)">
-                    <button onclick="document.getElementById('importFile').click()" class="w-full bg-emerald-600 text-white font-black py-3 rounded-xl hover:bg-emerald-700 active:scale-95 uppercase text-xs shadow-md shadow-emerald-200 transition-all">Datei laden</button>
-                </div>
+        <h2 class="text-xs font-black mb-4 text-slate-400 uppercase tracking-widest flex items-center gap-2">
+            <span class="w-8 h-[2px] bg-slate-200"></span> Schnellzugriff
+        </h2>
 
-                <div class="border border-blue-100 p-4 rounded-2xl mb-4 bg-blue-50/50">
-                    <h3 class="text-xs font-black text-blue-700 mb-2 uppercase tracking-wider">2. Export (Mehrfachauswahl)</h3>
-                    <div id="exportListeContainer" class="max-h-40 overflow-y-auto bg-white border border-blue-200 rounded-xl mb-3 p-2 space-y-1 shadow-inner">
-                        </div>
-                    <button onclick="exportiereAusgewaehlteSchueler()" class="w-full bg-blue-600 text-white font-black py-3 rounded-xl hover:bg-blue-700 active:scale-95 shadow-md shadow-blue-200 uppercase text-xs transition-all">Markierte IDs exportieren</button>
-                </div>
+        <div class="grid grid-cols-2 gap-4 mb-8">
+            <button onclick="window.location.href='neue-fahrt.html'" class="bg-emerald-50 border-2 border-emerald-100 p-4 rounded-2xl flex flex-col items-center justify-center aspect-square hover:bg-emerald-100 active:scale-95 transition-all shadow-sm group">
+                <svg class="w-12 h-12 text-emerald-600 mb-2 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                <span class="font-black text-emerald-800 text-xs uppercase">Neue Fahrt</span>
+            </button>
 
-                <div class="border-t-2 border-slate-100 pt-4 mt-2">
-                    <h3 class="text-[10px] font-black text-slate-400 mb-2 uppercase tracking-widest text-center">System-Sicherung</h3>
-                    <button onclick="exportiereDaten()" class="w-full bg-slate-800 text-white font-black py-4 rounded-2xl shadow-xl hover:bg-slate-900 active:scale-95 uppercase text-xs tracking-widest transition-all">PC-Gesamtsicherung herunterladen</button>
+            <button onclick="window.location.href='fortschritt.html'" class="bg-blue-50 border-2 border-blue-100 p-4 rounded-2xl flex flex-col items-center justify-center aspect-square hover:bg-blue-100 active:scale-95 transition-all shadow-sm group">
+                <svg class="w-12 h-12 text-blue-600 mb-2 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                <span class="font-black text-blue-800 text-xs uppercase">Fortschritt</span>
+            </button>
+
+            <button onclick="toggleBereich('schuelerVerwaltung')" class="bg-amber-50 border-2 border-amber-100 p-4 rounded-2xl flex flex-col items-center justify-center aspect-square hover:bg-amber-100 active:scale-95 transition-all shadow-sm group">
+                <svg class="w-12 h-12 text-amber-600 mb-2 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                <span class="font-black text-amber-800 text-xs uppercase">Schüler-IDs</span>
+            </button>
+
+            <button onclick="toggleBereich('exportVerwaltung')" class="bg-slate-50 border-2 border-slate-200 p-4 rounded-2xl flex flex-col items-center justify-center aspect-square hover:bg-slate-100 active:scale-95 transition-all shadow-sm group">
+                <svg class="w-12 h-12 text-slate-600 mb-2 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path></svg>
+                <span class="font-black text-slate-800 text-[10px] text-center uppercase leading-tight">Daten<br>Transfer</span>
+            </button>
+
+            <button onclick="window.location.href='karte.html'" class="col-span-2 bg-rose-50 border-2 border-rose-100 p-4 rounded-2xl flex flex-row items-center justify-center gap-4 hover:bg-rose-100 active:scale-95 transition-all shadow-sm group">
+                <svg class="w-10 h-10 text-rose-500 group-hover:scale-110 transition-transform flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                <div class="text-left">
+                    <span class="font-black text-rose-800 text-sm uppercase block">Ortsnotizen</span>
+                    <span class="text-rose-400 text-[10px] font-medium uppercase tracking-wide">Kartenpins je Fahrschüler</span>
                 </div>
+            </button>
+        </div>
+
+        <!-- Schüler-Verwaltung -->
+        <div id="schuelerVerwaltung" class="hidden animate-in fade-in slide-in-from-bottom-4">
+            <h2 class="text-sm font-black mb-3 text-slate-800 border-l-4 border-amber-400 pl-3 uppercase">IDs verwalten</h2>
+            <div class="mb-4 flex gap-2">
+                <input type="text" id="neueId" placeholder="NEUE ID EINGEBEN" class="flex-1 p-3 rounded-xl border-2 border-slate-200 bg-white focus:outline-none focus:border-amber-500 uppercase font-bold text-slate-800 transition-all text-sm">
+                <button onclick="addSchueler()" class="bg-amber-500 text-white font-bold px-5 rounded-xl hover:bg-amber-600 active:scale-95 shadow-md shadow-amber-200">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                </button>
             </div>
-        </main>
-    </div>
+            <div class="bg-slate-50 border border-slate-200 rounded-xl overflow-hidden shadow-sm">
+                <div class="p-2 bg-slate-200 text-[10px] font-black text-slate-600 uppercase text-center tracking-widest">Registrierte IDs</div>
+                <ul id="schuelerListe" class="divide-y divide-slate-200"></ul>
+            </div>
+        </div>
 
-    <script>
-        document.getElementById('current-date').textContent = new Date().toLocaleDateString('de-DE', { year: 'numeric', month: '2-digit', day: '2-digit' });
+        <!-- Export/Import -->
+        <div id="exportVerwaltung" class="hidden animate-in fade-in slide-in-from-bottom-4">
+            <h2 class="text-sm font-black mb-3 text-slate-800 border-l-4 border-blue-500 pl-3 uppercase">Daten-Transfer</h2>
+            <div class="border border-emerald-100 p-4 rounded-2xl mb-4 bg-emerald-50/50">
+                <h3 class="text-xs font-black text-emerald-700 mb-2 uppercase tracking-wider">Import (JSON-Datei)</h3>
+                <input type="file" id="importFile" accept=".json" class="hidden" onchange="importiereDaten(event)">
+                <button onclick="document.getElementById('importFile').click()" class="w-full bg-emerald-600 text-white font-black py-3 rounded-xl hover:bg-emerald-700 active:scale-95 uppercase text-xs shadow-md shadow-emerald-200 transition-all">Datei laden</button>
+            </div>
+            <div class="border border-blue-100 p-4 rounded-2xl mb-4 bg-blue-50/50">
+                <h3 class="text-xs font-black text-blue-700 mb-2 uppercase tracking-wider">Export (Mehrfachauswahl)</h3>
+                <div id="exportListeContainer" class="max-h-40 overflow-y-auto bg-white border border-blue-200 rounded-xl mb-3 p-2 space-y-1 shadow-inner"></div>
+                <button onclick="exportiereAusgewaehlteSchueler()" class="w-full bg-blue-600 text-white font-black py-3 rounded-xl hover:bg-blue-700 active:scale-95 shadow-md shadow-blue-200 uppercase text-xs transition-all">Markierte IDs exportieren</button>
+            </div>
+            <div class="border-t-2 border-slate-100 pt-4 mt-2">
+                <h3 class="text-[10px] font-black text-slate-400 mb-2 uppercase tracking-widest text-center">System-Sicherung</h3>
+                <button onclick="exportiereDaten()" class="w-full bg-slate-800 text-white font-black py-4 rounded-2xl shadow-xl hover:bg-slate-900 active:scale-95 uppercase text-xs tracking-widest transition-all">PC-Gesamtsicherung herunterladen</button>
+            </div>
+        </div>
+    </main>
+</div>
 
-        function toggleBereich(bereichId) {
-            document.getElementById('schuelerVerwaltung').classList.add('hidden');
-            document.getElementById('exportVerwaltung').classList.add('hidden');
-            document.getElementById(bereichId).classList.remove('hidden');
-            if(bereichId === 'schuelerVerwaltung') renderSchuelerListe();
-            if(bereichId === 'exportVerwaltung') renderExportListe();
-        }
+<script>
+document.getElementById('current-date').textContent = new Date().toLocaleDateString('de-DE', {year:'numeric',month:'2-digit',day:'2-digit'});
 
-        let aktiveSchuelerIds = JSON.parse(localStorage.getItem('bw_aktive_schueler')) || [];
-        function renderSchuelerListe() {
-            const liste = document.getElementById('schuelerListe');
-            liste.innerHTML = '';
-            if (aktiveSchuelerIds.length === 0) return liste.innerHTML = '<li class="p-6 text-xs font-bold text-center text-slate-400 italic text-sm">Keine IDs hinterlegt.</li>';
-            aktiveSchuelerIds.forEach(id => {
-                liste.innerHTML += `<li class="p-3 flex justify-between items-center px-4"><span class="font-black text-slate-700">${id}</span><button onclick="removeSchueler('${id}')" class="text-slate-300 hover:text-red-500 font-black transition-colors">LÖSCHEN</button></li>`;
-            });
-        }
-        function addSchueler(event) {
-            event.preventDefault();
-            const input = document.getElementById('neueId');
-            const neueId = input.value.trim().toUpperCase();
-            if (neueId && !aktiveSchuelerIds.includes(neueId)) {
-                aktiveSchuelerIds.push(neueId);
-                localStorage.setItem('bw_aktive_schueler', JSON.stringify(aktiveSchuelerIds));
-                input.value = ''; renderSchuelerListe();
-            }
-        }
-        function removeSchueler(id) {
-            if (confirm(`ID "${id}" unwiderruflich aus der Liste entfernen?`)) {
-                aktiveSchuelerIds = aktiveSchuelerIds.filter(item => item !== id);
-                localStorage.setItem('bw_aktive_schueler', JSON.stringify(aktiveSchuelerIds));
-                renderSchuelerListe();
-            }
-        }
+function toggleBereich(id) {
+    ['schuelerVerwaltung','exportVerwaltung'].forEach(b => document.getElementById(b).classList.add('hidden'));
+    document.getElementById(id).classList.remove('hidden');
+    if (id === 'schuelerVerwaltung') renderSchuelerListe();
+    if (id === 'exportVerwaltung') renderExportListe();
+}
 
-        function renderExportListe() {
-            const container = document.getElementById('exportListeContainer');
-            container.innerHTML = '';
-            if (aktiveSchuelerIds.length === 0) {
-                container.innerHTML = '<p class="text-[10px] text-slate-400 italic text-center py-2">Keine IDs zum Exportieren.</p>';
-                return;
-            }
-            aktiveSchuelerIds.forEach(id => {
-                container.innerHTML += `
-                    <label class="flex items-center gap-3 p-2 hover:bg-blue-50 rounded-lg cursor-pointer transition-colors">
-                        <input type="checkbox" name="exportCheck" value="${id}" class="w-4 h-4 rounded border-blue-300 text-blue-600 focus:ring-blue-500">
-                        <span class="text-sm font-bold text-slate-700">${id}</span>
-                    </label>
-                `;
-            });
-        }
+let aktiveSchuelerIds = JSON.parse(localStorage.getItem('bw_aktive_schueler')) || [];
 
-        function exportiereAusgewaehlteSchueler() {
-            const checkedBoxes = document.querySelectorAll('input[name="exportCheck"]:checked');
-            const ausgewaehlteIds = Array.from(checkedBoxes).map(cb => cb.value);
-            
-            if(ausgewaehlteIds.length === 0) {
-                alert("Bitte mindestens einen Schüler zum Exportieren auswählen.");
-                return;
-            }
+function renderSchuelerListe() {
+    const liste = document.getElementById('schuelerListe');
+    liste.innerHTML = '';
+    if (aktiveSchuelerIds.length === 0) {
+        liste.innerHTML = '<li class="p-6 text-xs font-bold text-center text-slate-400 italic">Keine IDs hinterlegt.</li>';
+        return;
+    }
+    const alleFahrten = JSON.parse(localStorage.getItem('bw_ausbildungsstand')) || [];
+    aktiveSchuelerIds.forEach(id => {
+        const fahrten = alleFahrten.filter(f => f.schuelerId === id);
+        const offene = (() => {
+            let stand = {};
+            fahrten.forEach(f => { for(let i=1;i<=74;i++) if(f[`item_${i}`]) stand[i]=f[`item_${i}`]; });
+            return Object.values(stand).filter(v => v !== 'gruen').length + (74 - Object.keys(stand).length);
+        })();
+        liste.innerHTML += `<li class="p-3 flex justify-between items-center px-4">
+            <div>
+                <span class="font-black text-slate-700">${id}</span>
+                <span class="ml-2 text-[10px] text-slate-400">${fahrten.length} Einheit(en)</span>
+                ${offene > 0 ? `<span class="ml-1 text-[10px] bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded-full font-black">${offene} offen</span>` : '<span class="ml-1 text-[10px] bg-emerald-100 text-emerald-700 px-1.5 py-0.5 rounded-full font-black">✓</span>'}
+            </div>
+            <button onclick="removeSchueler('${id}')" class="text-slate-300 hover:text-red-500 font-black transition-colors text-xs uppercase">Löschen</button>
+        </li>`;
+    });
+}
 
-            const alleFahrten = JSON.parse(localStorage.getItem('bw_ausbildungsstand')) || [];
-            const gefilterteFahrten = alleFahrten.filter(f => ausgewaehlteIds.includes(f.schuelerId));
-            
-            const exportData = {
-                typ: "Sammel_Uebergabe",
-                schuelerIDs: ausgewaehlteIds,
-                alleFahrten: gefilterteFahrten
-            };
+function addSchueler() {
+    const input = document.getElementById('neueId');
+    const neueId = input.value.trim().toUpperCase();
+    if (neueId && !aktiveSchuelerIds.includes(neueId)) {
+        aktiveSchuelerIds.push(neueId);
+        localStorage.setItem('bw_aktive_schueler', JSON.stringify(aktiveSchuelerIds));
+        input.value = '';
+        renderSchuelerListe();
+    }
+}
 
-            const dateiname = ausgewaehlteIds.length === 1 
-                ? `Uebergabe_${ausgewaehlteIds[0]}_${new Date().toISOString().split('T')[0]}.json`
-                : `Sammel_Export_${ausgewaehlteIds.length}_Schueler_${new Date().toISOString().split('T')[0]}.json`;
+function removeSchueler(id) {
+    if (confirm(`ID "${id}" aus der Liste entfernen?`)) {
+        aktiveSchuelerIds = aktiveSchuelerIds.filter(i => i !== id);
+        localStorage.setItem('bw_aktive_schueler', JSON.stringify(aktiveSchuelerIds));
+        renderSchuelerListe();
+    }
+}
 
-            downloadJSON(exportData, dateiname);
-        }
+function renderExportListe() {
+    const container = document.getElementById('exportListeContainer');
+    container.innerHTML = '';
+    if (aktiveSchuelerIds.length === 0) {
+        container.innerHTML = '<p class="text-[10px] text-slate-400 italic text-center py-2">Keine IDs vorhanden.</p>';
+        return;
+    }
+    aktiveSchuelerIds.forEach(id => {
+        container.innerHTML += `<label class="flex items-center gap-3 p-2 hover:bg-blue-50 rounded-lg cursor-pointer transition-colors">
+            <input type="checkbox" name="exportCheck" value="${id}" class="w-4 h-4 rounded border-blue-300 text-blue-600">
+            <span class="text-sm font-bold text-slate-700">${id}</span>
+        </label>`;
+    });
+}
 
-        function exportiereDaten() {
-            const fahrten = JSON.parse(localStorage.getItem('bw_ausbildungsstand')) || [];
-            const ids = JSON.parse(localStorage.getItem('bw_aktive_schueler')) || [];
-            downloadJSON({typ: "Gesamt_Backup", schuelerIDs: ids, alleFahrten: fahrten}, `BW_Gesamt_${new Date().toISOString().split('T')[0]}.json`);
-        }
-        function downloadJSON(data, filename) {
-            const a = document.createElement('a');
-            a.href = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(data, null, 2));
-            a.download = filename; document.body.appendChild(a); a.click(); a.remove();
-        }
-        function importiereDaten(event) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    const data = JSON.parse(e.target.result);
-                    let ids = JSON.parse(localStorage.getItem('bw_aktive_schueler')) || [];
-                    data.schuelerIDs.forEach(id => { if (!ids.includes(id)) ids.push(id); });
-                    localStorage.setItem('bw_aktive_schueler', JSON.stringify(ids));
-                    
-                    let fahrten = JSON.parse(localStorage.getItem('bw_ausbildungsstand')) || [];
-                    data.alleFahrten.forEach(n => {
-                        if (!fahrten.some(a => a.datum === n.datum && a.schuelerId === n.schuelerId)) fahrten.push(n);
-                    });
-                    localStorage.setItem('bw_ausbildungsstand', JSON.stringify(fahrten));
-                    aktiveSchuelerIds = ids; alert('✅ Import erfolgreich! Die Daten wurden hinzugefügt.');
-                } catch (err) { alert('Fehler: Die Datei konnte nicht gelesen werden.'); }
-            };
-            if(event.target.files[0]) reader.readAsText(event.target.files[0]);
-        }
-    </script>
+function exportiereAusgewaehlteSchueler() {
+    const checked = document.querySelectorAll('input[name="exportCheck"]:checked');
+    const ids = Array.from(checked).map(cb => cb.value);
+    if (ids.length === 0) { alert('Bitte mindestens eine ID auswählen.'); return; }
+    const alleFahrten = JSON.parse(localStorage.getItem('bw_ausbildungsstand')) || [];
+    const data = { typ: "Sammel_Uebergabe", schuelerIDs: ids, alleFahrten: alleFahrten.filter(f => ids.includes(f.schuelerId)) };
+    const name = ids.length === 1 ? `Uebergabe_${ids[0]}_${new Date().toISOString().split('T')[0]}.json` : `Sammel_Export_${ids.length}_Schueler_${new Date().toISOString().split('T')[0]}.json`;
+    downloadJSON(data, name);
+}
+
+function exportiereDaten() {
+    const fahrten = JSON.parse(localStorage.getItem('bw_ausbildungsstand')) || [];
+    const ids = JSON.parse(localStorage.getItem('bw_aktive_schueler')) || [];
+    downloadJSON({typ:"Gesamt_Backup", schuelerIDs:ids, alleFahrten:fahrten}, `BW_Gesamt_${new Date().toISOString().split('T')[0]}.json`);
+}
+
+function downloadJSON(data, filename) {
+    const a = document.createElement('a');
+    a.href = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(data, null, 2));
+    a.download = filename; document.body.appendChild(a); a.click(); a.remove();
+}
+
+function importiereDaten(event) {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        try {
+            const data = JSON.parse(e.target.result);
+            let ids = JSON.parse(localStorage.getItem('bw_aktive_schueler')) || [];
+            data.schuelerIDs.forEach(id => { if (!ids.includes(id)) ids.push(id); });
+            localStorage.setItem('bw_aktive_schueler', JSON.stringify(ids));
+            let fahrten = JSON.parse(localStorage.getItem('bw_ausbildungsstand')) || [];
+            data.alleFahrten.forEach(n => { if (!fahrten.some(a => a.datum === n.datum && a.schuelerId === n.schuelerId)) fahrten.push(n); });
+            localStorage.setItem('bw_ausbildungsstand', JSON.stringify(fahrten));
+            aktiveSchuelerIds = ids;
+            alert('✅ Import erfolgreich!');
+        } catch(err) { alert('Fehler beim Lesen der Datei.'); }
+    };
+    if (event.target.files[0]) reader.readAsText(event.target.files[0]);
+}
+
+// Letzter Schüler Schnellzugriff
+function ladeLetzenSchueler() {
+    const raw = localStorage.getItem('bw_letzter_schueler');
+    if (!raw) return;
+    try {
+        const { id, datum } = JSON.parse(raw);
+        const card = document.getElementById('letzterSchuelerCard');
+        document.getElementById('letzterSchuelerId').textContent = id;
+        document.getElementById('letzterSchuelerDatum').textContent = 'Letzte Fahrt: ' + new Date(datum).toLocaleDateString('de-DE', {day:'2-digit',month:'2-digit',year:'numeric'});
+        card.dataset.schuelerId = id;
+        card.classList.remove('hidden');
+    } catch(e) {}
+}
+
+function schnellNeueFahrt() {
+    const id = document.getElementById('letzterSchuelerCard').dataset.schuelerId;
+    if (id) sessionStorage.setItem('bw_vorgewaehlt', id);
+    window.location.href = 'neue-fahrt.html';
+}
+
+function schnellFortschritt() {
+    const id = document.getElementById('letzterSchuelerCard').dataset.schuelerId;
+    if (id) sessionStorage.setItem('bw_vorgewaehlt', id);
+    window.location.href = 'fortschritt.html';
+}
+
+ladeLetzenSchueler();
+</script>
 </body>
 </html>
