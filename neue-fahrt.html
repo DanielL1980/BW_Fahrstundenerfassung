@@ -309,20 +309,20 @@ const katalog = {
     },
     aufbaustufeC: {
         title: "Aufbaustufe C (47-56)",
-        items: [47,48,49,50,'h1',51,52,53,54,'h2',55,56],
+        items: [51,54,55,56,'h1',47,48,49,50,'h2',52,53],
         texts: [
+            "Abfahrtkontrolle (Sachgebiete 1 - 6)",
+            "Sicherheitskontrolle",
+            "Verbinden und Trennen von Fahrzeugen",
+            "Abstellen des Anhängers",
+            "Grundfahraufgaben DFE Kl C",
             "Rückwärtsfahren in eine Parklücke (Längsaufstellung)",
             "Rückwärts quer oder schräg einparken",
             "Fahren nach rechts rückwärts unter Ausnutzung einer Einmündung, Kreuzung oder Einfahrt",
             "Rückwärtsfahren und Versetzen nach rechts an eine Rampe zum Be- oder Entladen",
-            "Grundfahraufgaben DFE Kl C",
-            "Abfahrtkontrolle (Sachgebiete 1 - 6)",
-            "Rückwärtsfahren geradeaus an eine Rampe zum Be- oder Entladen",
-            "Umkehren durch Rückwärtsfahren nach links",
-            "Sicherheitskontrolle",
             "Grundfahraufgaben DFE Kl CE",
-            "Verbinden und Trennen von Fahrzeugen",
-            "Abstellen des Anhängers"
+            "Rückwärtsfahren geradeaus an eine Rampe zum Be- oder Entladen",
+            "Umkehren durch Rückwärtsfahren nach links"
         ],
         noteKey: "notizen_aufbauC"
     },
@@ -517,9 +517,9 @@ function applyDFEFilter() {
     document.getElementById('row-h1')?.classList.remove('hidden');
     document.getElementById('row-h2')?.classList.remove('hidden');
     if (k === 'C') {
-        // Klasse C: sichtbar 47,48,49,50,51 (App-Items)
-        // ausblenden: 52,53 (CE-Grundfahraufgaben), 54,55,56 (Sich.kontrolle/Verb./Abstellen = CE), 65,66,67 (CE-Sonderfahrten)
-        [52,53,54,55,56,65,66,67].forEach(id => document.getElementById(`row-${id}`)?.classList.add('hidden'));
+        // Klasse C: sichtbar App 51 (Abfahrtkontrolle) + App 47,48,49,50 (DFE KI C)
+        // ausblenden: App 54,55,56 (Sich.kont./Verb./Abstellen = CE), App 52,53 (CE-Grundf.), CE-Sonderfahrten
+        [54,55,56,52,53,65,66,67].forEach(id => document.getElementById(`row-${id}`)?.classList.add('hidden'));
         document.getElementById('row-h2')?.classList.add('hidden'); // DFE KI CE nicht bei Klasse C
     }
     if (k === 'C/CE') {
@@ -527,13 +527,14 @@ function applyDFEFilter() {
         [64].forEach(id => document.getElementById(`row-${id}`)?.classList.add('hidden'));
     }
     if (k === 'E für C') {
-        // Klasse E für C: sichtbar 52,53,54,55,56 (App-Items)
-        // ausblenden: 47,48,49,50,51 (DFE KI C Grundfahraufgaben + Abfahrtkontrolle)
+        // Klasse E für C: sichtbar App 54,55,56 (Sich.kont./Verb./Abstellen) + App 52,53 (CE-Grundf.)
+        // ausblenden: App 51 (Abfahrtkontrolle=nur C), App 47,48,49,50 (DFE KI C Grundf.)
         // ausblenden: Geländefahrt 36-46, Solo-C-Sonderfahrten 62,63,64
         [36,37,38,39,40,41,42,43,44,45,46,
-         47,48,49,50,51,
+         51,47,48,49,50,
          62,63,64].forEach(id => document.getElementById(`row-${id}`)?.classList.add('hidden'));
-        document.getElementById('row-h1')?.classList.add('hidden'); // DFE KI C nicht bei E für C
+        document.getElementById('row-h1')?.classList.add('hidden'); // DFE KI C ausblenden
+        // h2 (DFE KI CE) bleibt sichtbar
     }
     Object.keys(katalog).forEach(k => updateSectionBadge(k));
 }
