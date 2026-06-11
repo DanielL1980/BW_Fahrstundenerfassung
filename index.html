@@ -5,54 +5,84 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>BW Fahrschul-Manager</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
     <script type="module">
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
         import { getAuth, onAuthStateChanged, signInWithPopup, signOut, GoogleAuthProvider } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
-        import { getFirestore, collection, query, where, getDocs } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+        import { getFirestore, collection, query, where, getDocs, doc, setDoc, deleteDoc, onSnapshot, addDoc } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
 
         const firebaseConfig = {
-            apiKey: "DEINE_API_KEY",
-            authDomain: "DEIN_PROJEKT.firebaseapp.com",
-            projectId: "DEIN_PROJEKT_ID",
-            storageBucket: "DEIN_PROJEKT.appspot.com",
-            messagingSenderId: "DEINE_SENDER_ID",
-            appId: "DEINE_APP_ID"
+            apiKey:            "AIzaSyCEIfi1gmWVEvXRht01QLWomIoONdJdG7Q",
+            authDomain:        "fahrschueler-manager.firebaseapp.com",
+            projectId:         "fahrschueler-manager",
+            storageBucket:     "fahrschueler-manager.firebasestorage.app",
+            messagingSenderId: "54611825655",
+            appId:             "1:54611825655:web:68ebd9a905242e986054f2"
         };
 
-        const app = initializeApp(firebaseConfig);
+        const app  = initializeApp(firebaseConfig);
         const auth = getAuth(app);
-        const db = getFirestore(app);
+        const db   = getFirestore(app);
         window._auth = auth; window._db = db;
+        window._doc = doc; window._setDoc = setDoc; window._deleteDoc = deleteDoc; window._onSnapshot = onSnapshot; window._addDoc = addDoc;
         window._collection = collection; window._query = query;
         window._where = where; window._getDocs = getDocs;
         window._GoogleAuthProvider = GoogleAuthProvider;
         window._signInWithPopup = signInWithPopup;
         window._signOut = signOut;
 
-        onAuthStateChanged(auth, (user) => {
+        onAuthStateChanged(auth, async (user) => {
             window._currentUser = user;
             const statusEl = document.getElementById('authStatus');
-            const btnEl = document.getElementById('authBtn');
-            if (statusEl && btnEl) {
-                if (user) {
-                    statusEl.textContent = `🔒 ${user.displayName || user.email}`;
-                    statusEl.className = 'text-xs text-emerald-400 font-bold truncate max-w-[160px]';
-                    btnEl.textContent = 'Abmelden';
-                    btnEl.onclick = () => window._signOut(auth);
-                } else {
-                    statusEl.textContent = '⚠️ Nicht angemeldet – nur lokal';
-                    statusEl.className = 'text-xs text-amber-400 font-bold';
-                    btnEl.textContent = 'Mit Google anmelden';
-                    btnEl.onclick = async () => {
-                        try {
-                            await window._signInWithPopup(auth, new GoogleAuthProvider());
-                        } catch(e) { alert('Anmeldung fehlgeschlagen: ' + e.message); }
-                    };
-                }
+            const btnEl    = document.getElementById('authBtn');
+            if (!statusEl || !btnEl) return;
+            if (user) {
+                statusEl.textContent = `🔒 ${user.displayName || user.email}`;
+                statusEl.className = 'text-xs text-emerald-400 font-bold truncate max-w-[160px]';
+                btnEl.textContent = 'Abmelden';
+                btnEl.onclick = () => window._signOut(auth);
+                // Schüler-IDs aus Firestore laden und mit LocalStorage zusammenführen
+                await ladeSchuelerAusFirestore();
+            } else {
+                statusEl.textContent = '⚠️ Nicht angemeldet – nur lokal';
+                statusEl.className = 'text-xs text-amber-400 font-bold';
+                btnEl.textContent = 'Mit Google anmelden';
+                btnEl.onclick = async () => {
+                    try { await window._signInWithPopup(auth, new GoogleAuthProvider()); }
+                    catch(e) { alert('Anmeldung: ' + e.message); }
+                };
             }
             ladeLetzenSchueler();
         });
     </script>
+    <style>
+        .toast{opacity:0;transform:translateY(8px);transition:all 0.2s ease;pointer-events:none}
+        .toast.show{opacity:1;transform:translateY(0)}
+        .drive-btn-idle{background:#1a73e8}
+        .drive-btn-loading{background:#94a3b8}
+        .drive-btn-ok{background:#059669}
+        .drive-btn-err{background:#dc2626}
+        .btn-3d {
+            box-shadow: 0 7px 0 rgba(0,0,0,0.20), 0 10px 24px rgba(0,0,0,0.14);
+            border: 2px solid rgba(0,0,0,0.09) !important;
+            transform: translateY(0);
+            transition: box-shadow 0.1s ease, transform 0.1s ease;
+        }
+        .btn-3d:active {
+            box-shadow: 0 2px 0 rgba(0,0,0,0.20), 0 2px 8px rgba(0,0,0,0.10);
+            transform: translateY(5px);
+        }
+        select {
+            border: 2px solid #94a3b8 !important;
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.08) !important;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23475569'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            background-size: 18px;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+    </style>
 </head>
 <body class="bg-slate-50 text-slate-900 font-sans antialiased pb-24">
 <div class="max-w-md mx-auto bg-white min-h-screen shadow-2xl relative flex flex-col">
@@ -70,7 +100,6 @@
 
     <main class="flex-1 p-5">
 
-        <!-- Letzter Schüler Schnellzugriff -->
         <div id="letzterSchuelerCard" class="hidden mb-5 bg-gradient-to-r from-emerald-600 to-teal-600 rounded-2xl p-4 shadow-lg shadow-emerald-100">
             <p class="text-[10px] font-black text-emerald-200 uppercase tracking-widest mb-1">Zuletzt bearbeitet</p>
             <div class="flex items-center justify-between">
@@ -79,14 +108,8 @@
                     <p id="letzterSchuelerDatum" class="text-emerald-200 text-xs mt-0.5"></p>
                 </div>
                 <div class="flex gap-2">
-                    <button onclick="schnellNeueFahrt()"
-                        class="bg-white text-emerald-700 font-black text-xs px-3 py-2 rounded-xl active:scale-95 transition-all shadow-sm">
-                        + Neue Fahrt
-                    </button>
-                    <button onclick="schnellFortschritt()"
-                        class="bg-emerald-500 text-white font-black text-xs px-3 py-2 rounded-xl active:scale-95 transition-all border border-emerald-400">
-                        Fortschritt
-                    </button>
+                    <button onclick="schnellNeueFahrt()" class="bg-white text-emerald-700 font-black text-xs px-3 py-2 rounded-xl active:scale-95 transition-all shadow-sm">+ Neue Fahrt</button>
+                    <button onclick="schnellFortschritt()" class="bg-emerald-500 text-white font-black text-xs px-3 py-2 rounded-xl active:scale-95 transition-all border border-emerald-400">Fortschritt</button>
                 </div>
             </div>
         </div>
@@ -96,27 +119,23 @@
         </h2>
 
         <div class="grid grid-cols-2 gap-4 mb-8">
-            <button onclick="window.location.href='neue-fahrt.html'" class="bg-emerald-50 border-2 border-emerald-100 p-4 rounded-2xl flex flex-col items-center justify-center aspect-square hover:bg-emerald-100 active:scale-95 transition-all shadow-sm group">
-                <svg class="w-12 h-12 text-emerald-600 mb-2 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            <button onclick="window.location.href='neue-fahrt.html'" class="btn-3d bg-emerald-50 border-2 border-emerald-100 p-4 rounded-2xl flex flex-col items-center justify-center aspect-square hover:bg-emerald-100 active:scale-95 transition-all shadow-sm group">
+                <svg class="w-12 h-12 text-emerald-600 mb-2 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                 <span class="font-black text-emerald-800 text-xs uppercase">Neue Fahrt</span>
             </button>
-
-            <button onclick="window.location.href='fortschritt.html'" class="bg-blue-50 border-2 border-blue-100 p-4 rounded-2xl flex flex-col items-center justify-center aspect-square hover:bg-blue-100 active:scale-95 transition-all shadow-sm group">
-                <svg class="w-12 h-12 text-blue-600 mb-2 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+            <button onclick="window.location.href='fortschritt.html'" class="btn-3d bg-blue-50 border-2 border-blue-100 p-4 rounded-2xl flex flex-col items-center justify-center aspect-square hover:bg-blue-100 active:scale-95 transition-all shadow-sm group">
+                <svg class="w-12 h-12 text-blue-600 mb-2 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
                 <span class="font-black text-blue-800 text-xs uppercase">Fortschritt</span>
             </button>
-
-            <button onclick="toggleBereich('schuelerVerwaltung')" class="bg-amber-50 border-2 border-amber-100 p-4 rounded-2xl flex flex-col items-center justify-center aspect-square hover:bg-amber-100 active:scale-95 transition-all shadow-sm group">
-                <svg class="w-12 h-12 text-amber-600 mb-2 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+            <button onclick="toggleBereich('schuelerVerwaltung')" class="btn-3d bg-amber-50 border-2 border-amber-100 p-4 rounded-2xl flex flex-col items-center justify-center aspect-square hover:bg-amber-100 active:scale-95 transition-all shadow-sm group">
+                <svg class="w-12 h-12 text-amber-600 mb-2 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
                 <span class="font-black text-amber-800 text-xs uppercase">Schüler-IDs</span>
             </button>
-
-            <button onclick="toggleBereich('exportVerwaltung')" class="bg-slate-50 border-2 border-slate-200 p-4 rounded-2xl flex flex-col items-center justify-center aspect-square hover:bg-slate-100 active:scale-95 transition-all shadow-sm group">
-                <svg class="w-12 h-12 text-slate-600 mb-2 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path></svg>
+            <button onclick="toggleBereich('exportVerwaltung')" class="btn-3d bg-slate-50 border-2 border-slate-200 p-4 rounded-2xl flex flex-col items-center justify-center aspect-square hover:bg-slate-100 active:scale-95 transition-all shadow-sm group">
+                <svg class="w-12 h-12 text-slate-600 mb-2 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/></svg>
                 <span class="font-black text-slate-800 text-[10px] text-center uppercase leading-tight">Daten<br>Transfer</span>
             </button>
-
-            <button onclick="window.location.href='karte.html'" class="col-span-2 bg-rose-50 border-2 border-rose-100 p-4 rounded-2xl flex flex-row items-center justify-center gap-4 hover:bg-rose-100 active:scale-95 transition-all shadow-sm group">
+            <button onclick="window.location.href='karte.html'" class="btn-3d col-span-2 bg-rose-50 border-2 border-rose-100 p-4 rounded-2xl flex flex-row items-center justify-center gap-4 hover:bg-rose-100 active:scale-95 transition-all shadow-sm group">
                 <svg class="w-10 h-10 text-rose-500 group-hover:scale-110 transition-transform flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
                 <div class="text-left">
                     <span class="font-black text-rose-800 text-sm uppercase block">Ortsnotizen</span>
@@ -126,12 +145,12 @@
         </div>
 
         <!-- Schüler-Verwaltung -->
-        <div id="schuelerVerwaltung" class="hidden animate-in fade-in slide-in-from-bottom-4">
+        <div id="schuelerVerwaltung" class="hidden">
             <h2 class="text-sm font-black mb-3 text-slate-800 border-l-4 border-amber-400 pl-3 uppercase">IDs verwalten</h2>
             <div class="mb-4 flex gap-2">
-                <input type="text" id="neueId" placeholder="NEUE ID EINGEBEN" class="flex-1 p-3 rounded-xl border-2 border-slate-200 bg-white focus:outline-none focus:border-amber-500 uppercase font-bold text-slate-800 transition-all text-sm">
+                <input type="text" id="neueId" placeholder="NEUE ID EINGEBEN" class="flex-1 p-3 rounded-xl border-2 border-slate-200 focus:outline-none focus:border-amber-500 uppercase font-bold text-slate-800 text-sm">
                 <button onclick="addSchueler()" class="bg-amber-500 text-white font-bold px-5 rounded-xl hover:bg-amber-600 active:scale-95 shadow-md shadow-amber-200">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
                 </button>
             </div>
             <div class="bg-slate-50 border border-slate-200 rounded-xl overflow-hidden shadow-sm">
@@ -140,166 +159,572 @@
             </div>
         </div>
 
-        <!-- Export/Import -->
-        <div id="exportVerwaltung" class="hidden animate-in fade-in slide-in-from-bottom-4">
-            <h2 class="text-sm font-black mb-3 text-slate-800 border-l-4 border-blue-500 pl-3 uppercase">Daten-Transfer</h2>
-            <div class="border border-emerald-100 p-4 rounded-2xl mb-4 bg-emerald-50/50">
-                <h3 class="text-xs font-black text-emerald-700 mb-2 uppercase tracking-wider">Import (JSON-Datei)</h3>
-                <input type="file" id="importFile" accept=".json" class="hidden" onchange="importiereDaten(event)">
-                <button onclick="document.getElementById('importFile').click()" class="w-full bg-emerald-600 text-white font-black py-3 rounded-xl hover:bg-emerald-700 active:scale-95 uppercase text-xs shadow-md shadow-emerald-200 transition-all">Datei laden</button>
+        <!-- Daten Transfer -->
+        <div id="exportVerwaltung" class="hidden space-y-4">
+            <h2 class="text-sm font-black text-slate-800 border-l-4 border-blue-500 pl-3 uppercase">Daten-Transfer</h2>
+
+            <!-- Google Drive -->
+            <div class="border-2 border-blue-200 rounded-2xl overflow-hidden">
+                <div class="bg-blue-600 px-4 py-3 flex items-center gap-3">
+                    <svg class="w-5 h-5 flex-shrink-0" viewBox="0 0 87.3 78" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M6.6 66.85l3.85 6.65c.8 1.4 1.95 2.5 3.3 3.3l13.75-23.8H0c0 1.55.4 3.1 1.2 4.5z" fill="#0066da"/>
+                        <path d="M43.65 25L29.9 1.2C28.55 2 27.4 3.1 26.6 4.5L1.2 48.5C.4 49.9 0 51.45 0 53h27.5z" fill="#00ac47"/>
+                        <path d="M73.55 76.8c1.35-.8 2.5-1.9 3.3-3.3l1.6-2.75 7.65-13.25c.8-1.4 1.2-2.95 1.2-4.5H60l5.85 11.5z" fill="#ea4335"/>
+                        <path d="M43.65 25L57.4 1.2C56.05.4 54.5 0 52.9 0H34.4c-1.6 0-3.15.45-4.5 1.2z" fill="#00832d"/>
+                        <path d="M60 53H27.5L13.75 76.8c1.35.8 2.9 1.2 4.5 1.2h50.1c1.6 0 3.15-.45 4.5-1.2z" fill="#2684fc"/>
+                        <path d="M73.4 26.5l-12.8-22.2c-.8-1.4-1.95-2.5-3.3-3.3L43.65 25 60 53h27.45c0-1.55-.4-3.1-1.2-4.5z" fill="#ffba00"/>
+                    </svg>
+                    <div>
+                        <p class="text-white font-black text-sm uppercase tracking-wide">Google Drive Upload</p>
+                        <p class="text-blue-200 text-[10px]">Direkt in Drive — kein lokaler Download</p>
+                    </div>
+                    <div id="driveVerbunden" class="ml-auto hidden">
+                        <span class="bg-emerald-500 text-white text-[9px] font-black px-2 py-1 rounded-full uppercase">Verbunden ✓</span>
+                    </div>
+                </div>
+                <div class="p-4 bg-blue-50 space-y-3">
+                    <div id="driveAuthBereich">
+                        <p class="text-[10px] text-slate-500 mb-2 font-semibold">Einmalige Autorisierung. Zugriff nur auf Ordner <code class="bg-slate-100 px-1 rounded">BW_Fahrschule/</code></p>
+                        <button onclick="driveAutorisieren()" class="w-full py-3 rounded-xl text-white font-black text-sm uppercase tracking-wide active:scale-95 transition-all drive-btn-idle shadow-md">Mit Google Drive verbinden</button>
+                    </div>
+                    <div id="driveUploadBereich" class="hidden space-y-2">
+                        <p class="text-[10px] font-black text-slate-500 uppercase tracking-wider">Fahrschüler → Drive hochladen</p>
+                        <div id="driveSchuelerListe" class="space-y-2"></div>
+                        <button onclick="alleNachDriveHochladen()" class="w-full py-3 rounded-xl bg-blue-600 text-white font-black text-xs uppercase tracking-wide active:scale-95 transition-all shadow-md mt-2">Alle Schüler hochladen</button>
+                    </div>
+                </div>
             </div>
-            <div class="border border-blue-100 p-4 rounded-2xl mb-4 bg-blue-50/50">
-                <h3 class="text-xs font-black text-blue-700 mb-2 uppercase tracking-wider">Export (Mehrfachauswahl)</h3>
-                <div id="exportListeContainer" class="max-h-40 overflow-y-auto bg-white border border-blue-200 rounded-xl mb-3 p-2 space-y-1 shadow-inner"></div>
-                <button onclick="exportiereAusgewaehlteSchueler()" class="w-full bg-blue-600 text-white font-black py-3 rounded-xl hover:bg-blue-700 active:scale-95 shadow-md shadow-blue-200 uppercase text-xs transition-all">Markierte IDs exportieren</button>
+
+            <!-- Lokaler Export/Import -->
+            <div class="border border-slate-200 p-4 rounded-2xl bg-slate-50 space-y-3">
+                <h3 class="text-xs font-black text-slate-600 uppercase tracking-wider border-b border-slate-200 pb-2">Lokaler Export / Import</h3>
+                <div>
+                    <p class="text-[10px] text-slate-400 mb-2 font-semibold uppercase">Einzelne Schüler exportieren</p>
+                    <div id="exportListeContainer" class="max-h-36 overflow-y-auto bg-white border border-slate-200 rounded-xl mb-2 p-2 space-y-1"></div>
+                    <button onclick="exportiereAusgewaehlteSchueler()" class="w-full bg-slate-700 text-white font-black py-3 rounded-xl active:scale-95 uppercase text-xs shadow-md transition-all">Markierte IDs als JSON exportieren</button>
+                </div>
+                <div class="border-t border-slate-200 pt-3">
+                    <button onclick="exportiereDaten()" class="w-full bg-slate-800 text-white font-black py-3 rounded-xl active:scale-95 uppercase text-xs tracking-widest transition-all shadow-md">Gesamtsicherung herunterladen</button>
+                </div>
+                <div class="border-t border-slate-200 pt-3">
+                    <input type="file" id="importFile" accept=".json" class="hidden" onchange="importiereDaten(event)">
+                    <button onclick="document.getElementById('importFile').click()" class="w-full bg-emerald-600 text-white font-black py-3 rounded-xl active:scale-95 uppercase text-xs shadow-md transition-all">JSON-Datei importieren</button>
+                </div>
             </div>
-            <div class="border-t-2 border-slate-100 pt-4 mt-2">
-                <h3 class="text-[10px] font-black text-slate-400 mb-2 uppercase tracking-widest text-center">System-Sicherung</h3>
-                <button onclick="exportiereDaten()" class="w-full bg-slate-800 text-white font-black py-4 rounded-2xl shadow-xl hover:bg-slate-900 active:scale-95 uppercase text-xs tracking-widest transition-all">PC-Gesamtsicherung herunterladen</button>
+
+            <!-- Zugführer-Zugang -->
+            <div class="border-2 border-amber-200 rounded-2xl overflow-hidden">
+                <div class="bg-amber-600 px-4 py-3 flex items-center gap-2">
+                    <span class="text-white font-black text-sm uppercase tracking-wide">⭐ Zugführer-Zugang</span>
+                    <span id="zfStatusBadge" class="hidden ml-auto bg-white text-amber-700 text-[9px] font-black px-2 py-1 rounded-full uppercase"></span>
+                </div>
+                <div class="p-4 bg-amber-50 space-y-3">
+                    <div id="zfEingabeBereich">
+                        <p class="text-[10px] text-slate-500 mb-2 font-semibold">Code eingeben um Zugführer-Ansicht freizuschalten</p>
+                        <div class="flex gap-2">
+                            <input type="password" id="zfCode" placeholder="Zugführer-Code"
+                                class="flex-1 p-2.5 rounded-xl border-2 border-amber-200 font-mono text-sm focus:outline-none focus:border-amber-500">
+                            <button onclick="zfCodeEingeben()"
+                                class="bg-amber-600 text-white font-black px-4 rounded-xl active:scale-95 transition-all">OK</button>
+                        </div>
+                    </div>
+                    <div id="zfAktivBereich" class="hidden">
+                        <p id="zfRolleText" class="text-sm font-black text-amber-800 mb-2"></p>
+                        <button onclick="window.location.href='fortschritt.html'"
+                            class="w-full py-2.5 rounded-xl bg-amber-600 text-white font-black text-xs uppercase tracking-wide active:scale-95 transition-all">
+                            Alle Fahrschüler einsehen →
+                        </button>
+                        <button onclick="zfAbmelden()"
+                            class="w-full py-2 rounded-xl text-amber-500 font-black text-[10px] uppercase mt-2 hover:text-red-500 transition-colors">
+                            Zugführer-Zugang aufheben
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
     </main>
 </div>
 
+<div id="toast" class="toast fixed bottom-6 left-1/2 -translate-x-1/2 bg-slate-800 text-white text-sm font-bold px-5 py-3 rounded-2xl shadow-xl z-50 whitespace-nowrap"></div>
+
 <script>
-document.getElementById('current-date').textContent = new Date().toLocaleDateString('de-DE', {year:'numeric',month:'2-digit',day:'2-digit'});
+const GOOGLE_CLIENT_ID  = '54611825655-deiggm94l8fm4ease9dk1fshp6b294ip.apps.googleusercontent.com';
+const DRIVE_FOLDER_NAME = 'BW_Fahrschule';
+let driveAccessToken = null;
+let driveFolderId    = null;
+let tokenClient      = null;
+
+function driveAutorisieren() {
+    if (!window.google?.accounts?.oauth2) { setTimeout(driveAutorisieren, 1500); return; }
+    if (!tokenClient) {
+        tokenClient = google.accounts.oauth2.initTokenClient({
+            client_id: GOOGLE_CLIENT_ID,
+            scope: 'https://www.googleapis.com/auth/drive.file',
+            callback: async (resp) => {
+                if (resp.error) { showToast('❌ Autorisierung fehlgeschlagen'); return; }
+                driveAccessToken = resp.access_token;
+                driveFolderId = await driveOrdnerSicherstellen();
+                if (driveFolderId) {
+                    document.getElementById('driveAuthBereich').classList.add('hidden');
+                    document.getElementById('driveUploadBereich').classList.remove('hidden');
+                    document.getElementById('driveVerbunden').classList.remove('hidden');
+                    renderDriveSchuelerListe();
+                    showToast('✅ Google Drive verbunden');
+                }
+            }
+        });
+    }
+    tokenClient.requestAccessToken();
+}
+
+async function driveOrdnerSicherstellen() {
+    const r = await fetch(`https://www.googleapis.com/drive/v3/files?q=name='${DRIVE_FOLDER_NAME}'+and+mimeType='application/vnd.google-apps.folder'+and+trashed=false&fields=files(id)`,
+        { headers: { Authorization: `Bearer ${driveAccessToken}` } });
+    const d = await r.json();
+    if (d.files?.length > 0) return d.files[0].id;
+    const cr = await fetch('https://www.googleapis.com/drive/v3/files', {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${driveAccessToken}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: DRIVE_FOLDER_NAME, mimeType: 'application/vnd.google-apps.folder' })
+    });
+    const cd = await cr.json();
+    return cd.id || null;
+}
+
+function renderDriveSchuelerListe() {
+    const liste = document.getElementById('driveSchuelerListe');
+    const ids = JSON.parse(localStorage.getItem('bw_aktive_schueler')) || [];
+    liste.innerHTML = ids.length === 0
+        ? '<p class="text-[10px] text-slate-400 italic text-center py-2">Keine Schüler-IDs hinterlegt.</p>'
+        : ids.map(id => `
+            <div class="flex items-center justify-between bg-white border border-slate-100 rounded-xl px-3 py-2.5">
+                <span class="font-black text-slate-700 text-sm">${id}</span>
+                <button id="driveBtn_${id}" onclick="schuelerNachDriveHochladen('${id}')"
+                    class="drive-btn-idle text-white text-[10px] font-black px-3 py-1.5 rounded-lg active:scale-95 transition-all uppercase flex items-center gap-1.5">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
+                    Hochladen
+                </button>
+            </div>`).join('');
+}
+
+async function schuelerNachDriveHochladen(id) {
+    if (!driveAccessToken || !driveFolderId) { showToast('⚠️ Erst mit Drive verbinden'); return; }
+    const btn = document.getElementById(`driveBtn_${id}`);
+    btn.innerHTML = '⏳ Lädt…'; btn.disabled = true;
+    btn.className = btn.className.replace('drive-btn-idle','drive-btn-loading');
+    try {
+        const fahrten = (JSON.parse(localStorage.getItem('bw_ausbildungsstand'))||[]).filter(f=>f.schuelerId===id);
+        const inhalt  = JSON.stringify({ schuelerIDs:[id], alleFahrten:fahrten }, null, 2);
+        const dateiname = `${id}.json`;
+        const sr = await fetch(`https://www.googleapis.com/drive/v3/files?q=name='${dateiname}'+and+'${driveFolderId}'+in+parents+and+trashed=false&fields=files(id)`,
+            { headers: { Authorization: `Bearer ${driveAccessToken}` } });
+        const sd = await sr.json();
+        const vorhandeneId = sd.files?.[0]?.id;
+        const boundary = 'bw_boundary';
+        const meta = vorhandeneId ? { name: dateiname } : { name: dateiname, parents: [driveFolderId] };
+        const body = `--${boundary}\r\nContent-Type: application/json; charset=UTF-8\r\n\r\n${JSON.stringify(meta)}\r\n--${boundary}\r\nContent-Type: application/json\r\n\r\n${inhalt}\r\n--${boundary}--`;
+        const url  = vorhandeneId
+            ? `https://www.googleapis.com/upload/drive/v3/files/${vorhandeneId}?uploadType=multipart`
+            : 'https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart';
+        const res  = await fetch(url, { method: vorhandeneId ? 'PATCH' : 'POST',
+            headers: { Authorization: `Bearer ${driveAccessToken}`, 'Content-Type': `multipart/related; boundary=${boundary}` }, body });
+        const data = await res.json();
+        if (data.id) {
+            btn.innerHTML = '✓ Gespeichert';
+            btn.className = btn.className.replace('drive-btn-loading','drive-btn-ok');
+            showToast(`☁️ ${id}.json in Drive gespeichert`);
+            setTimeout(() => {
+                btn.innerHTML = `<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg> Hochladen`;
+                btn.className = btn.className.replace('drive-btn-ok','drive-btn-idle'); btn.disabled = false;
+            }, 3000);
+        } else throw new Error(JSON.stringify(data));
+    } catch(e) {
+        btn.innerHTML = '❌ Fehler'; btn.className = btn.className.replace('drive-btn-loading','drive-btn-err');
+        showToast('❌ Upload fehlgeschlagen');
+        setTimeout(() => {
+            btn.innerHTML = `<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg> Hochladen`;
+            btn.className = btn.className.replace('drive-btn-err','drive-btn-idle'); btn.disabled = false;
+        }, 3000);
+    }
+}
+
+async function alleNachDriveHochladen() {
+    const ids = JSON.parse(localStorage.getItem('bw_aktive_schueler')) || [];
+    for (const id of ids) { await schuelerNachDriveHochladen(id); await new Promise(r=>setTimeout(r,300)); }
+}
+
+let aktiveSchuelerIds = JSON.parse(localStorage.getItem('bw_aktive_schueler')) || [];
+
+// ── FIRESTORE SYNC ────────────────────────────────────────────────────────────
+async function ladeSchuelerAusFirestore() {
+    if (!window._db || !window._currentUser) return;
+    try {
+        const uid = window._currentUser.uid;
+        const q = window._query(
+            window._collection(window._db, 'schueler'),
+            window._where('uid', '==', uid)
+        );
+        const snap = await window._getDocs(q);
+        const fsIds = snap.docs.map(d => d.data().schuelerId);
+        const merged = [...new Set([...aktiveSchuelerIds, ...fsIds])];
+        if (merged.length !== aktiveSchuelerIds.length) {
+            aktiveSchuelerIds = merged;
+            localStorage.setItem('bw_aktive_schueler', JSON.stringify(aktiveSchuelerIds));
+        }
+        await ladeFahrtenAusFirestore(uid);
+    } catch(e) { console.warn('Firestore laden:', e); }
+}
+
+async function ladeFahrtenAusFirestore(uid) {
+    if (!window._db) return;
+    try {
+        const q = window._query(
+            window._collection(window._db, 'fahrten'),
+            window._where('uid', '==', uid)
+        );
+        const snap = await window._getDocs(q);
+        const fsFahrten = snap.docs.map(d => d.data());
+        let lokalFahrten = JSON.parse(localStorage.getItem('bw_ausbildungsstand') || '[]');
+        let changed = false;
+        fsFahrten.forEach(ff => {
+            const exists = lokalFahrten.some(lf => lf.datum === ff.datum && lf.schuelerId === ff.schuelerId);
+            if (!exists) { lokalFahrten.push(ff); changed = true; }
+        });
+        if (changed) localStorage.setItem('bw_ausbildungsstand', JSON.stringify(lokalFahrten));
+    } catch(e) { console.warn('Fahrten laden:', e); }
+}
+
+async function schuelerInFirestoreSpeichern(schuelerId) {
+    if (!window._db || !window._currentUser) return;
+    try {
+        const uid = window._currentUser.uid;
+        const safeId = schuelerId.replace(/[\/\s]/g, '_');
+        await window._setDoc(window._doc(window._db, 'schueler', uid + '_' + safeId),
+            { schuelerId, uid, erstellt: new Date().toISOString() });
+    } catch(e) { console.warn('Schüler speichern:', e); }
+}
+
+async function schuelerAusFirestoreLoeschen(schuelerId) {
+    if (!window._db || !window._currentUser) return;
+    try {
+        const uid = window._currentUser.uid;
+        const safeId = schuelerId.replace(/[\/\s]/g, '_');
+        await window._deleteDoc(window._doc(window._db, 'schueler', uid + '_' + safeId));
+    } catch(e) { console.warn('Schüler löschen:', e); }
+}
+
+// ── FREIGABE-SYSTEM ───────────────────────────────────────────────────────────
+function zufallsToken(len = 12) {
+    const chars = 'ABCDEFGHJKMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789';
+    return Array.from({length: len}, () => chars[Math.floor(Math.random() * chars.length)]).join('');
+}
+
+function freigabeDialog(schuelerId) {
+    const dlg = document.createElement('div');
+    dlg.id = 'freigabeDlg';
+    dlg.className = 'fixed inset-0 z-50 flex items-end justify-center bg-black/50 backdrop-blur-sm';
+    dlg.innerHTML = `
+        <div class="bg-white w-full max-w-md rounded-t-3xl p-6 shadow-2xl">
+            <h3 class="font-black text-slate-800 text-lg mb-1">Schüler teilen</h3>
+            <p class="text-sm text-slate-500 mb-4"><b>${schuelerId}</b> — Link gilt 7 Tage</p>
+            <div class="space-y-3 mb-5">
+                <label class="flex items-center gap-3 p-3 border-2 border-slate-200 rounded-xl cursor-pointer hover:border-blue-400 transition-all">
+                    <input type="radio" name="freigabeTyp" value="lesen" class="w-4 h-4 text-blue-600">
+                    <div>
+                        <p class="font-black text-slate-800 text-sm">Nur lesen</p>
+                        <p class="text-xs text-slate-400">Kollege sieht Fortschritt, kann nichts ändern</p>
+                    </div>
+                </label>
+                <label class="flex items-center gap-3 p-3 border-2 border-slate-200 rounded-xl cursor-pointer hover:border-emerald-400 transition-all">
+                    <input type="radio" name="freigabeTyp" value="schreiben" class="w-4 h-4 text-emerald-600" checked>
+                    <div>
+                        <p class="font-black text-slate-800 text-sm">Lesen & Schreiben</p>
+                        <p class="text-xs text-slate-400">Kollege kann Fahrten dokumentieren</p>
+                    </div>
+                </label>
+            </div>
+            <div class="flex gap-3">
+                <button onclick="document.getElementById('freigabeDlg').remove()"
+                    class="flex-1 py-3 rounded-2xl border-2 border-slate-200 font-black text-slate-600 active:scale-95">Abbrechen</button>
+                <button onclick="freigabeLinkErstellen('${schuelerId}')"
+                    class="flex-1 py-3 rounded-2xl bg-blue-600 text-white font-black active:scale-95 shadow-lg">🔗 Link erstellen</button>
+            </div>
+        </div>`;
+    document.body.appendChild(dlg);
+    dlg.addEventListener('click', e => { if (e.target === dlg) dlg.remove(); });
+}
+
+async function freigabeLinkErstellen(schuelerId) {
+    if (!window._db || !window._currentUser) return;
+    const typ = document.querySelector('input[name="freigabeTyp"]:checked')?.value || 'schreiben';
+    const token = zufallsToken();
+    const ablauf = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
+    const uid = window._currentUser.uid;
+
+    try {
+        await window._setDoc(window._doc(window._db, 'freigaben', token), {
+            schuelerId, vonUid: uid, typ, ablauf, erstellt: new Date().toISOString()
+        });
+
+        const link = window.location.origin + '/?freigabe=' + token;
+        await navigator.clipboard.writeText(link);
+
+        document.getElementById('freigabeDlg').remove();
+        showToast('🔗 Link kopiert! Gilt 7 Tage.');
+    } catch(e) {
+        alert('Fehler: ' + e.message);
+    }
+}
+
+async function freigabePruefen() {
+    const params = new URLSearchParams(window.location.search);
+    const token = params.get('freigabe');
+    if (!token) return;
+
+    if (!window._currentUser) {
+        // Warten bis Auth bereit
+        setTimeout(freigabePruefen, 500);
+        return;
+    }
+
+    try {
+        const ref = window._doc(window._db, 'freigaben', token);
+        const snap = await window._getDocs(window._query(
+            window._collection(window._db, 'freigaben'),
+            window._where('__name__', '==', token)
+        ));
+
+        // Direkt per doc lesen
+        const { getDoc } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+        const docSnap = await getDoc(ref);
+
+        if (!docSnap.exists()) { alert('Link nicht gefunden oder abgelaufen.'); return; }
+
+        const data = docSnap.data();
+        if (new Date(data.ablauf) < new Date()) { alert('Dieser Link ist abgelaufen.'); return; }
+
+        const { schuelerId, typ } = data;
+        const uid = window._currentUser.uid;
+
+        // Schüler beim Kollegen hinzufügen
+        if (!aktiveSchuelerIds.includes(schuelerId)) {
+            aktiveSchuelerIds.push(schuelerId);
+            localStorage.setItem('bw_aktive_schueler', JSON.stringify(aktiveSchuelerIds));
+        }
+
+        // In Firestore als freigegebenen Schüler eintragen
+        const safeId = schuelerId.replace(/[\/\s]/g, '_');
+        await window._setDoc(window._doc(window._db, 'schueler', uid + '_' + safeId), {
+            schuelerId, uid, erstellt: new Date().toISOString(),
+            freigabeVon: data.vonUid, freigabeTyp: typ
+        });
+
+        // Fahrten des Original-Besitzers laden
+        const fahrtenSnap = await window._getDocs(window._query(
+            window._collection(window._db, 'fahrten'),
+            window._where('uid', '==', data.vonUid),
+            window._where('schuelerId', '==', schuelerId)
+        ));
+        let lokalFahrten = JSON.parse(localStorage.getItem('bw_ausbildungsstand') || '[]');
+        fahrtenSnap.docs.forEach(d => {
+            const f = d.data();
+            if (!lokalFahrten.some(lf => lf.datum === f.datum && lf.schuelerId === f.schuelerId)) {
+                lokalFahrten.push(f);
+            }
+        });
+        localStorage.setItem('bw_ausbildungsstand', JSON.stringify(lokalFahrten));
+
+        // URL bereinigen
+        window.history.replaceState({}, '', window.location.pathname);
+        showToast('✅ Schüler ' + schuelerId + ' hinzugefügt!');
+        ladeLetzenSchueler();
+
+    } catch(e) {
+        alert('Fehler beim Laden der Freigabe: ' + e.message);
+    }
+}
+
+// ── ZUGFÜHRER-FUNKTIONEN ─────────────────────────────────────────────────────
+const ZF_CODES = {
+    'ZF1-KFAUSBZ-2026': 'Zugführer 1. Zug',
+    'ZF2-KFAUSBZ-2026': 'Zugführer 2. Zug',
+    'VT1-KFAUSBZ-2026': 'Vertreter 1. Zug',
+    'VT2-KFAUSBZ-2026': 'Vertreter 2. Zug',
+};
+
+function zfCodeEingeben() {
+    const code = document.getElementById('zfCode').value.trim();
+    if (ZF_CODES[code]) {
+        localStorage.setItem('bw_zf_rolle', ZF_CODES[code]);
+        zfStatusAnzeigen();
+        showToast('⭐ ' + ZF_CODES[code] + ' aktiviert');
+    } else {
+        showToast('❌ Ungültiger Code');
+        document.getElementById('zfCode').value = '';
+    }
+}
+
+function zfAbmelden() {
+    localStorage.removeItem('bw_zf_rolle');
+    zfStatusAnzeigen();
+    showToast('Zugführer-Zugang aufgehoben');
+}
+
+function zfStatusAnzeigen() {
+    const rolle = localStorage.getItem('bw_zf_rolle');
+    const eingabe = document.getElementById('zfEingabeBereich');
+    const aktiv   = document.getElementById('zfAktivBereich');
+    const badge   = document.getElementById('zfStatusBadge');
+    const rolleText = document.getElementById('zfRolleText');
+    if (rolle) {
+        eingabe?.classList.add('hidden');
+        aktiv?.classList.remove('hidden');
+        badge?.classList.remove('hidden');
+        if (badge) badge.textContent = rolle;
+        if (rolleText) rolleText.textContent = '✓ Aktiv als: ' + rolle;
+    } else {
+        eingabe?.classList.remove('hidden');
+        aktiv?.classList.add('hidden');
+        badge?.classList.add('hidden');
+    }
+}
+
+// Code-Eingabe per Enter
+document.addEventListener('DOMContentLoaded', () => {
+    zfStatusAnzeigen();
+    document.getElementById('zfCode')?.addEventListener('keydown', e => {
+        if (e.key === 'Enter') zfCodeEingeben();
+    });
+});
+
+function showToast(msg) {
+    let t = document.getElementById('toast');
+    if (!t) {
+        t = document.createElement('div');
+        t.id = 'toast';
+        t.className = 'fixed bottom-6 left-1/2 -translate-x-1/2 bg-slate-800 text-white text-sm font-bold px-5 py-3 rounded-2xl shadow-xl z-50 whitespace-nowrap transition-all';
+        document.body.appendChild(t);
+    }
+    t.textContent = msg;
+    t.style.opacity = '1';
+    t.style.transform = 'translateX(-50%) translateY(0)';
+    setTimeout(() => { t.style.opacity = '0'; }, 2500);
+}
 
 function toggleBereich(id) {
     ['schuelerVerwaltung','exportVerwaltung'].forEach(b => document.getElementById(b).classList.add('hidden'));
     document.getElementById(id).classList.remove('hidden');
     if (id === 'schuelerVerwaltung') renderSchuelerListe();
-    if (id === 'exportVerwaltung') renderExportListe();
+    if (id === 'exportVerwaltung')   { renderExportListe(); renderDriveSchuelerListe(); }
 }
-
-let aktiveSchuelerIds = JSON.parse(localStorage.getItem('bw_aktive_schueler')) || [];
 
 function renderSchuelerListe() {
     const liste = document.getElementById('schuelerListe');
-    liste.innerHTML = '';
-    if (aktiveSchuelerIds.length === 0) {
-        liste.innerHTML = '<li class="p-6 text-xs font-bold text-center text-slate-400 italic">Keine IDs hinterlegt.</li>';
-        return;
-    }
-    const alleFahrten = JSON.parse(localStorage.getItem('bw_ausbildungsstand')) || [];
-    aktiveSchuelerIds.forEach(id => {
-        const fahrten = alleFahrten.filter(f => f.schuelerId === id);
-        const offene = (() => {
-            let stand = {};
-            fahrten.forEach(f => { for(let i=1;i<=74;i++) if(f[`item_${i}`]) stand[i]=f[`item_${i}`]; });
-            return Object.values(stand).filter(v => v !== 'gruen').length + (74 - Object.keys(stand).length);
-        })();
-        liste.innerHTML += `<li class="p-3 flex justify-between items-center px-4">
-            <div>
+    const fahrten = JSON.parse(localStorage.getItem('bw_ausbildungsstand')) || [];
+    liste.innerHTML = aktiveSchuelerIds.length === 0
+        ? '<li class="p-6 text-xs font-bold text-center text-slate-400 italic">Keine IDs hinterlegt.</li>'
+        : aktiveSchuelerIds.map(id => `<li class="p-3 flex justify-between items-center px-4 gap-2">
+            <div class="flex-1 min-w-0">
                 <span class="font-black text-slate-700">${id}</span>
-                <span class="ml-2 text-[10px] text-slate-400">${fahrten.length} Einheit(en)</span>
-                ${offene > 0 ? `<span class="ml-1 text-[10px] bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded-full font-black">${offene} offen</span>` : '<span class="ml-1 text-[10px] bg-emerald-100 text-emerald-700 px-1.5 py-0.5 rounded-full font-black">✓</span>'}
+                <span class="ml-2 text-[10px] text-slate-400">${fahrten.filter(f=>f.schuelerId===id).length} Einheit(en)</span>
             </div>
-            <button onclick="removeSchueler('${id}')" class="text-slate-300 hover:text-red-500 font-black transition-colors text-xs uppercase">Löschen</button>
-        </li>`;
-    });
+            <div class="flex gap-2 flex-shrink-0">
+                <button onclick="freigabeDialog('${id}')"
+                    class="text-[10px] font-black text-blue-500 hover:text-blue-700 border border-blue-200 hover:border-blue-400 px-2 py-1 rounded-lg transition-all uppercase">
+                    🔗 Teilen
+                </button>
+                <button onclick="removeSchueler('${id}')"
+                    class="text-slate-300 hover:text-red-500 font-black text-xs uppercase">Löschen</button>
+            </div>
+          </li>`).join('');
 }
 
 function addSchueler() {
     const input = document.getElementById('neueId');
-    const neueId = input.value.trim().toUpperCase();
-    if (neueId && !aktiveSchuelerIds.includes(neueId)) {
-        aktiveSchuelerIds.push(neueId);
+    const id = input.value.trim().toUpperCase();
+    if (id && !aktiveSchuelerIds.includes(id)) {
+        aktiveSchuelerIds.push(id);
         localStorage.setItem('bw_aktive_schueler', JSON.stringify(aktiveSchuelerIds));
-        input.value = '';
-        renderSchuelerListe();
+        schuelerInFirestoreSpeichern(id); // auch in Firestore
+        input.value = ''; renderSchuelerListe();
     }
 }
 
 function removeSchueler(id) {
-    if (confirm(`ID "${id}" aus der Liste entfernen?`)) {
-        aktiveSchuelerIds = aktiveSchuelerIds.filter(i => i !== id);
+    if (confirm(`ID "${id}" entfernen?`)) {
+        aktiveSchuelerIds = aktiveSchuelerIds.filter(i=>i!==id);
         localStorage.setItem('bw_aktive_schueler', JSON.stringify(aktiveSchuelerIds));
+        schuelerAusFirestoreLoeschen(id); // auch aus Firestore
         renderSchuelerListe();
     }
 }
 
 function renderExportListe() {
-    const container = document.getElementById('exportListeContainer');
-    container.innerHTML = '';
-    if (aktiveSchuelerIds.length === 0) {
-        container.innerHTML = '<p class="text-[10px] text-slate-400 italic text-center py-2">Keine IDs vorhanden.</p>';
-        return;
-    }
-    aktiveSchuelerIds.forEach(id => {
-        container.innerHTML += `<label class="flex items-center gap-3 p-2 hover:bg-blue-50 rounded-lg cursor-pointer transition-colors">
-            <input type="checkbox" name="exportCheck" value="${id}" class="w-4 h-4 rounded border-blue-300 text-blue-600">
-            <span class="text-sm font-bold text-slate-700">${id}</span>
-        </label>`;
-    });
+    const c = document.getElementById('exportListeContainer');
+    c.innerHTML = aktiveSchuelerIds.length === 0
+        ? '<p class="text-[10px] text-slate-400 italic text-center py-2">Keine IDs.</p>'
+        : aktiveSchuelerIds.map(id=>`<label class="flex items-center gap-3 p-2 hover:bg-blue-50 rounded-lg cursor-pointer">
+            <input type="checkbox" name="exportCheck" value="${id}" class="w-4 h-4">
+            <span class="text-sm font-bold text-slate-700">${id}</span></label>`).join('');
 }
 
 function exportiereAusgewaehlteSchueler() {
-    const checked = document.querySelectorAll('input[name="exportCheck"]:checked');
-    const ids = Array.from(checked).map(cb => cb.value);
-    if (ids.length === 0) { alert('Bitte mindestens eine ID auswählen.'); return; }
-    const alleFahrten = JSON.parse(localStorage.getItem('bw_ausbildungsstand')) || [];
-    const data = { typ: "Sammel_Uebergabe", schuelerIDs: ids, alleFahrten: alleFahrten.filter(f => ids.includes(f.schuelerId)) };
-    const name = ids.length === 1 ? `Uebergabe_${ids[0]}_${new Date().toISOString().split('T')[0]}.json` : `Sammel_Export_${ids.length}_Schueler_${new Date().toISOString().split('T')[0]}.json`;
-    downloadJSON(data, name);
+    const ids = Array.from(document.querySelectorAll('input[name="exportCheck"]:checked')).map(c=>c.value);
+    if (!ids.length) { alert('Bitte mindestens eine ID wählen.'); return; }
+    const fahrten = JSON.parse(localStorage.getItem('bw_ausbildungsstand')) || [];
+    downloadJSON({ typ:'Sammel_Uebergabe', schuelerIDs:ids, alleFahrten:fahrten.filter(f=>ids.includes(f.schuelerId)) },
+        ids.length===1 ? `Uebergabe_${ids[0]}_${today()}.json` : `Sammel_${ids.length}_${today()}.json`);
 }
 
 function exportiereDaten() {
-    const fahrten = JSON.parse(localStorage.getItem('bw_ausbildungsstand')) || [];
-    const ids = JSON.parse(localStorage.getItem('bw_aktive_schueler')) || [];
-    downloadJSON({typ:"Gesamt_Backup", schuelerIDs:ids, alleFahrten:fahrten}, `BW_Gesamt_${new Date().toISOString().split('T')[0]}.json`);
+    downloadJSON({ typ:'Gesamt_Backup', schuelerIDs:aktiveSchuelerIds, alleFahrten:JSON.parse(localStorage.getItem('bw_ausbildungsstand')||'[]') },
+        `BW_Gesamt_${today()}.json`);
 }
 
-function downloadJSON(data, filename) {
+function downloadJSON(data, name) {
     const a = document.createElement('a');
-    a.href = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(data, null, 2));
-    a.download = filename; document.body.appendChild(a); a.click(); a.remove();
+    a.href = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(data,null,2));
+    a.download = name; document.body.appendChild(a); a.click(); a.remove();
 }
 
-function importiereDaten(event) {
+function importiereDaten(e) {
     const reader = new FileReader();
-    reader.onload = function(e) {
+    reader.onload = ev => {
         try {
-            const data = JSON.parse(e.target.result);
-            let ids = JSON.parse(localStorage.getItem('bw_aktive_schueler')) || [];
-            data.schuelerIDs.forEach(id => { if (!ids.includes(id)) ids.push(id); });
+            const d = JSON.parse(ev.target.result);
+            let ids = JSON.parse(localStorage.getItem('bw_aktive_schueler')||'[]');
+            (d.schuelerIDs||[]).forEach(id => { if(!ids.includes(id)) ids.push(id); });
             localStorage.setItem('bw_aktive_schueler', JSON.stringify(ids));
-            let fahrten = JSON.parse(localStorage.getItem('bw_ausbildungsstand')) || [];
-            data.alleFahrten.forEach(n => { if (!fahrten.some(a => a.datum === n.datum && a.schuelerId === n.schuelerId)) fahrten.push(n); });
-            localStorage.setItem('bw_ausbildungsstand', JSON.stringify(fahrten));
+            let f = JSON.parse(localStorage.getItem('bw_ausbildungsstand')||'[]');
+            (d.alleFahrten||[]).forEach(n => { if(!f.some(a=>a.datum===n.datum&&a.schuelerId===n.schuelerId)) f.push(n); });
+            localStorage.setItem('bw_ausbildungsstand', JSON.stringify(f));
             aktiveSchuelerIds = ids;
-            alert('✅ Import erfolgreich!');
-        } catch(err) { alert('Fehler beim Lesen der Datei.'); }
+            showToast('✅ Import erfolgreich');
+        } catch { alert('Fehler beim Lesen.'); }
     };
-    if (event.target.files[0]) reader.readAsText(event.target.files[0]);
+    if (e.target.files[0]) reader.readAsText(e.target.files[0]);
 }
 
-// Letzter Schüler Schnellzugriff
 function ladeLetzenSchueler() {
-    const raw = localStorage.getItem('bw_letzter_schueler');
-    if (!raw) return;
     try {
-        const { id, datum } = JSON.parse(raw);
-        const card = document.getElementById('letzterSchuelerCard');
+        const { id, datum } = JSON.parse(localStorage.getItem('bw_letzter_schueler') || 'null') || {};
+        if (!id) return;
         document.getElementById('letzterSchuelerId').textContent = id;
-        document.getElementById('letzterSchuelerDatum').textContent = 'Letzte Fahrt: ' + new Date(datum).toLocaleDateString('de-DE', {day:'2-digit',month:'2-digit',year:'numeric'});
-        card.dataset.schuelerId = id;
-        card.classList.remove('hidden');
-    } catch(e) {}
+        document.getElementById('letzterSchuelerDatum').textContent = 'Letzte Fahrt: ' + new Date(datum).toLocaleDateString('de-DE');
+        document.getElementById('letzterSchuelerCard').dataset.schuelerId = id;
+        document.getElementById('letzterSchuelerCard').classList.remove('hidden');
+    } catch {}
 }
 
-function schnellNeueFahrt() {
-    const id = document.getElementById('letzterSchuelerCard').dataset.schuelerId;
-    if (id) sessionStorage.setItem('bw_vorgewaehlt', id);
-    window.location.href = 'neue-fahrt.html';
-}
+function schnellNeueFahrt()    { const id = document.getElementById('letzterSchuelerCard').dataset.schuelerId; if(id) sessionStorage.setItem('bw_vorgewaehlt',id); window.location.href='neue-fahrt.html'; }
+function schnellFortschritt()  { const id = document.getElementById('letzterSchuelerCard').dataset.schuelerId; if(id) sessionStorage.setItem('bw_vorgewaehlt',id); window.location.href='fortschritt.html'; }
+function today() { return new Date().toISOString().split('T')[0]; }
+function showToast(msg) { const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2800); }
 
-function schnellFortschritt() {
-    const id = document.getElementById('letzterSchuelerCard').dataset.schuelerId;
-    if (id) sessionStorage.setItem('bw_vorgewaehlt', id);
-    window.location.href = 'fortschritt.html';
-}
-
+document.getElementById('current-date').textContent = new Date().toLocaleDateString('de-DE',{year:'numeric',month:'2-digit',day:'2-digit'});
 ladeLetzenSchueler();
+// Freigabe-Link prüfen (nach kurzer Verzögerung damit Auth bereit ist)
+setTimeout(freigabePruefen, 1500);
 </script>
 </body>
 </html>

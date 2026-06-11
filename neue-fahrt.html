@@ -8,17 +8,17 @@
     <!-- Firebase -->
     <script type="module">
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
-        import { getFirestore, collection, addDoc, query, where, orderBy, getDocs } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+        import { getFirestore, collection, addDoc, query, where, orderBy, getDocs, doc, setDoc } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
         import { getAuth, onAuthStateChanged, signInWithPopup, GoogleAuthProvider } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
 
         // ── FIREBASE CONFIG ── hier eintragen sobald Projekt angelegt ──
         const firebaseConfig = {
-            apiKey: "DEINE_API_KEY",
-            authDomain: "DEIN_PROJEKT.firebaseapp.com",
-            projectId: "DEIN_PROJEKT_ID",
-            storageBucket: "DEIN_PROJEKT.appspot.com",
-            messagingSenderId: "DEINE_SENDER_ID",
-            appId: "DEINE_APP_ID"
+            apiKey: "AIzaSyCEIfi1gmWVEvXRht01QLWomIoONdJdG7Q",
+            authDomain: "fahrschueler-manager.firebaseapp.com",
+            projectId: "fahrschueler-manager",
+            storageBucket: "fahrschueler-manager.firebasestorage.app",
+            messagingSenderId: "54611825655",
+            appId: "1:54611825655:web:68ebd9a905242e986054f2"
         };
 
         const app = initializeApp(firebaseConfig);
@@ -52,16 +52,50 @@
     <style>
         input[type="radio"].ampel-radio { display: none; }
         input[type="radio"].ampel-radio:checked + label {
-            opacity: 1; transform: scale(1.1);
-            border: 2px solid white; box-shadow: 0 4px 6px rgba(0,0,0,0.15);
+            opacity: 1; transform: scale(1.15);
+            border: 2px solid white; box-shadow: 0 4px 10px rgba(0,0,0,0.25);
         }
-        .ampel-label { opacity: 0.2; transition: all 0.2s; cursor: pointer; }
-        .ampel-label:hover { opacity: 0.5; }
+        .ampel-label { opacity: 0.25; transition: all 0.2s; cursor: pointer; }
+        .ampel-label:hover { opacity: 0.6; transform: scale(1.05); }
         details > summary { list-style: none; cursor: pointer; }
         details > summary::-webkit-details-marker { display: none; }
-        .header-row { background:#f1f5f9; padding:10px; font-weight:900; font-size:11px; color:#475569; border-left:4px solid #3b82f6; margin-top:15px; text-transform:uppercase; }
-        .gray-row   { background:#e2e8f0; padding:10px; font-weight:900; font-size:11px; border-left:4px solid #64748b; margin-top:15px; text-transform:uppercase; }
-        .note-area  { width:100%; margin-top:10px; padding:10px; border-radius:8px; border:1px dashed #cbd5e1; font-size:11px; background:#fafafa; resize:vertical; }
+        /* Abschnitte deutlich sichtbar */
+        details {
+            box-shadow: 0 3px 10px rgba(0,0,0,0.10), 0 1px 3px rgba(0,0,0,0.08) !important;
+            border: 1.5px solid #cbd5e1 !important;
+        }
+        details summary {
+            border-bottom: 1.5px solid #e2e8f0;
+            letter-spacing: 0.08em;
+        }
+        /* Bewertungszeilen abwechselnd eingefärbt */
+        #formContent .flex.items-center.justify-between:nth-child(odd)  { background: #f8fafc; }
+        #formContent .flex.items-center.justify-between:nth-child(even) { background: #ffffff; }
+        #formContent .flex.items-center.justify-between {
+            border-bottom: 1px solid #e2e8f0 !important;
+            padding-left: 8px;
+            padding-right: 8px;
+            border-radius: 4px;
+        }
+        .header-row { background:#dbeafe; padding:10px; font-weight:900; font-size:11px; color:#1e40af; border-left:4px solid #2563eb; margin-top:15px; text-transform:uppercase; border-radius:4px; }
+        .gray-row   { background:#e2e8f0; padding:10px; font-weight:900; font-size:11px; border-left:4px solid #475569; margin-top:15px; text-transform:uppercase; border-radius:4px; }
+        .note-area  { width:100%; margin-top:10px; padding:10px; border-radius:8px; border:2px solid #cbd5e1; font-size:11px; background:#f8fafc; resize:vertical; box-shadow: inset 0 2px 4px rgba(0,0,0,0.06); }
+        /* Dropdowns deutlicher */
+        select {
+            border: 2px solid #94a3b8 !important;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.10), inset 0 2px 4px rgba(0,0,0,0.05) !important;
+            -webkit-appearance: none;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23475569'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            background-size: 18px;
+        }
+        /* Zähler-Bereich */
+        .flex.items-center.bg-slate-100.rounded-lg {
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.08);
+            border: 1px solid #cbd5e1;
+        }
         .slide-panel { transform:translateY(100%); transition:transform 0.3s cubic-bezier(0.32,0.72,0,1); }
         .slide-panel.open { transform:translateY(0); }
         .pin-modal { opacity:0; pointer-events:none; transition:opacity 0.2s ease; }
@@ -210,16 +244,16 @@ const katalog = {
         items: [1,2,3,4,5,6,7,8,9,10,11,12,13],
         texts: [
             "Einweisung in das Ausbildungsfahrzeug",
-            "Technische Durchsichten",
-            "Ladungssicherung",
-            "Fahrtechnische Vorbereitungen",
-            "Führung des Fahrauftrags",
+            "Techn. Durchsichten (vor, während, nach der Benutzung)",
+            "Ladungssicherung (Ladung, Zubehör und pers. Ausrüstung)",
+            "Fahrtechn. Vorbereitungen (Sitz / Spiegel / Lenkrad / Gurt)",
+            "Führung Fahrauftrag",
             "Handhabung der Bedienungseinrichtung",
             "Bedienung EG-Kontrollgerät",
             "Anfahr-, Schalt- und Lenkübungen",
             "Fahren mit geringer Geschwindigkeit",
             "Abbremsen aus geringer Geschwindigkeit",
-            "Rückwärtsfahren mit Einweiser",
+            "Rückwärtsfahren mit Einweiser / Sicherungsposten",
             "An- und Abkuppeln des Anhängers",
             "Maßnahmen beim Verlassen des Fahrzeugs"
         ],
@@ -229,47 +263,47 @@ const katalog = {
         title: "Aufbaustufe A (14-35)",
         items: [14,15,16,17,'hint',18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35],
         texts: [
-            "Verhalten beim Anfahren",
+            "Verhalten beim Anfahren (Ebene / Steigung / Gefälle)",
             "Gangwechsel",
-            "Fahrbahnbenutzung",
-            "Abbiegen",
+            "Fahrbahnbenutzung (Kurven / ein- und mehrspurig)",
+            "Abbiegen an Kreuzungen / Einmündungen",
             "Kreuzungs-Check!",
             "Fahrstreifenwechsel",
-            "Beobachtung des Verkehrsraums",
-            "Beachten der Verkehrszeichen",
-            "Geschwindigkeit",
+            "Beobachtung Verkehrsraum",
+            "Beachten der Verkehrszeichen und -einrichtungen",
+            "Geschwindigkeit (Straßen- / Verkehrsverhältnisse)",
             "Sicherheitsabstände",
             "Überholen und Vorbeifahren",
-            "Regelung durch Lichtzeichen",
-            "mit und ohne Verkehrszeichen",
-            "Verhalten am Kreisverkehr",
+            "- Regelung durch Lichtzeichen oder Polizeibeamte",
+            "- mit und ohne Verkehrszeichen",
+            "Verhalten am und im Kreisverkehr",
             "Verhalten an Bahnübergängen",
-            "Verhalten gegenüber Fußgängern",
+            "Verhalten gegenüber Fußgängern und Radfahrern",
             "Verhalten an Fußgängerüberwegen",
             "Verhalten in verkehrsberuhigten Bereichen",
-            "Haltende öffentliche Verkehrsmittel",
+            "Haltende öffentliche Verkehrsmittel u. Schulbusse",
             "Durchfahren von Engstellen",
             "Benutzung der Warneinrichtungen",
-            "Maßnahmen bei Liegenbleiben",
+            "Maßnahmen zur Sicherung liegengebliebener Fzg",
             "Wenden und Rückwärtsfahren mit und ohne Anhänger"
         ],
         noteKey: "notizen_aufbauA"
     },
     aufbaustufeB: {
-        title: "Aufbaustufe B (36-46)",
+        title: "Aufbaustufe B im leichten Gelände (36-46)",
         items: [36,37,38,39,40,41,42,43,44,45,46],
         texts: [
-            "Fahren auf Feld-, Wald- und Wiesenwegen",
+            "Fahren auf Feld-, Wald-, und Wiesenwegen",
             "Fahren auf unterschiedlichen Bodenverhältnissen",
             "Materialschonendes Fahren",
             "Geschwindigkeit und Gangwahl",
-            "Fahren ohne und mit Geländegang",
-            "Befahren von Fahrspuren",
-            "Gefahrbremsung unbefestigt",
+            "Fahren ohne und mit Geländegang / Getriebesperren",
+            "Befahren von Fahrspuren, Lenkradhaltung",
+            "Gefahrbremsung auf losem Untergrund (mit/ohne ABV)",
             "Ausweichen von Hindernissen",
             "Befahren von Steigungen und Gefällen",
-            "Überwinden von Querrinnen",
-            "Geländebeurteilung"
+            "Überwinden von Querrinnen / Bodenunebenheiten",
+            "Geländebeurteilung / -ausnutzung"
         ],
         noteKey: "notizen_aufbauB"
     },
@@ -277,17 +311,17 @@ const katalog = {
         title: "Aufbaustufe C (47-56)",
         items: [47,48,49,50,'h1',51,52,53,54,'h2',55,56],
         texts: [
-            "Rückwärtsfahren Parklücke",
+            "Rückwärtsfahren in eine Parklücke (Längsaufstellung)",
             "Rückwärts quer oder schräg einparken",
-            "Fahren nach rechts rückwärts (Einmündung)",
-            "Rückwärts Versetzen Rampe",
+            "Fahren nach rechts rückwärts unter Ausnutzung einer Einmündung, Kreuzung oder Einfahrt",
+            "Rückwärtsfahren und Versetzen nach rechts an eine Rampe zum Be- oder Entladen",
             "Grundfahraufgaben DFE Kl C",
-            "Abfahrtkontrolle",
-            "Rückwärts Rampe gerade",
-            "Umkehren durch Rückwärtsfahren links",
+            "Abfahrtkontrolle (Sachgebiete 1 - 6)",
+            "Rückwärtsfahren geradeaus an eine Rampe zum Be- oder Entladen",
+            "Umkehren durch Rückwärtsfahren nach links",
             "Sicherheitskontrolle",
             "Grundfahraufgaben DFE Kl CE",
-            "Verbinden und Trennen",
+            "Verbinden und Trennen von Fahrzeugen",
             "Abstellen des Anhängers"
         ],
         noteKey: "notizen_aufbauC"
@@ -298,15 +332,15 @@ const katalog = {
         texts: [
             "Vorausschauendes Fahren",
             "Beobachtung anderer Verkehrsteilnehmer",
-            "Beobachtung Fahrverhalten anderer",
-            "Beobachtung des Verkehrsraums",
+            "Beobachtung des Fahrverhaltens anderer FzFhr",
+            "Beobachtung Verkehrsraum",
             "Bremsen in Gefahrensituationen",
-            "Überlandfahrt (Solo C)",
-            "Autobahnfahrt (Solo C)",
-            "Nachtfahrt (Solo C)",
-            "Überlandfahrt (CE)",
-            "Autobahnfahrt (CE)",
-            "Nachtfahrt (CE)"
+            "Schulung auf Bundes- oder Landstraßen (Solo C)",
+            "Schulung auf Autobahnen (Solo C)",
+            "Schulung bei Dämmerung oder Dunkelheit (Solo C)",
+            "Schulung auf Bundes- oder Landstraßen (Zug CE)",
+            "Schulung auf Autobahnen (Zug CE)",
+            "Schulung bei Dämmerung oder Dunkelheit (Zug CE)"
         ],
         noteKey: "notizen_leistung"
     },
@@ -320,8 +354,8 @@ const katalog = {
             "Fahren unter Prüfungsbedingungen",
             "Feststellen der Prüfungsreife",
             "Einweisertätigkeiten",
-            "Einweisertätigkeit bei Tag (min)",
-            "Einweisertätigkeit bei Nacht (min)"
+            "Einweisertätigkeit bei Tag → Minuten",
+            "Einweisertätigkeiten bei Nacht → Minuten"
         ],
         noteKey: "notizen_reifestufe"
     }
@@ -397,7 +431,8 @@ const ALLGEMEINE_GESETZE = [
 // ===================== FORMULAR AUFBAU =====================
 function generateRow(id, text) {
     if (id === 'hint') return `<div class="text-[9px] bg-yellow-50 p-2 my-1 border-l-4 border-yellow-400 font-bold italic text-yellow-700">⚠ Check: Kreuzungen / Einmündungen</div>`;
-    if (id === 'h1' || id === 'h2') return `<div class="header-row">${text}</div>`;
+    if (id === 'h1') return `<div id="row-h1" class="header-row">${text}</div>`;
+    if (id === 'h2') return `<div id="row-h2" class="header-row">${text}</div>`;
     if (id === 'g1') return `<div class="gray-row">${text}</div>`;
     return `<div id="row-${id}" class="flex items-center justify-between py-2.5 border-b border-slate-50">
         <span class="text-[11px] font-semibold text-slate-600 pr-2 leading-tight" style="width:52%">${id}. ${text}</span>
@@ -479,8 +514,27 @@ function applyDFEFilter() {
         const el = document.getElementById(`row-${i}`);
         if (el) el.classList.remove('hidden');
     }
-    if (k === 'C')       [49,50,54,65,66,67].forEach(id => document.getElementById(`row-${id}`)?.classList.add('hidden'));
-    if (k === 'E für C') [35,36,37,38,39,40,41,42,43,44,45,46,51,52,53,62,63,64].forEach(id => document.getElementById(`row-${id}`)?.classList.add('hidden'));
+    document.getElementById('row-h1')?.classList.remove('hidden');
+    document.getElementById('row-h2')?.classList.remove('hidden');
+    if (k === 'C') {
+        // Klasse C: sichtbar 47,48,49,50,51 (App-Items)
+        // ausblenden: 52,53 (CE-Grundfahraufgaben), 54,55,56 (Sich.kontrolle/Verb./Abstellen = CE), 65,66,67 (CE-Sonderfahrten)
+        [52,53,54,55,56,65,66,67].forEach(id => document.getElementById(`row-${id}`)?.classList.add('hidden'));
+        document.getElementById('row-h2')?.classList.add('hidden'); // DFE KI CE nicht bei Klasse C
+    }
+    if (k === 'C/CE') {
+        // Klasse C/CE: alle Aufbaustufe-C-Items sichtbar, nur Nacht Solo C ausblenden
+        [64].forEach(id => document.getElementById(`row-${id}`)?.classList.add('hidden'));
+    }
+    if (k === 'E für C') {
+        // Klasse E für C: sichtbar 52,53,54,55,56 (App-Items)
+        // ausblenden: 47,48,49,50,51 (DFE KI C Grundfahraufgaben + Abfahrtkontrolle)
+        // ausblenden: Geländefahrt 36-46, Solo-C-Sonderfahrten 62,63,64
+        [36,37,38,39,40,41,42,43,44,45,46,
+         47,48,49,50,51,
+         62,63,64].forEach(id => document.getElementById(`row-${id}`)?.classList.add('hidden'));
+        document.getElementById('row-h1')?.classList.add('hidden'); // DFE KI C nicht bei E für C
+    }
     Object.keys(katalog).forEach(k => updateSectionBadge(k));
 }
 
@@ -573,7 +627,12 @@ async function saveFahrt(e) {
     }
 
     const d = Object.fromEntries(new FormData(e.target).entries());
+    // Selects außerhalb des <form>-Tags manuell ergänzen
+    d.schuelerId = document.getElementById('schuelerSelect').value;
+    d.dfeKlasse  = document.getElementById('dfeKlasse').value;
     d.datum = new Date().toISOString();
+    // uid für Firestore-Zuordnung
+    if (window._currentUser) d.uid = window._currentUser.uid;
 
     // LocalStorage (immer als Fallback)
     let arr = JSON.parse(localStorage.getItem('bw_ausbildungsstand')) || [];

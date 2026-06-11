@@ -7,23 +7,23 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script type="module">
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
-        import { getFirestore, collection, query, where, orderBy, getDocs } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+        import { getFirestore, collection, collectionGroup, query, where, orderBy, getDocs } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
         import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
 
         const firebaseConfig = {
-            apiKey: "DEINE_API_KEY",
-            authDomain: "DEIN_PROJEKT.firebaseapp.com",
-            projectId: "DEIN_PROJEKT_ID",
-            storageBucket: "DEIN_PROJEKT.appspot.com",
-            messagingSenderId: "DEINE_SENDER_ID",
-            appId: "DEINE_APP_ID"
+            apiKey: "AIzaSyCEIfi1gmWVEvXRht01QLWomIoONdJdG7Q",
+            authDomain: "fahrschueler-manager.firebaseapp.com",
+            projectId: "fahrschueler-manager",
+            storageBucket: "fahrschueler-manager.firebasestorage.app",
+            messagingSenderId: "54611825655",
+            appId: "1:54611825655:web:68ebd9a905242e986054f2"
         };
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
         const auth = getAuth(app);
         window._db = db; window._auth = auth;
-        window._collection = collection; window._query = query;
+        window._collection = collection; window._collectionGroup = collectionGroup; window._query = query;
         window._where = where; window._orderBy = orderBy; window._getDocs = getDocs;
 
         onAuthStateChanged(auth, (user) => {
@@ -47,6 +47,7 @@
                 <svg class="w-6 h-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M15 19l-7-7 7-7" stroke-width="2"></path></svg>
             </button>
             <h1 class="text-xl font-black uppercase italic">Fortschritt</h1>
+        <span id="zfBadge" class="hidden ml-2 bg-amber-500 text-white text-[9px] font-black px-2 py-1 rounded-lg uppercase"></span>
         </div>
         <!-- Neue Fahrt Button -->
         <button id="neueFahrtBtn" onclick="neueFahrtStarten()" class="hidden bg-emerald-600 text-white text-xs font-black px-4 py-2.5 rounded-xl active:scale-95 transition-all border-b-2 border-emerald-800 shadow-lg">
@@ -104,37 +105,37 @@
 const katalog = {
     grundstufe:   { title: "Grundstufe",    items: [1,2,3,4,5,6,7,8,9,10,11,12,13], farbe: '#059669' },
     aufbaustufeA: { title: "Aufbaustufe A", items: [14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35], farbe: '#2563eb' },
-    aufbaustufeB: { title: "Aufbaustufe B", items: [36,37,38,39,40,41,42,43,44,45,46], farbe: '#7c3aed' },
+    aufbaustufeB: { title: "Aufbaustufe B im leichten Gelände", items: [36,37,38,39,40,41,42,43,44,45,46], farbe: '#7c3aed' },
     aufbaustufeC: { title: "Aufbaustufe C", items: [47,48,49,50,51,52,53,54,55,56], farbe: '#0891b2' },
     leistung:     { title: "Leistungsstufe", items: [57,58,59,60,61,62,63,64,65,66,67], farbe: '#d97706' },
     reife:        { title: "Reife & Einweiser", items: [68,69,70,71,72,73,74], farbe: '#dc2626' },
 };
 
 const kKatalog = [
-    "Einweisung in das Ausbildungsfahrzeug","Technische Durchsichten","Ladungssicherung",
-    "Fahrtechnische Vorbereitungen","Führung des Fahrauftrags","Handhabung der Bedienungseinrichtung",
+    "Einweisung in das Ausbildungsfahrzeug","Techn. Durchsichten (vor, während, nach der Benutzung)","Ladungssicherung (Ladung, Zubehör und pers. Ausrüstung)",
+    "Fahrtechn. Vorbereitungen (Sitz / Spiegel / Lenkrad / Gurt)","Führung Fahrauftrag","Handhabung der Bedienungseinrichtung",
     "Bedienung EG-Kontrollgerät","Anfahr-, Schalt- und Lenkübungen","Fahren mit geringer Geschwindigkeit",
-    "Abbremsen aus geringer Geschwindigkeit","Rückwärtsfahren mit Einweiser","An- und Abkuppeln des Anhängers",
-    "Maßnahmen beim Verlassen des Fahrzeugs","Verhalten beim Anfahren","Gangwechsel","Fahrbahnbenutzung",
-    "Abbiegen","Fahrstreifenwechsel","Beobachtung des Verkehrsraums","Beachten der Verkehrszeichen",
-    "Geschwindigkeit","Sicherheitsabstände","Überholen und Vorbeifahren","Regelung durch Lichtzeichen",
-    "mit und ohne Verkehrszeichen","Verhalten am Kreisverkehr","Verhalten an Bahnübergängen",
-    "Verhalten gegenüber Fußgängern","Verhalten an Fußgängerüberwegen","Verhalten in verkehrsberuhigten Bereichen",
-    "Haltende öffentliche Verkehrsmittel","Durchfahren von Engstellen","Benutzung der Warneinrichtungen",
-    "Maßnahmen bei Liegenbleiben","Wenden und Rückwärtsfahren mit und ohne Anhänger",
-    "Fahren auf Feld-, Wald- und Wiesenwegen","Fahren auf unterschiedlichen Bodenverhältnissen",
-    "Materialschonendes Fahren","Geschwindigkeit und Gangwahl","Fahren ohne und mit Geländegang",
-    "Befahren von Fahrspuren","Gefahrbremsung unbefestigt","Ausweichen von Hindernissen",
-    "Befahren von Steigungen und Gefällen","Überwinden von Querrinnen","Geländebeurteilung",
-    "Rückwärtsfahren Parklücke","Rückwärts quer oder schräg einparken","Fahren nach rechts rückwärts (Einmündung)",
-    "Rückwärts Versetzen Rampe","Abfahrtkontrolle","Rückwärts Rampe gerade",
-    "Umkehren durch Rückwärtsfahren links","Sicherheitskontrolle","Verbinden und Trennen","Abstellen des Anhängers",
-    "Vorausschauendes Fahren","Beobachtung anderer Verkehrsteilnehmer","Beobachtung Fahrverhalten anderer",
-    "Beobachtung des Verkehrsraums","Bremsen in Gefahrensituationen","Überlandfahrt (Solo C)",
-    "Autobahnfahrt (Solo C)","Nachtfahrt (Solo C)","Überlandfahrt (CE)","Autobahnfahrt (CE)","Nachtfahrt (CE)",
+    "Abbremsen aus geringer Geschwindigkeit","Rückwärtsfahren mit Einweiser / Sicherungsposten","An- und Abkuppeln des Anhängers",
+    "Maßnahmen beim Verlassen des Fahrzeugs","Verhalten beim Anfahren (Ebene / Steigung / Gefälle)","Gangwechsel","Fahrbahnbenutzung (Kurven / ein- und mehrspurig)",
+    "Abbiegen an Kreuzungen / Einmündungen","Fahrstreifenwechsel","Beobachtung Verkehrsraum","Beachten der Verkehrszeichen und -einrichtungen",
+    "Geschwindigkeit (Straßen- / Verkehrsverhältnisse)","Sicherheitsabstände","Überholen und Vorbeifahren","- Regelung durch Lichtzeichen oder Polizeibeamte",
+    "- mit und ohne Verkehrszeichen","Verhalten am und im Kreisverkehr","Verhalten an Bahnübergängen",
+    "Verhalten gegenüber Fußgängern und Radfahrern","Verhalten an Fußgängerüberwegen","Verhalten in verkehrsberuhigten Bereichen",
+    "Haltende öffentliche Verkehrsmittel u. Schulbusse","Durchfahren von Engstellen","Benutzung der Warneinrichtungen",
+    "Maßnahmen zur Sicherung liegengebliebener Fzg","Wenden und Rückwärtsfahren mit und ohne Anhänger",
+    "Fahren auf Feld-, Wald-, und Wiesenwegen","Fahren auf unterschiedlichen Bodenverhältnissen",
+    "Materialschonendes Fahren","Geschwindigkeit und Gangwahl","Fahren ohne und mit Geländegang / Getriebesperren",
+    "Befahren von Fahrspuren, Lenkradhaltung","Gefahrbremsung auf losem Untergrund (mit/ohne ABV)","Ausweichen von Hindernissen",
+    "Befahren von Steigungen und Gefällen","Überwinden von Querrinnen / Bodenunebenheiten","Geländebeurteilung / -ausnutzung",
+    "Rückwärtsfahren in eine Parklücke (Längsaufstellung)","Rückwärts quer oder schräg einparken","Fahren nach rechts rückwärts unter Ausnutzung einer Einmündung, Kreuzung oder Einfahrt",
+    "Rückwärtsfahren und Versetzen nach rechts an eine Rampe zum Be- oder Entladen","Abfahrtkontrolle (Sachgebiete 1 - 6)","Rückwärtsfahren geradeaus an eine Rampe zum Be- oder Entladen",
+    "Umkehren durch Rückwärtsfahren nach links","Sicherheitskontrolle","Verbinden und Trennen von Fahrzeugen","Abstellen des Anhängers",
+    "Vorausschauendes Fahren","Beobachtung anderer Verkehrsteilnehmer","Beobachtung des Fahrverhaltens anderer FzFhr",
+    "Beobachtung Verkehrsraum","Bremsen in Gefahrensituationen","Schulung auf Bundes- oder Landstraßen (Solo C)",
+    "Schulung auf Autobahnen (Solo C)","Schulung bei Dämmerung oder Dunkelheit (Solo C)","Schulung auf Bundes- oder Landstraßen (Zug CE)","Schulung auf Autobahnen (Zug CE)","Schulung bei Dämmerung oder Dunkelheit (Zug CE)",
     "Verhalten in komplizierten Verkehrssituationen","Vermeiden risikoreicher Verkehrssituationen",
     "Fahren in unbekannten Verkehrsräumen","Fahren unter Prüfungsbedingungen","Feststellen der Prüfungsreife",
-    "Einweisertätigkeit bei Tag (min)","Einweisertätigkeit bei Nacht (min)"
+    "Einweisertätigkeit bei Tag → Minuten","Einweisertätigkeiten bei Nacht → Minuten"
 ];
 
 let currentFilter = 'all';
@@ -155,14 +156,27 @@ async function renderAnalyse() {
     // Firebase versuchen
     if (window._db && window._currentUser) {
         try {
-            const q = window._query(
-                window._collection(window._db, 'fahrten'),
-                window._where('schuelerId', '==', id),
-                window._orderBy('datum', 'asc')
-            );
+            const uid = window._currentUser ? window._currentUser.uid : null;
+            const q = uid
+                ? window._query(
+                    window._collection(window._db, 'fahrten'),
+                    window._where('uid', '==', uid),
+                    window._where('schuelerId', '==', id),
+                    window._orderBy('datum', 'asc')
+                  )
+                : window._query(
+                    window._collection(window._db, 'fahrten'),
+                    window._where('schuelerId', '==', id),
+                    window._orderBy('datum', 'asc')
+                  );
             const snap = await window._getDocs(q);
             fahrten = snap.docs.map(d => d.data());
         } catch(e) { console.warn('Firebase:', e); }
+    }
+
+    // Zugführer: Fahrten von allen Fahrlehrern laden
+    if (fahrten.length === 0 && istZugfuehrer()) {
+        try { fahrten = await ladeAlleFahrtenFuerSchueler(id); } catch(e) {}
     }
 
     // Fallback LocalStorage
@@ -259,11 +273,90 @@ function neueFahrtStarten() {
     window.location.href = 'neue-fahrt.html';
 }
 
+// ── ZUGFÜHRER-SYSTEM ─────────────────────────────────────────────────────────
+const ZF_CODES = {
+    'ZF1-KFAUSBZ-2026': 'Zugführer 1. Zug',
+    'ZF2-KFAUSBZ-2026': 'Zugführer 2. Zug',
+    'VT1-KFAUSBZ-2026': 'Vertreter 1. Zug',
+    'VT2-KFAUSBZ-2026': 'Vertreter 2. Zug',
+};
+
+function istZugfuehrer() {
+    return !!localStorage.getItem('bw_zf_rolle');
+}
+
+function zugfuehrerRolle() {
+    return localStorage.getItem('bw_zf_rolle') || '';
+}
+
+async function ladeAlleSchueler() {
+    // Alle Schüler aller Fahrlehrer aus Firestore laden
+    if (!window._db || !window._currentUser) return [];
+    try {
+        const snap = await window._getDocs(window._collection(window._db, 'schueler'));
+        // Einzigartige Schüler-IDs sammeln mit Fahrlehrer-Info
+        const result = {};
+        snap.docs.forEach(d => {
+            const data = d.data();
+            if (!result[data.schuelerId]) {
+                result[data.schuelerId] = { schuelerId: data.schuelerId, uid: data.uid };
+            }
+        });
+        return Object.values(result);
+    } catch(e) {
+        console.warn('Alle Schüler laden:', e);
+        return [];
+    }
+}
+
+async function ladeAlleFahrtenFuerSchueler(schuelerId) {
+    // Fahrten eines Schülers von ALLEN Fahrlehrern laden
+    if (!window._db) return [];
+    try {
+        const snap = await window._getDocs(window._query(
+            window._collection(window._db, 'fahrten'),
+            window._where('schuelerId', '==', schuelerId),
+            window._orderBy('datum', 'asc')
+        ));
+        return snap.docs.map(d => d.data());
+    } catch(e) { return []; }
+}
+
 // Init
 const ids = JSON.parse(localStorage.getItem('bw_aktive_schueler')) || [];
 const sel = document.getElementById('schuelerSelect');
-sel.innerHTML = '<option disabled selected>Fahrschüler wählen...</option>';
-ids.forEach(id => sel.innerHTML += `<option value="${id}">${id}</option>`);
+
+async function initSchuelerListe() {
+    sel.innerHTML = '<option disabled selected>Fahrschüler wählen...</option>';
+
+    if (istZugfuehrer()) {
+        // Zugführer: alle Schüler aus Firestore laden
+        const alle = await ladeAlleSchueler();
+        if (alle.length === 0) {
+            ids.forEach(id => sel.innerHTML += `<option value="${id}">${id}</option>`);
+        } else {
+            alle.forEach(s => sel.innerHTML += `<option value="${s.schuelerId}">${s.schuelerId}</option>`);
+        }
+        // Zugführer-Badge anzeigen
+        const badge = document.getElementById('zfBadge');
+        if (badge) {
+            badge.textContent = zugfuehrerRolle();
+            badge.classList.remove('hidden');
+        }
+    } else {
+        ids.forEach(id => sel.innerHTML += `<option value="${id}">${id}</option>`);
+    }
+
+    // Vorgewählten Schüler aus SessionStorage laden
+    const vorgewaehlt = sessionStorage.getItem('bw_vorgewaehlt');
+    if (vorgewaehlt) {
+        sel.value = vorgewaehlt;
+        sessionStorage.removeItem('bw_vorgewaehlt');
+        renderAnalyse();
+    }
+}
+
+initSchuelerListe();
 
 // Vorgewählten Schüler aus SessionStorage laden
 const vorgewaehlt = sessionStorage.getItem('bw_vorgewaehlt');
