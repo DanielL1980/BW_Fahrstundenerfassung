@@ -309,7 +309,7 @@ const katalog = {
     },
     aufbaustufeC: {
         title: "Aufbaustufe C (47-56)",
-        items: [51,54,55,56,'h1',47,48,49,50,'h2',52,53],
+        items: [47,48,49,50,'h1',51,52,53,54,'h2',55,56],
         texts: [
             "Abfahrtkontrolle (Sachgebiete 1 - 6)",
             "Sicherheitskontrolle",
@@ -514,27 +514,22 @@ function applyDFEFilter() {
         const el = document.getElementById(`row-${i}`);
         if (el) el.classList.remove('hidden');
     }
-    document.getElementById('row-h1')?.classList.remove('hidden');
-    document.getElementById('row-h2')?.classList.remove('hidden');
+
     if (k === 'C') {
-        // Klasse C: sichtbar App 51 (Abfahrtkontrolle) + App 47,48,49,50 (DFE KI C)
-        // ausblenden: App 54,55,56 (Sich.kont./Verb./Abstellen = CE), App 52,53 (CE-Grundf.), CE-Sonderfahrten
-        [54,55,56,52,53,65,66,67].forEach(id => document.getElementById(`row-${id}`)?.classList.add('hidden'));
-        document.getElementById('row-h2')?.classList.add('hidden'); // DFE KI CE nicht bei Klasse C
+        // Klasse C: App 47=Abfahrtkontrolle sichtbar, 48/49/50=leer, 51-54=DFE KI C sichtbar, 55/56=leer
+        [48,49,50,55,56,65,66,67].forEach(id => document.getElementById(`row-${id}`)?.classList.add('hidden'));
     }
     if (k === 'C/CE') {
-        // Klasse C/CE: alle Aufbaustufe-C-Items sichtbar, nur Nacht Solo C ausblenden
+        // Klasse C/CE: alle Items 47-56 sichtbar (1:1 Mapping), nur Nacht Solo C ausblenden
         [64].forEach(id => document.getElementById(`row-${id}`)?.classList.add('hidden'));
     }
     if (k === 'E für C') {
-        // Klasse E für C: sichtbar App 54,55,56 (Sich.kont./Verb./Abstellen) + App 52,53 (CE-Grundf.)
-        // ausblenden: App 51 (Abfahrtkontrolle=nur C), App 47,48,49,50 (DFE KI C Grundf.)
+        // Klasse E für C: App 47=leer, 48/49/50=sichtbar, 51-54=leer, 55/56=sichtbar
+        // ausblenden: App 47 (Abfahrtkontrolle=nur C), App 51-54 (DFE KI C Grundf.)
         // ausblenden: Geländefahrt 36-46, Solo-C-Sonderfahrten 62,63,64
         [36,37,38,39,40,41,42,43,44,45,46,
-         51,47,48,49,50,
+         47,51,52,53,54,
          62,63,64].forEach(id => document.getElementById(`row-${id}`)?.classList.add('hidden'));
-        document.getElementById('row-h1')?.classList.add('hidden'); // DFE KI C ausblenden
-        // h2 (DFE KI CE) bleibt sichtbar
     }
     Object.keys(katalog).forEach(k => updateSectionBadge(k));
 }
